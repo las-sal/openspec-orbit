@@ -138,11 +138,14 @@ the markdown directly and the user will save it.
 
 ## After completing the review
 
-1. **Also list findings in chat** — in addition to writing the file, output a
-   concise summary of your findings in this chat so the user sees them
-   immediately without opening the file. Per finding: severity + title +
-   `file:line`, optionally a one-line description. The chat summary may be
-   terser than the file; it must cover every finding.
+1. **Output the full findings markdown in chat** — in addition to writing the
+   findings file, output the COMPLETE findings markdown in this chat. Same
+   content as the file: every severity section (`## CRITICAL` / `## WARNING`
+   / `## SUGGESTION`), every `### Title` entry, every `**File**:` and
+   `**Description**:` field. Do NOT abbreviate or summarize — the chat output
+   is the immediately-visible read for the user (they should be able to
+   evaluate every finding without opening the file). The file remains the
+   canonical record for `--from-file` parsing.
 
 2. **Commit and push the findings file** (if your environment supports git):
 
@@ -173,10 +176,10 @@ If you don't have git access, just output the findings markdown in this chat
 - **WHEN** the prompt's commit instructions are generated
 - **THEN** the suggested commit message line follows the form `External review (<as>, iter <N>): <change-name>` followed by a blank line and a one-line summary of the findings (severity counts + headline finding if any); this format makes the iteration / mode visible in `git log` and pairs with the file's own iteration counter
 
-#### Scenario: Chat-side findings summary in prompt
+#### Scenario: Full findings output to chat in prompt
 
 - **WHEN** the prompt is generated
-- **THEN** the "After completing the review" section instructs the external AI to ALSO list a concise summary of findings in chat (per finding: severity + title + file:line, optionally a one-line description) in addition to writing the full findings file; the chat summary is for visibility, the file is the canonical record
+- **THEN** the "After completing the review" section instructs the external AI to output the FULL findings markdown in chat (every finding's severity section + `### Title` + `**File**:` + `**Description**:`, identical content to the findings file — no abbreviation, no summarization) in addition to writing the findings file; the chat output is the immediately-visible read for the user, the file is the canonical record for parsing by `--from-file`
 
 ### Requirement: Output format specification in prompt
 

@@ -159,10 +159,12 @@ output the markdown directly and the user will save it.
 
 ## After completing the review
 
-1. **Also list findings in chat** — in addition to writing the file, output
-   a concise summary in this chat so the user sees findings immediately
-   without opening the file. Per finding: severity + title + `file:line`,
-   optionally a one-line description.
+1. **Output the full findings markdown in chat** — in addition to writing
+   the findings file, output the COMPLETE findings markdown in this chat.
+   Same content as the file: every severity section, every `### Title`,
+   every `**File**:` and `**Description**:` field. Do not abbreviate or
+   summarize — the chat output is the immediately-visible read for the
+   user; the file is the canonical record for `--from-file` parsing.
 
 2. **Commit and push the findings file** (if your environment supports git):
 
