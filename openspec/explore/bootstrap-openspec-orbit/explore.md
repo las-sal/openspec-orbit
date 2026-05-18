@@ -1,0 +1,198 @@
+# Exploration: bootstrap-openspec-orbit
+
+> **Status**: exploring. Promoted to `proposal.md` / `design.md` / `specs/` via `/opsx:propose` when decisions firm up.
+
+## Guiding principles
+
+These are stance-level constraints that shape every decision below. New decisions must be checked against them.
+
+1. **Coherence with openspec form and spirit** (2026-05-17) — orbit is developed as if it could one day be merged into upstream `@fission-ai/openspec`, even though that's not the plan. Acid test: if orbit and upstream were merged tomorrow, would the diff read like a contributor's PR, or like two different products mashed together? Aim for the former. Concretely:
+   - Reuse openspec's vocabulary: change, delta, artifact, requirement, scenario, capability, ADDED/MODIFIED/REMOVED/RENAMED.
+   - Reuse openspec's file layout: `openspec/changes/<name>/`, `openspec/specs/`, archive directory. New orbit dirs (e.g., `openspec/explore/<name>/`) follow the directory-per-change convention.
+   - Reuse openspec's output conventions: 3-dimension scorecard + CRITICAL/WARNING/SUGGESTION severity + actionable findings with file:line refs. Every review/audit command outputs the same shape as `verify-change`.
+   - Reuse openspec's CLI as source of truth: skills call `openspec list --json`, `openspec status --json`, `openspec instructions … --json` (not file-walking directly).
+   - Reuse openspec's skill/command file format (frontmatter, metadata block).
+   - License MIT (matches upstream).
+   - Verb-based naming family: orbit's `review-*` / `audit-*` / `distill-*` fit upstream's verb pattern. Propose new verbs only when no existing verb fits.
+   - Don't gratuitously diverge: if upstream has a way of doing something, use it. Override only when extending it.
+
+2. **Up-front cost trumps downstream cost — comprehensiveness over efficiency** (2026-05-17) — paying compute / LLM tokens / extra passes up front almost always beats fixing issues that escape into production or the next cycle. Concretely:
+   - Defaults lean toward thorough, not fast. The default mode for any review command is the comprehensive one (`--full`), not the cheap one (`--fast`).
+   - "Just in case" passes are kept rather than pruned. If a pass catches even one real issue per few runs, the cost is worth paying.
+   - Subagent parallelism (`--parallel`) is included in v1 even though it costs more LLM tokens per run, because the downstream benefit (better signal, scales to bigger projects, surfaces issues single-context would miss) is bigger.
+   - The cross-AI review cycle the user already runs (~5 cycles per change) is an instance of this principle, and orbit's commands compose with it rather than replacing it.
+   - When trading off "more checks now" vs "simpler now, possibly more issues later," choose the former.
+   - This is a design *default-setter*, not a hard rule. When a check has truly negligible signal, prune it. But err on inclusion.
+
+3. **Specs are the ultimate source of truth** (2026-05-17) — orbit's design assumes the spec set in `openspec/specs/` is the authoritative description of the system, and code is one realization of that description. A fresh AI handed the curated spec set should be able to reproduce the system. This stance shapes orbit's emphasis on spec hygiene: lens-driven reviews validate code against archived specs, `audit-drift` keeps spec/doc references coherent, `distill-specs` actively curates specs toward regen-readiness. For users who hold the opposite stance (code-is-truth, specs-are-documentation), most orbit commands still help with doc hygiene, but `distill-specs` is the opt-in lever for the spec-truth camp specifically — easy to skip if it doesn't fit. orbit doesn't force the stance; it tools for it.
+
+## Premise
+
+Establish **openspec-orbit** — a `.claude/` overlay published as a standalone GitHub repo that sits on top of upstream `@fission-ai/openspec`. opsx ships canonical slash commands and skills via `openspec init`; openspec-orbit replaces/adds to those files to bake in a tested review-and-capture workflow that has been working ad-hoc across the home-control / home-env / home-control-test projects. Today the user agrees on the review pattern with the AI per session — review conventions, marker formats, pushback discipline, and capture habits all have to be re-negotiated each time. Bake the recurring pattern into the overlay so it survives across sessions and projects.
+
+This change is the v1 bootstrap of the overlay: scaffold the repo, ship the review commands, the address-reviews skill, the explore-capture affordances, and the explore.md convention.
+
+The pattern that's been working:
+
+1. `/opsx:explore` — think through a change with the AI
+2. `/opsx:propose` — produce proposal.md, design.md, spec.md(s), tasks.md
+3. **Review the proposal artifacts** — internal cohesion, archive consistency, codegen-readiness, gaps, drift
+4. Cross-AI cycle: push to GitHub, have a clean AI (codex / fresh Claude) review the same artifacts, paste findings back, address with pushback discipline
+5. Cycle ~5x until both AIs converge on "no meaningful issues"
+6. `/opsx:apply` — generate code
+7. **Review the generated code** — surface walks, critical paths, spec conformance, drift, race/bug/gap hunting
+8. Cross-AI cycle again
+9. `/opsx:archive` — promote deltas to baseline specs
+
+## Decisions
+
+### Project shape
+
+- **Project name: `openspec-orbit`** (2026-05-17) — published as a standalone GitHub repo at `github.com/las-sal/openspec-orbit` (private during development). "orbit" reflects that it circles upstream opsx rather than replacing it; "review" undersold the scope (also covers explore-capture, address-reviews skill, propose-promotion behavior).
+- **Distribution: consumer-side `.claude/` overlay** (2026-05-17) — repo ships `.claude/commands/opsx/*.md` + `.claude/skills/openspec-*/SKILL.md` + supporting docs. Consumers `openspec init` first (gets upstream defaults), then drop orbit files in to override/extend. No CLI fork, no upstream contribution.
+- **No upstream contribution to `Fission-AI/OpenSpec`** (2026-05-17) — standalone, not a Git fork. Upstream changes don't auto-flow; manual diff if anything is worth pulling in.
+- **Repo doubles as dev sandbox** (2026-05-17) — the repo's own `openspec/` directory is used to develop orbit itself (eat your own dog food: explore, propose, apply *using* opsx in this repo, on opsx-overlay changes).
+- **All 12 upstream workflows populated locally (2026-05-17)** — `explore`, `propose`, `apply-change`, `archive-change`, `new-change`, `continue-change`, `ff-change`, `sync-specs`, `bulk-archive-change`, `verify-change`, `onboard`, `feedback`. Extracted from `@fission-ai/openspec@1.3.1` templates and written to `.claude/commands/opsx/*.md` + `.claude/skills/openspec-*/SKILL.md` for inspection and selective override.
+- **Plugin packaging deferred to Phase 2** (2026-05-17) — when orbit stabilizes, package as a Claude Code plugin with a manifest, distribute via marketplace or direct git URL. Versioning, namespacing, `/plugin install <url>`. Not for v1.
+
+### Command surface
+
+- **Two review commands, not one** (2026-05-16) — `/opsx:review-proposal` (covers proposal + design + spec deltas + tasks) and `/opsx:review-system` (post-apply). Different invocation points, different authoritative inputs, different stop conditions. A unified command would either be too broad or fragile.
+- **Pre-apply review command is named `/opsx:review-proposal`** (2026-05-16, confirmed 2026-05-17) — pairs verbally with `/opsx:propose` ("review what propose produced").
+- **Post-apply review command is named `/opsx:review-system`** (2026-05-17, supersedes `review-code`) — names the scope honestly (whole product, not just the code that changed). The `review-` prefix deliberately distinguishes orbit's editorial layer from upstream's structural `verify-` commands.
+- **Naming taxonomy across orbit (2026-05-17)** — three verbs, each with a distinct meaning, so adopters can predict where any new command goes:
+  - `verify-*` (upstream) = structural correctness checks at a defined scope (`verify-change`, etc.) — the foundation.
+  - `review-*` (orbit additions) = opinionated editorial passes layered on top of `verify-*` (`review-proposal`, `review-system`). Signals "add-on for specific purposes," not a replacement.
+  - `audit-*` (orbit) = scan for drift / residue / staleness (`audit-drift` — single unified command in v1).
+  - `distill-*` (orbit) = reduce to essential (`distill-specs`).
+  - Standalone verbs for non-fitting operations (`address-reviews`).
+- **`/opsx:explore` gains a "capture convention" affordance** (2026-05-16) — when the user says something that reads as a durable convention ("files should be named X", "we always do Y not Z"), explore offers to write it to a topic file (e.g., `naming_convention.md`), not auto-dump into CLAUDE.md. CLAUDE.md is for handoff orientation and references topic files. Offer, don't auto-capture — user decides.
+- **New skill: `/opsx:address-reviews`** (2026-05-16, sketched lean v1 on 2026-05-17) — full design in sibling `sketches/address-reviews.md`. **Lean v1**: scans for `@review:` markers anywhere in the repo (with safe exclusions like `.git`, `node_modules`, `dist`, `build`), walks each with pushback discipline, removes marker on resolution. Lifecycle: discover → triage → walk each → ripple **flag** (no auto-cascade) → report. Output is a **resolution log** (✓ resolved / ⚠ stale / ⏸ deferred / ✗ escalated), not a 3-dimension scorecard. Four enforcement wins justify the skill over "just ask the AI": convention durability, pushback discipline, marker removal invariant, multi-file-type uniformity.
+- **Lean v1 scope for address-reviews (2026-05-17)** — defers to v2: paste/file input sources (`--from-paste`, `--from-file`), automatic ripple cascade, severity tracking, `--strict`, `--parallel`, categorized markers. Lean v1 covers `@review:` marker scanning + walk + resolve + remove. Tracked in GitHub issue #3.
+- **Source-code markers included in v1 (2026-05-17, supersedes earlier v2-deferral)** — `@review:` works as the marker in any file type (markdown bare, source code inside the file's comment syntax). One grep pattern (`@review:`) finds them all. No separate machinery for source vs markdown.
+- **Marker convention is `@review: <content>`** (2026-05-17, supersedes the original `<!-- REVIEW: -->` decision) — simpler, easier to remember, distinctive in prose (low false-positive grep), works across file types without per-type comment-syntax wrapping at the marker level. Examples: `@review: should we forbid sensitive devices here?` in markdown; `// @review: handles expired tokens?` in TypeScript; `# @review: configurable per env?` in YAML.
+- **address-reviews ripple behavior (lean v1, 2026-05-17)** — when a resolution touches normative content, the skill **lists** affected related files (sibling specs, `CLAUDE.md`, `project.md`, `*_convention.md`, `openspec/lenses/`) but does **not** automatically edit them. User decides what to fix and when. Auto-cascade is v2 (issue #3). Excluded from ripple at any version: baseline specs in `openspec/specs/<capability>/` (that's `/opsx:apply` + `sync-specs` territory) and source code (that's `/opsx:apply`).
+- **address-reviews handling of unresolvable markers (2026-05-17)** — per-marker user choice with default: (a) file as a follow-up task in `tasks.md` and remove the marker (default), (b) convert to permanent `@todo: ...` marker, (c) leave with `@review(escalated): ...` and explanation.
+
+### Exploration durability
+
+- **Exploration produces a durable file at `openspec/explore/<name>/explore.md`** (2026-05-17) — staged in `openspec/explore/<name>/` because the change dir doesn't exist pre-propose (creating it is `/opsx:propose`'s job in the existing flow). Five sections (Premise / Decisions / Open questions / Considered & out / References). AI proactively updates as decisions crystallize; user can say "capture that" to force a write. `/opsx:propose` reads `explore.md`, generates proposal/design/specs/tasks, then **moves** the `openspec/explore/<name>/` directory to `openspec/changes/<name>/`. `explore.md` travels with the change as historical record, so Considered & out is available to seed design.md alternatives without rediscovery.
+- **Explore staging is a directory, not a single file** (2026-05-17) — `openspec/explore/<name>/` (not `openspec/explore/<name>.md`). Room for sibling captures during explore (e.g., draft `naming_convention.md` that the user agreed to capture but isn't ready to promote to the project yet).
+
+### Review-command design
+
+- **`/opsx:review-system` extends `verify-change`** (2026-05-17) — verify-change covers "did we build what this change said we'd build" (completeness + correctness + coherence within the change's deltas). `/opsx:review-system` runs verify-change first (full output) and then adds 6 system-wide passes:
+  1. **Baseline-compliance** — does the change break behaviors specified in archived `openspec/specs/`?
+  2. **Cohesion** — walk callers / dependents outside the change's tasks; flag signature drift, ripple effects.
+  3. **Surface walk** — enumerate every CLI/MCP/HTTP/etc. surface; does each still behave coherently after this change?
+  4. **Perspective reviews** — simulate typical call patterns from registered caller-perspectives.
+  5. **Critical-path scan** — for each registered user flow, walk end-to-end for breakage / regression / drift.
+  6. **Drift / residue check** — call into `/opsx:audit-residue` for vocabulary residue after rename-shaped changes.
+  Verify-change alone is the right tool when only the change's deltas matter; `/opsx:review-system` is for "is the whole product still honest after this change."
+- **All orbit review/audit commands inherit `verify-change`'s reporting convention** (2026-05-17) — 3-dimension scorecard (Completeness / Correctness / Coherence) with status metrics in the Status column, findings listed by CRITICAL → WARNING → SUGGESTION severity, every finding has a specific file:line reference + actionable recommendation, false-positive bias toward lower severity, graceful degradation noting skipped checks. Stock final-assessment phrasings: "X critical issue(s) found. Fix before \<gate\>." / "No critical issues. Y warning(s) to consider. Ready \<gate\> (with noted improvements)." / "All checks passed. Ready \<gate\>." This shared convention applies to `/opsx:review-proposal`, `/opsx:review-system`, `/opsx:audit-residue`, and `/opsx:distill-specs`.
+- **Project-level judgment layer lives in `openspec/lenses/`** (2026-05-17) — review commands need durable answers to questions code can't answer: which callers matter, which flows are critical. Captured in `openspec/lenses/` as a directory of markdown files (matches openspec's collection-as-subdir convention). v1 files:
+  - `openspec/lenses/perspectives.md` — named callers (e.g., "Claude Desktop using MCP") + validation criteria
+  - `openspec/lenses/critical-paths.md` — named end-to-end flows + touchpoints + expected behavior
+  Surfaces are *not* in `lenses/` — they're derivable from `openspec/specs/<capability>/` (capabilities are surfaces). Name "lenses" captures the function: perspectives literally are lenses (look-through), critical paths are attention lenses (focus). Each file teaches the reviewer how to focus. Room to grow: future `error-paths.md`, `performance-budgets.md`, etc. fit as additional lenses. Format: markdown with strict structural conventions (`## <Name>` per entry, `**Key:** value` for parseable fields) — matches openspec's content-shaped files. Graceful degradation: empty `lenses/` → review-system Passes 4/5 skip with a note.
+- **`lenses/` content grows via `/opsx:explore` capture triggers (2026-05-17)** — explore's prompt is extended with two new triggers alongside the convention-capture affordance:
+  - When the user describes a caller/client of the system → offer "capture as perspective in `lenses/perspectives.md`?"
+  - When the user describes a critical user flow → offer "capture as critical path in `lenses/critical-paths.md`?"
+  Offer, don't auto-capture. Same pattern as conventions. Result: orbit ships with empty `lenses/`; real projects' content materializes as exploration happens. Start-small-and-grow shape.
+- **`/opsx:explore` modifications sketched in detail (2026-05-17)** — full design in sibling `sketches/explore.md`. Preserves upstream's "stance, not workflow" character; adds capture affordances on top. Five capture types: conventions, perspectives, critical paths, decisions (to `explore.md`), references. Three invocation modes: (A) bare — pure think, no file; (B) named — `/opsx:explore <name>` opens or resumes; (C) bare-then-crystallized — explore offers a name prompt after 2+ substantive decisions emerge. Maintains the "offer, don't auto-capture" rule for all captures except decisions, which are proactively captured with brief acknowledgment.
+- **`/opsx:propose` modifications sketched in detail (2026-05-17)** — full design in sibling `sketches/propose.md`. Two modes: (1) **consume** — when `openspec/explore/<name>/` exists, propose reads `explore.md`, prompts to handle Open questions (resolve / defer-as-`@review:` / abandon), generates artifacts, then **moves** the staging dir to `openspec/changes/<name>/` so explore.md persists as historical record; (2) **standalone** — when no explore dir exists, behaves exactly like upstream propose (description → artifacts). Section mapping: Premise → proposal motivation; Decisions → spec deltas + design choices + tasks; Open questions → resolved or deferred to markers; Considered & out → design.md alternatives; References → contextual reads.
+- **Convergence signal = option B (light iteration note) (2026-05-17)** — orbit doesn't try to fully automate "when is the cycle done." Single-run "ready" is the Final Assessment (already shipped via verify-change convention). Cross-cycle "converged" is a user judgment, supported by a light iteration note when prior runs exist. Each review/audit run writes a small JSON summary to `openspec/changes/<name>/.orbit-runs/<command>-<TS>.json` (committed). When a review command runs and prior summaries exist, it adds a one-sentence iteration note to the report ("Note: N of these findings appeared in the last run on <date>. M new this run."). User decides when to stop cycling. Full delta/trajectory analysis deferred to v2 alongside caching (issue #1).
+- **Persistence layout: `openspec/changes/<name>/.orbit-runs/` (committed, dot-prefixed)** (2026-05-17) — single directory holds both internal-run summaries (`review-proposal-<TS>.json`, `review-system-<TS>.json`, `audit-drift-<TS>.json`) and external-review findings (`external-proposal-<TS>.md`, `external-system-<TS>.md`). Dot-prefix signals "orbit metadata, not part of canonical openspec change" — keeps upstream's view of the change dir clean. Committed because iteration history is real evidence of the review cycle and supports team handoffs.
+- **New command: `/opsx:review-external <change> [--as proposal|system]`** (2026-05-17) — sketched in `sketches/review-external.md`. Packages a review request for an external AI (codex, fresh Claude, etc.) by emitting a self-contained markdown prompt to chat. User copies the prompt into the external AI's interface; external AI reads the change + project context + lenses + iteration history; writes findings to `openspec/changes/<name>/.orbit-runs/external-<as>-<TS>.md` (or outputs markdown for user to save if chat-only). The `--as` flag picks mode (proposal-style or system-style review focus); default inferred from `tasks.md` state. Output to chat (not a file), since the prompt is regenerated each invocation. Sister command to `/opsx:review-proposal` and `/opsx:review-system` — completes the `review-*` family.
+- **External findings file format defined** (2026-05-17) — markdown with rigid section structure: `## CRITICAL` / `## WARNING` / `## SUGGESTION` headings; each finding is a `### Title` with `**File**: path:line` and `**Description**: text`. Plus optional `## Notes` for general observations. Same severity model as orbit's internal reports. Parser in address-reviews extracts per-finding severity + title + file:line + description.
+- **`--from-file` promoted into v1 of `/opsx:address-reviews`** (2026-05-17, supersedes earlier v2 deferral) — the cross-AI cycle requires this to avoid copy-paste-per-finding. Reads an external-review file, parses into virtual markers, walks through the same lifecycle (pushback → classify → apply → log). Virtual markers don't have a corresponding marker in source, so the "remove on resolution" step is a no-op for them; source findings file persists in `.orbit-runs/` as historical record. `--from-paste` (stdin) and other comprehensive features stay v2 (issue #3 updated).
+- **Pushback discipline lives per-command, not in CLAUDE.md (2026-05-17)** — each command that needs the discipline (review-proposal, review-system, audit-drift, address-reviews) bakes "verify against current state before fixing; if state already changed, report evidence and don't re-edit" into its own SKILL.md. Yes, intentional text duplication across the five commands. Trade-off: text duplication for self-contained reliability — commands don't depend on CLAUDE.md being loaded. Orbit's README optionally documents the discipline as a recommended CLAUDE.md snippet for adopters who want project-level reinforcement; SKILL.md behavior doesn't depend on it.
+- **Abandoned explorations left to user management in v1 (2026-05-17)** — `openspec/explore/<name>/` directories that never get promoted via `/opsx:propose` stay where they are. User can manually delete them or move to `openspec/explore/archive/<name>/` for archive semantics (symmetric with `openspec/changes/archive/`). Resume by running `/opsx:explore <name>` again. orbit's README documents the cleanup pattern. Auto-archive based on staleness deferred to v2 if/when clutter becomes a real friction point.
+
+### Companion orbit commands deferred to v2
+
+- **`/opsx:distill-specs` v2 scope notes (2026-05-17)** — deferred to v2; no sketch in v1. Captured here so v2 has a concrete starting point:
+  - **Purpose**: actively curate canonical specs toward regen-readiness. Different from `/opsx:audit-drift` (audit reports drift; distill curates and reduces).
+  - **Trigger**: explicit user invocation. Code-as-truth adopters can skip; spec-as-truth adopters run periodically.
+  - **Inputs**: `openspec/specs/` (canonical baseline), `openspec/changes/archive/` (historical context), codebase (to detect implicit requirements not yet captured).
+  - **Operations**: identifies stale, intermediate-state, duplicated, contradictory requirements; surfaces implicit requirements present in code but missing from specs.
+  - **Output**: "regen-readiness" report. Optionally a proposed curated spec set, presented for review before applying (this is destructive, so explicit confirmation required).
+  - **Success test**: a fresh AI handed the curated `openspec/specs/` reproduces the system.
+  - **Composition**: project-wide periodic operation; doesn't fit the per-change cycle. Similar temporal slot as `/opsx:audit-drift` but different intent.
+  - **Open v2 questions**:
+    - Apply mode? (read-only report / propose-edits-for-approval / apply-with-confirm)
+    - "Stale" threshold? (last-touched date, archive age, semantic mismatch with current code)
+    - How to extract implicit-in-code requirements? (walks code to find behaviors not in specs)
+    - Naming alternatives: `/opsx:distill-specs`, `/opsx:audit-baseline`, `/opsx:spec-hygiene` — pick during v2 design.
+- **Flag family for review commands** (2026-05-17) — both `/opsx:review-proposal` and `/opsx:review-system` share the same flag shape:
+  - **Depth modes (mutually exclusive)**:
+    - `--fast` — cheap subset only (grep-heavy passes); for mid-cycle quick sanity checks.
+    - `--full` (default) — all passes, sequential; the workhorse.
+    - `--thorough` — all passes + extras (specifics tracked in GitHub issue, TBD); for pre-apply / pre-archive deep clean.
+  - **Execution mode (orthogonal, combinable with any depth)**:
+    - `--parallel` — spawn subagents for heavy passes concurrently. ~3-4× wall-clock, partitions context for larger projects. Opt-in. **Included in v1** per guiding principle 2 (cost up front beats cost downstream).
+  - **Secondary flags**:
+    - `--focus <lens>` — emphasize rename / flip / refactor / hotpath.
+    - `--strict` — fail-fast on first CRITICAL (CI-style usage).
+    - `--skip-verify` — review-system only; skip Pass 0 if `/opsx:verify-change` ran separately.
+    - `--fresh` — opt-in clean-context subagent for main work (deferred from v1 default behavior; flag still available).
+    - `--mark` — review-proposal only; drop `@review: ...` markers in artifacts based on findings, for unified resolution via `/opsx:address-reviews`.
+  - Per-command pass selections for `--fast` defined in each sketch.
+- **`/opsx:review-proposal` sketched in detail (2026-05-17)** — full design captured in sibling file `sketches/review-proposal.md`. Maps the user's ~80 transcript review-prompts into 9 passes, rolled up into the 3-dimension scorecard. Generative-completeness probe (Pass 6) is the differentiator vs. `openspec validate`.
+- **`/opsx:review-system` sketched in detail (2026-05-17)** — full design captured in sibling file `sketches/review-system.md`. Wraps upstream `verify-change` (Pass 0) and adds 6 system-wide passes. Each pass grounded in specific transcript patterns. Structurally twin to review-proposal (same shape, different stage/gate), per guiding principle 1.
+- **Caching of pass results deferred to v2** (2026-05-17) — tracked at [issue #1](https://github.com/las-sal/openspec-orbit/issues/1). 5-cycle convergence pattern means caching has high payoff; design needs careful per-pass input tracking for correct invalidation, which is the load-bearing work.
+
+### Companion orbit commands (in scope for v1 unless noted)
+
+- **Unified audit command: `/opsx:audit-drift`** (2026-05-17, supersedes `audit-residue` — one command, not many) — project-wide scan for drift in captured knowledge vs. reality. Four scan categories: (1) **Vocabulary residue** — renamed/removed terms lingering in non-delta'd specs, `project.md`, `CLAUDE.md`, `*_convention.md` (the original `OPENSPEC_LESSONS.md` lesson); (2) **Lens staleness** — entries in `openspec/lenses/` referencing surfaces/capabilities that no longer exist; (3) **Cross-doc consistency** — different docs describing the same thing inconsistently; (4) **Archive coherence** — recently archived changes whose `sync-specs` step missed updates. Output uses the same 3-dimension scorecard + severity model as the review commands. Composition: `/opsx:review-system` Pass 6 calls `audit-drift` as a library function; users can invoke standalone; `/opsx:archive` auto-calls it as a pre-archive sweep (see below). Name "drift" matches the user's transcript vocabulary; scales as scope grows.
+- **`/opsx:archive` auto-invokes `/opsx:audit-drift` as a pre-archive sweep (2026-05-17, sketched same day)** — full design in sibling `sketches/archive.md`. Resolves the original `OPENSPEC_LESSONS.md` lesson directly. Behavior: archive command runs audit-drift before completing; findings are surfaced in the archive output; user confirms archive even with CRITICAL findings (with explicit "address now / proceed / abort" prompt). Not a hard gate. Opt-out via `--skip-audit`. Writes an archive run summary to `.orbit-runs/archive-<TS>.json` capturing the audit findings + user decision for traceability. Also warns on unresolved `@review:` markers in the change dir before archiving. The `.orbit-runs/` directory travels with the change into `openspec/changes/archive/<name>/.orbit-runs/`.
+- **`/opsx:audit-drift` sketched in detail (2026-05-17)** — full design captured in sibling file `sketches/audit-drift.md`. Four scan categories rolled into the standard 3-dimension scorecard, same flag family as review commands, library + standalone invocation, archive auto-hook.
+
+## Open questions
+
+All v1-blocking open questions are resolved. Remaining items are tracked in GitHub issues:
+
+- **`--thorough` extras** — precise extras for both review commands not yet defined. Tracked in [issue #2](https://github.com/las-sal/openspec-orbit/issues/2).
+- **Caching of pass results** — v2 work; needs careful per-pass input tracking. Tracked in [issue #1](https://github.com/las-sal/openspec-orbit/issues/1).
+- **Comprehensive `/opsx:address-reviews` features** — `--from-paste`, cascade, severity filtering, `--strict`, `--parallel`, categorized markers, system-side `--mark`, auto-rerun. Tracked in [issue #3](https://github.com/las-sal/openspec-orbit/issues/3).
+- **`/opsx:distill-specs` design** — v2 scope notes captured in Decisions above; concrete sketch deferred until v2 work starts.
+
+## Considered & out
+
+- **Single unified `/opsx:review` command** (rejected 2026-05-16) — would either be too broad (mediocre at both spec and code review) or require mode-detection (fragile). Different invocation points + stop conditions justify two commands.
+- **Auto-capture conventions to CLAUDE.md during explore** (rejected 2026-05-16) — too aggressive; CLAUDE.md is for handoff orientation, not a convention dumping ground. Topic files (e.g., `naming_convention.md`) referenced from CLAUDE.md is the better pattern.
+- **`explore-output.md` as the filename** (rejected 2026-05-17) — `-output` suffix is redundant given the file itself is the output. `explore.md` is terser and matches the verb.
+- **`explore.md` in `openspec/changes/<name>/` from the start** (rejected 2026-05-17, superseded same day) — preempts `/opsx:propose`'s job of creating the change directory. Doesn't fit the existing OpenSpec flow. Better to stage in `openspec/explore/<name>/` and let `/opsx:propose` promote on creation.
+- **Fork the upstream OpenSpec TypeScript CLI** (rejected 2026-05-17) — would mean cloning `Fission-AI/OpenSpec`, modifying `src/core/templates/workflows/*.ts`, and publishing as a competing npm package. Inherits their build/test/release infra and forces us to track upstream. Heavyweight for what we ship (markdown prompts, no CLI behavior changes). Overlay is the right artifact.
+- **Mirror upstream's repo structure** (rejected 2026-05-17) — upstream is a TypeScript CLI project (`src/`, `bin/`, `test/`, `package.json`, `tsconfig.json`, etc.). We ship a different artifact (`.claude/` overlay markdown). Mirroring would imply we're forking the CLI, which we're not.
+- **Repo name `openspec-review`** (rejected 2026-05-17) — undersells scope: orbit covers explore-capture, propose promotion, address-reviews skill, etc., not just review. `openspec-orbit` is more accurate.
+- **Command name `/opsx:review-code`** (rejected 2026-05-17, superseded same day by `/opsx:review-system`) — accurate to the user's vocabulary but undersold the scope. The command examines the *whole system* state (code + cross-spec compliance + cohesion + drift across docs), not just the code touched by the change. `review-system` names that honestly.
+- **Symmetric verify naming (`/opsx:verify-proposal` + `/opsx:verify-system`)** (rejected 2026-05-17) — would force-fit "verify" onto operations that are really editorial review (proposal coherence, surface walks, perspective passes). "Verify" implies comparison against a ground-truth target, which a proposal doesn't have. Asymmetric `verify-*` (upstream, structural) vs `review-*` (orbit, editorial) is more honest, and the `review-` prefix usefully signals to adopters that these are opinionated add-ons, not a replacement.
+- **`review-system` as a replacement for `verify-change`** (rejected 2026-05-17) — would force orbit to track every upstream evolution of verify-change. Extension via Pass 0 delegation is cleaner: orbit inherits upstream's structural checks for free and adds the system-wide passes on top.
+- **Single review command with mode auto-detection** (rejected 2026-05-17) — would have to infer pre-apply vs post-apply from context. Fragile, especially when changes are partially applied. Two named commands at clear gates.
+- **`--fresh` (clean-context subagent) as default for review commands** (rejected 2026-05-17) — would mean the main work runs in a fresh subagent every time, losing the speed of in-session work. Opt-in instead via `--fresh` flag; revisit as default in v2 if data supports.
+- **`-since <ref>` flag (diff-scoped review)** (rejected 2026-05-17) — doesn't fit openspec's change-centric model (the unit of work is the change name, not a git ref). Different concern from depth modes; would add a third orthogonal axis. Skip.
+- **Pass-level summary rows in the scorecard** (rejected 2026-05-17) — would deviate from `verify-change`'s 3-dimension summary table convention. Rolling 9 passes into the 3 dimensions (Completeness / Correctness / Coherence) keeps the table digestible and matches upstream's information density.
+- **Naming the judgment-layer directory `openspec/system/`** (rejected 2026-05-17, superseded same day by `openspec/lenses/`) — "system" smuggles OS/infrastructure connotations and implies the directory holds the system-of-truth (it doesn't — that's `openspec/specs/`). `lenses/` names the function honestly: how to look at the system, not what the system is.
+- **Surfaces as a separate concept in `openspec/lenses/`** (rejected 2026-05-17) — surfaces are derivable from `openspec/specs/<capability>/` (capabilities ARE surfaces). Re-declaring them in lenses/ would duplicate information and create drift. Only the *subjective judgment layer* (perspectives, critical paths) needs a separate home; objective surface info lives in specs.
+- **Putting judgment-layer content in `CLAUDE.md` or `project.md`** (rejected 2026-05-17) — different audience (human handoff orientation) and different lifecycle from review-driven content. Mixing concerns. `lenses/` keeps the read/write surface clean for both AI and human consumers.
+- **YAML format for judgment-layer content** (rejected 2026-05-17) — would be easier to parse but harder to evolve as prose grows. openspec's pattern: YAML for config, markdown for content-the-AI-reads. Judgment-layer content is content, not config. Markdown with strict structural conventions parses reliably for the AI and stays human-friendly.
+- **Multiple `audit-*` commands (one per drift type)** (rejected 2026-05-17) — separate `audit-residue` / `audit-lenses` / `audit-coherence` would fragment the user surface for a unified problem (drift in captured knowledge). One command (`audit-drift`) with `--focus <area>` covers all four scan categories. Users learn one verb; orbit ships less complexity.
+- **Folding `distill-specs` into the audit command** (rejected 2026-05-17) — audit and distill have different intents: audit asks "is the captured state coherent?" (scan and report); distill asks "is the spec set minimal and regen-ready?" (curate and reduce). Different operations, different cadences, different user populations. Spec-source-of-truth users will run distill; code-source-of-truth users will skip it. Keeping it separate makes the opt-in explicit.
+- **HTML-comment marker convention `<!-- REVIEW: ... -->`** (rejected 2026-05-17, superseded same day by `@review: ...`) — invisible in rendered markdown but verbose to type, hard to remember, and HTML-ish. `@review:` is simpler, distinctive enough to grep without false positives, works in any file type (markdown bare; source/configs inside their own comment syntax).
+- **Comprehensive v1 for `/opsx:address-reviews`** (rejected 2026-05-17) — original sketch had paste/file input sources, automatic ripple cascade, severity tracking, `--strict`, `--parallel`. Lean v1 ships the four enforcement wins (convention, pushback, removal, file-type uniformity) PLUS `--from-file` (needed for the cross-AI loop). Other comprehensive features (paste, cascade, severity filtering, etc.) defer to v2 (issue #3). Easier to ship and validate; comprehensive features iterate on a proven base.
+- **Command name `/opsx:handoff` for the external-review packaging** (rejected 2026-05-17, superseded same day by `/opsx:review-external`) — "handoff" connotes a permanent transfer of ownership, which isn't what's happening (we're requesting a single review pass from another AI). `review-external` is more accurate: it's a review, just one that happens externally. Also fits the `review-*` family alongside `review-proposal` and `review-system`.
+- **`.orbit-handoff/` directory for the external-review prompt** (rejected 2026-05-17, superseded same day) — earlier sketch persisted the prompt to disk. Simpler to emit prompt directly to chat (user copy-pastes); the prompt is regenerated each invocation. Only the FINDINGS files persist (in `.orbit-runs/`) because they're history. Asymmetric persistence by lifetime.
+
+## References
+
+- Upstream opsx workflows shipped in `@fission-ai/openspec@1.3.1` at `dist/core/templates/workflows/`: `explore`, `propose`, `new-change`, `continue-change`, `apply-change`, `ff-change`, `sync-specs`, `archive-change`, `bulk-archive-change`, `verify-change`, `onboard`, `feedback`. Key for orbit: `verify-change` (structural code-review template — composed with `/opsx:review-system`), `sync-specs` (delta-merge mechanism — gap covered by `/opsx:audit-residue`).
+- `/Users/sal/code/openspec-review/OPENSPEC_LESSONS.md` — two lessons from `mcp-bridge-test-redesign`: (1) archive-time doc-residue audit; (2) pushback discipline on parallel-reviewer findings.
+- `/Users/sal/code/openspec-review/home_env_review_requests_claude.md` — ~80 verbatim review prompts from home-control transcripts with context.
+- `/Users/sal/code/openspec-review/review_requests_transcripts_codex.md` — 41 review-oriented requests + a "recurring review shapes" summary.
+- `https://github.com/las-sal/home-env` — repo where the ad-hoc review pattern was developed.
+- `https://github.com/las-sal/openspec-orbit` — this project (private during development).
+- `https://github.com/las-sal/openspec-orbit/issues/1` — caching deferred to v2.
+- Existing opsx skills: `/opsx:explore`, `/opsx:propose`, `/opsx:apply`, `/opsx:archive` — the new commands plug into the same family.
+- Sibling sketches:
+  - `sketches/review-proposal.md` — full design for `/opsx:review-proposal`.
+  - `sketches/review-system.md` — full design for `/opsx:review-system`.
