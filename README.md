@@ -57,9 +57,10 @@ orbit is developed with the discipline that *if* it were ever upstreamed, the di
 
 ## The orbit workflow
 
-End-to-end loop, from idea to archived change:
+End-to-end loop, from idea to archived change. **The workflow has two review cycles** — proposal-side (between PROPOSE and APPLY) and system-side (between APPLY and ARCHIVE). Each cycle iterates internal review → external review → resolve until findings converge, then progresses forward. On real changes these cycles typically run 3-5 iterations apiece.
 
 ```
+   LINEAR PHASE
 ┌─────────────────────────────────────────────────────────────────────┐
 │                                                                     │
 │   1. THINK                                                          │
@@ -92,86 +93,95 @@ End-to-end loop, from idea to archived change:
 │   tasks.md; MOVES openspec/explore/<name>/ → openspec/changes/<     │
 │   name>/. explore.md persists as historical record.                 │
 │                                                                     │
-│                          │                                          │
-│                          ▼                                          │
+└─────────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+   ╔═════════════════════════════════════════════════════════════════╗
+   ║  PROPOSAL-SIDE REVIEW CYCLE  (typically 3-5 iterations)         ║
+   ║                                                                 ║
+   ║       ┌────────────────────────────────────────────────────┐    ║
+   ║       │                                                    │    ║
+   ║       ▼                                                    │    ║
+   ║   3. REVIEW --as proposal       (internal, 9 passes)       │    ║
+   ║       │                                                    │    ║
+   ║       ▼                                                    │    ║
+   ║   4. REVIEW-EXTERNAL --as proposal  (cross-AI handoff)     │    ║
+   ║       │                                                    │    ║
+   ║       ▼                                                    │    ║
+   ║   5. ADDRESS-REVIEWS  (--from-file <findings>)             │    ║
+   ║       │                                                    │    ║
+   ║       ├── findings remain → loop ──────────────────────────┘    ║
+   ║       │                                                         ║
+   ║       ▼ no CRITICAL + no unresolved @review: markers → exit     ║
+   ║                                                                 ║
+   ╚═════════════════════════════════════════════════════════════════╝
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│   LINEAR PHASE                                                      │
 │                                                                     │
-│   3. REVIEW (proposal side, internal)                               │
-│   /opsx:review <name> --as proposal                                      │
-│      ↓                                                              │
-│   9 passes → 3-dimension scorecard (Completeness/Correctness/       │
-│   Coherence). Findings reported with file:line + recommendation.    │
-│                                                                  │
-│                          │                                          │
-│                          ▼                                          │
-│                                                                     │
-│   4. REVIEW (proposal side, external)                               │
-│   /opsx:review-external <name> --as proposal                        │
-│      ↓                                                              │
-│   Prompt file written to .orbit-runs/external-prompt-proposal-      │
-│   <TS>.md (committed). Tiny invocation snippet emitted to chat →    │
-│   user pushes + pastes snippet into codex → codex pulls + reads     │
-│   prompt → writes findings to .orbit-runs/external-proposal-<TS>.md │
-│                                                                     │
-│                          │                                          │
-│                          ▼                                          │
-│                                                                     │
-│   5. RESOLVE                                                        │
-│   /opsx:address-reviews [--from-file <path>]                        │
-│      ↓                                                              │
-│   Walks @review: markers OR ingests external-review file. Pushback  │
-│   discipline: verify against current state before fixing. Removes   │
-│   markers on resolution.                                            │
-│                                                                     │
-│                  (cycle 3-5 until clean)                            │
-│                          │                                          │
-│                          ▼                                          │
-│                                                                     │
-│   6. APPLY (upstream behavior, unmodified)                          │
+│   6. APPLY  (upstream behavior, unmodified)                         │
 │   /opsx:apply <name>                                                │
 │      ↓                                                              │
 │   Implements tasks; generates code.                                 │
 │                                                                     │
-│                          │                                          │
-│                          ▼                                          │
-│                                                                  │
-│   7. REVIEW (system side, internal)                                 │
-│   /opsx:review <name> --as system                                        │
-│      ↓                                                              │
-│   Wraps verify-change (Pass 0) + 6 system-wide passes (baseline,    │
-│   cohesion, surface walk, perspectives, critical paths, drift).     │
-│                                                                     │
-│                          │                                          │
-│                          ▼                                          │
-│                                                                     │
-│   8. REVIEW (system side, external)                                 │
-│   /opsx:review-external <name> --as system                          │
-│      ↓                                                              │
-│   Same handoff pattern as step 4, with system-review focus.         │
-│                                                                     │
-│                          │                                          │
-│                          ▼                                          │
-│                                                                     │
-│   9. RESOLVE again                                                  │
-│   /opsx:address-reviews                                             │
-│                                                                     │
-│                  (cycle 7-9 until clean)                            │
-│                          │                                          │
-│                          ▼                                          │
+└─────────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+   ╔═════════════════════════════════════════════════════════════════╗
+   ║  SYSTEM-SIDE REVIEW CYCLE  (typically 3-5 iterations)           ║
+   ║                                                                 ║
+   ║       ┌────────────────────────────────────────────────────┐    ║
+   ║       │                                                    │    ║
+   ║       ▼                                                    │    ║
+   ║   7. REVIEW --as system  (verify-change + 6 system passes) │    ║
+   ║       │                                                    │    ║
+   ║       ▼                                                    │    ║
+   ║   8. REVIEW-EXTERNAL --as system  (cross-AI handoff)       │    ║
+   ║       │                                                    │    ║
+   ║       ▼                                                    │    ║
+   ║   9. ADDRESS-REVIEWS  (--from-file <findings>)             │    ║
+   ║       │                                                    │    ║
+   ║       ├── findings remain → loop ──────────────────────────┘    ║
+   ║       │                                                         ║
+   ║       ▼ no CRITICAL + no unresolved @review: markers → exit     ║
+   ║                                                                 ║
+   ╚═════════════════════════════════════════════════════════════════╝
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│   LINEAR PHASE                                                      │
 │                                                                     │
 │   10. ARCHIVE                                                       │
 │   /opsx:archive <name>                                              │
-│      ↓                                                              │
-│   Auto-invokes /opsx:audit-drift as pre-archive sweep. Critical-    │
-│   drift findings prompt user (not block). On confirm: runs sync-    │
-│   specs; moves change to openspec/changes/archive/<DATE>-<name>/.   │
+│       │                                                             │
+│       ▼                                                             │
+│   10a. /opsx:audit-drift  (auto-invoked pre-archive sweep)          │
+│         │                                                           │
+│         ├── CRITICAL? → prompt (address / proceed / abort)          │
+│         │              warnings logged, don't gate                  │
+│         │              --skip-audit bypasses 10a entirely           │
+│         ▼ proceed                                                   │
+│   10b. sync-specs  (merge deltas to baseline)                       │
+│       ↓                                                             │
+│       mv openspec/changes/<name>/ →                                 │
+│          openspec/changes/archive/<YYYY-MM-DD>-<name>/              │
+│       ↓                                                             │
+│   10c. write archive run summary →                                  │
+│          .orbit-runs/archive-<TS>.json                              │
 │                                                                     │
 └─────────────────────────────────────────────────────────────────────┘
 
 Periodic (not change-bound):
    /opsx:audit-drift                  ◄── standalone project-wide scan
+                                          (e.g., "something feels off"
+                                          between changes, or after archive
+                                          to verify sync-specs propagation)
 ```
 
-Each numbered step has a `/opsx:` command. The cycles at 3-5 and 7-9 typically run 3-5 iterations on real changes.
+**Cycles aren't required to be 3-5 iterations**: a small change may converge in 1 internal review + 1 external review (2 iterations total); a complex one may need more. The loop-back is on findings: if `/opsx:address-reviews` resolves findings and the next `/opsx:review` is clean, the cycle exits. If the next review surfaces new findings (often because resolutions introduced their own residue — see the change-completeness discipline), the cycle continues.
+
+**Skipping the external pass** (4 / 8) is permitted for low-stakes changes; the internal review (3 / 7) + address-reviews (5 / 9) sub-cycle still applies. External review is the second-pair-of-eyes pass against an independent reviewer; valuable on substantial changes, optional on quick ones.
 
 ---
 
