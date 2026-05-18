@@ -185,6 +185,30 @@ Three stances that shape every design decision in orbit:
 
 3. **Specs as the ultimate source of truth** — orbit's tooling assumes the spec set is authoritative; code is one realization. A fresh AI handed the curated `openspec/specs/` should reproduce the system. Users who hold the opposite stance still benefit from the editorial reviews and drift audits; `/opsx:distill-specs` (v2) is the opt-in lever for the spec-truth camp specifically.
 
+## Cross-cutting discipline: change completeness
+
+Beyond the three guiding principles above, orbit codifies one cross-cutting **execution discipline** in the `orbit-conventions` spec that adopters should reinforce at the project level (e.g., in `CLAUDE.md`):
+
+> **Any substantive modification to a change-in-flight must be applied fully across all affected artifacts before being declared done.** This applies regardless of how the modification was triggered — formal openspec command, mid-cycle decision during exploration, or direct user request in chat all qualify equally. Residue cleanup is not optional and is not deferred to subsequent review cycles. After mechanical replacement (sed, find-replace), a manual sweep MUST follow looking for: residue the mechanical pattern didn't reach; new bugs introduced by overly-broad replacement (file-name corruption, duplicate-entry corruption); awkward phrasing artifacts.
+>
+> Known residue MUST NOT be left for review to catch — that corrupts the review signal and violates the cost-up-front principle. If a substantive modification is followed by an external-review pass, the cleanup MUST complete BEFORE the prompt file is pushed (concurrent cleanup + review produces stale-state findings the authoring AI then has to pushback-suppress at ingest time).
+
+### Recommended `CLAUDE.md` snippet for adopters
+
+If you want to reinforce orbit's disciplines at the project level (recommended), copy this snippet into your project's `CLAUDE.md`:
+
+```markdown
+## Working with orbit
+
+This project uses [openspec-orbit](https://github.com/las-sal/openspec-orbit), an opinionated `.claude/` overlay on `@fission-ai/openspec`. Orbit codifies two disciplines worth reinforcing here:
+
+**Pushback discipline (review-time)**. When responding to flagged issues — from inline `@review:` markers, `/opsx:address-reviews --from-file` external findings, or any other source — verify the claim against current state before fixing. Stale findings (issue already fixed) get reported with evidence and suppressed; don't re-edit already-fixed state.
+
+**Change completeness discipline (modification-time)**. Substantive modifications to a change-in-flight (renames, capability merges, scope changes, marker conventions, file paths) must be applied fully across ALL affected artifacts before being declared done — specs, sketches, README, design.md, tasks.md, explore.md, command bodies. After mechanical replacement (sed, find-replace), do a manual sweep for residue patterns and new bugs the mechanical replacement may have introduced. Known residue MUST NOT be left for a downstream review to catch — that violates orbit's cost-up-front principle and corrupts the review signal.
+```
+
+Behavior of orbit's commands does not depend on this snippet being present (the disciplines are baked into each command's SKILL.md). The snippet is a project-level reinforcement; orbit's review/audit/address commands carry the discipline self-contained.
+
 ---
 
 ## Command reference

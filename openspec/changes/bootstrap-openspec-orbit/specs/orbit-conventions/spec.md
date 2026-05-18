@@ -357,6 +357,40 @@ The system SHALL maintain conventions as a distinct knowledge layer from CLAUDE.
 - **WHEN** a user describes a caller or critical flow worth validating from
 - **THEN** the capture target is `openspec/lenses/`, not a convention file; lenses describe judgment about *what matters for review*, conventions describe *how the system should be built*
 
+### Requirement: Change completeness discipline
+
+The system SHALL apply substantive modifications to a change-in-flight fully across all affected artifacts before the modification is declared done. Residue cleanup is not optional and is not deferred to subsequent review cycles. This requirement applies regardless of how the modification was triggered — formal openspec command, mid-cycle decision captured during exploration, or direct user request in chat all qualify equally.
+
+#### Scenario: Substantive modification triggers full completeness sweep
+
+- **WHEN** the AI makes a substantive change to a change-in-flight (rename, capability merge, scope change, command consolidation, marker-convention change, file-naming change, or any modification that touches multiple artifacts)
+- **THEN** before declaring the modification done, the AI: (a) greps the change directory + `README.md` + sketches + `design.md` + `tasks.md` + `explore.md` for all plausible variants of the old form (capitalized, snake-cased, hyphenated, slash-prefixed-command, capability-name, file-name, JSON-key); (b) classifies each match as current-state or legitimate-historical (in Considered & out, alternatives-considered, prior-decision context); (c) fixes the current-state matches; (d) re-validates with `openspec validate <change>` and re-runs the grep to confirm zero current-state residue
+
+#### Scenario: Mechanical replacement requires manual follow-up
+
+- **WHEN** the AI uses `sed`, find-replace, or other mechanical replacement to apply a rename or pattern change
+- **THEN** it MUST follow up with a manual review of each touched file looking for: (a) residue the mechanical pattern didn't reach (places the pattern was too narrow); (b) new bugs introduced by overly-broad replacement (e.g., file-name corruption like `"proposal-mode review.md"` produced by a pattern that should have stopped at word boundaries, or duplicate-entry corruption when two distinct names collapse to the same target); (c) awkward phrasing artifacts (e.g., parenthetical inserts like `"review (system mode) wraps"` that read clumsily and need a second-pass rewording)
+
+#### Scenario: Known residue MUST NOT be left for review
+
+- **WHEN** the AI is about to invoke `/opsx:review`, `/opsx:review-external`, or any other review-cycle command after a substantive modification
+- **THEN** it MUST first verify completeness per the previous scenarios; known residue (residue the AI is aware of) MUST NOT be deferred to the review cycle to catch — leaving known issues for a reviewer corrupts the review signal (the reviewer wastes effort on things the AI knew about) and violates the cost-up-front guiding principle (small cost now to surface known issues, save the larger cost of having the reviewer rediscover them)
+
+#### Scenario: Modification scope distinguishes substantive from cosmetic
+
+- **WHEN** evaluating whether a modification requires the full completeness sweep
+- **THEN** modifications that affect command names, capability names, file paths, marker conventions, file-format conventions, JSON schemas, or any term used across multiple artifacts qualify as **substantive** (full sweep required); modifications that affect a single isolated typo, a single comment in a single file, or a wording polish in a single paragraph are **cosmetic** (no full sweep required)
+
+#### Scenario: Cleanup-before-prompt-push timing for external review
+
+- **WHEN** the AI plans to follow up a substantive modification with `/opsx:review-external` (writing a prompt file and pushing it for an external AI to pull)
+- **THEN** the completeness sweep MUST complete BEFORE the prompt file is pushed; doing the cleanup concurrent with an in-progress external review means the external AI is analyzing stale state and produces mixed-state findings the authoring AI then has to pushback-suppress at ingest time — friction that is avoidable by ordering cleanup first
+
+#### Scenario: Lesson origin in `explore.md`
+
+- **WHEN** the AI executes this requirement
+- **THEN** it MAY reference the specific origin: this discipline was codified after a real-time failure during the bootstrap-openspec-orbit dogfood where (a) a major rename (`/opsx:review-proposal` + `/opsx:review-system` → unified `/opsx:review --as <mode>`) was applied via sed; (b) the AI knew residue remained; (c) the AI proposed letting the next review cycle catch it; (d) the user correctly pushed back that this violated the cost-up-front principle; (e) the AI's corrective cleanup landed concurrent with the in-progress external review, producing the mixed-state findings problem the previous scenario describes. The lesson and its origin are captured in `explore.md` Decisions for future readers.
+
 ### Requirement: orbit does not replace linter/hook tooling
 
 The system SHALL define convention files as an AI-readable rules layer that coexists with — does not replace — automated tooling like linters, formatters, and pre-commit hooks.
