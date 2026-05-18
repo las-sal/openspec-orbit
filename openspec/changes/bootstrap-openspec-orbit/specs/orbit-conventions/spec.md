@@ -391,6 +391,55 @@ The system SHALL apply substantive modifications to a change-in-flight fully acr
 - **WHEN** the AI executes this requirement
 - **THEN** it MAY reference the specific origin: this discipline was codified after a real-time failure during the bootstrap-openspec-orbit dogfood where (a) a major rename (`/opsx:review-proposal` + `/opsx:review-system` → unified `/opsx:review --as <mode>`) was applied via sed; (b) the AI knew residue remained; (c) the AI proposed letting the next review cycle catch it; (d) the user correctly pushed back that this violated the cost-up-front principle; (e) the AI's corrective cleanup landed concurrent with the in-progress external review, producing the mixed-state findings problem the previous scenario describes. The lesson and its origin are captured in `explore.md` Decisions for future readers.
 
+### Requirement: Read-before-reference discipline
+
+The system SHALL read the actual definition of any specific named construct (function signature, type/interface, class definition, object shape, named symbol, file path, import target, API surface, spec requirement name) before generating code, tests, specs, or documentation that references it. Inference from training-data patterns, common conventions, or "this is how this is usually structured" is NOT a substitute for reading the actual definition. This discipline applies whenever the AI authors content that names or invokes specific local constructs.
+
+#### Scenario: Test code references production code
+
+- **WHEN** the AI is writing a test that calls, mocks, asserts on, or otherwise references a specific production-code construct (a function, method, class, object, API endpoint, schema field, etc.)
+- **THEN** the AI MUST read the production code first via `Read`, `grep`, or `openspec instructions` — and use the actual signature/shape verbatim; the AI MUST NOT assume the shape based on conventions (e.g., must NOT assume `user.email` when the code may actually use `user.emailAddress` or `user.contact_email`)
+
+#### Scenario: Implementation references existing code
+
+- **WHEN** the AI is writing implementation that calls an existing function, instantiates an existing class, imports from an existing module, or constructs an object of an existing type
+- **THEN** the AI MUST read the existing definition first — function signatures must match, type/interface shapes must match, import paths must verify, named exports must exist
+
+#### Scenario: Spec deltas reference baseline capabilities
+
+- **WHEN** a spec delta (`## ADDED`, `## MODIFIED`, `## REMOVED`, `## RENAMED Requirements`) references a baseline requirement by name
+- **THEN** the AI MUST read the baseline spec at `openspec/specs/<capability>/spec.md` to confirm the requirement exists with the exact name being referenced; a `RENAMED FROM` symbol that doesn't exist in baseline is a structural error caught at the authoring step, not at review
+
+#### Scenario: Cross-spec references in specs
+
+- **WHEN** a scenario in one spec references a construct, command, or concept defined in another spec
+- **THEN** the AI MUST grep for the referenced name (e.g., `grep -rn "<symbol>" openspec/`) before authoring the reference; if the name doesn't resolve, either the reference is wrong or the cross-spec target is missing — both surface at authoring time, not as a downstream finding
+
+#### Scenario: Tool invocations or CLI commands
+
+- **WHEN** the AI is invoking a CLI tool or shell command that takes specific flags / subcommands / arguments
+- **THEN** the AI MUST verify the flag exists (via `<tool> --help`, `openspec --help`, manpage, or documentation) before using it; the AI MUST NOT guess flags based on "common patterns" (e.g., must NOT assume `--verbose` exists if the tool documents `-v` or `--debug`)
+
+#### Scenario: Scope of "read" is the specific construct, not the whole module
+
+- **WHEN** the AI applies this discipline
+- **THEN** "read" means reading enough of the construct to verify the reference — typically a `grep -n <symbol>` to locate, followed by reading 10–50 lines of context around the definition; it does NOT mean "read the entire file" or "read the entire codebase" — that would be infeasible. The bar is: enough context to know the construct exists and has the shape you're using.
+
+#### Scenario: When verification is genuinely uncertain
+
+- **WHEN** the AI cannot verify a reference (the file doesn't exist, the symbol isn't found, the documentation is ambiguous)
+- **THEN** the AI MUST either (a) ask the user via `AskUserQuestion` for clarification, or (b) report the uncertainty in the output (`@review: unable to verify <reference>; <fallback assumption>`), or (c) refuse to generate the reference. The AI MUST NOT invent a plausible-looking reference and proceed silently.
+
+#### Scenario: Conceptual reasoning vs. specific references
+
+- **WHEN** the AI is writing prose, design rationale, or architectural discussion at a conceptual level (e.g., "this looks like an Observer pattern", "the API follows REST conventions")
+- **THEN** read-before-reference does NOT require verifying every detail — conceptual reasoning is allowed. The discipline kicks in when a SPECIFIC NAMED CONSTRUCT enters the output (a specific function name, a specific field, a specific import path); at that boundary, verification is required.
+
+#### Scenario: Lesson origin
+
+- **WHEN** the AI executes this requirement
+- **THEN** it MAY reference the specific origin: this discipline was codified after a real-world failure during home-env development where the AI wrote a test case that assumed the structure of an object based on common patterns instead of reading the actual code. The test passed locally (because the AI's mock matched its own assumption) but the underlying assumption was wrong. The same failure mode in production code rather than test code would have shipped broken behavior. The discipline distinguishes authoring-time verification (read the source before referencing) from review-time pushback (verify against current state when responding to findings) and modification-time completeness (apply changes fully across all affected artifacts).
+
 ### Requirement: orbit does not replace linter/hook tooling
 
 The system SHALL define convention files as an AI-readable rules layer that coexists with — does not replace — automated tooling like linters, formatters, and pre-commit hooks.
