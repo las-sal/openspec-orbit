@@ -285,3 +285,161 @@ But this summary is optional. Sometimes the thinking IS the value.
 - **Do visualize** - A good diagram is worth many paragraphs
 - **Do explore the codebase** - Ground discussions in reality
 - **Do question assumptions** - Including the user's and your own
+
+---
+
+# Orbit additions
+
+The sections below describe orbit-specific additions on top of upstream's "stance, not workflow" character. The upstream content above is unchanged; orbit layers capture affordances, an `explore.md` authoring convention, and three invocation modes that activate when the conversation produces material worth keeping.
+
+## Three execution disciplines (apply throughout this command)
+
+These three disciplines bracket the authoring lifecycle (authoring-time / modification-time / review-time). They're embedded in every orbit command for self-contained reliability.
+
+**Read-before-reference (authoring-time)**. When you write into `explore.md`, perspectives, critical-paths, conventions, or any captured artifact and reference a specific named construct (function, type, file path, capability, command flag), read the actual definition first. Inferred references degrade the durability of the captured material. If you can't verify, ask the user or leave a `@review:` marker instead of guessing.
+
+**Change completeness (modification-time)**. When updating `explore.md` (moving an Open question to Decisions, rejecting an option into Considered & out, adding to References), apply the changes fully. Don't leave partial edits — e.g., adding a Decision without removing it from Open questions, or rejecting an option without dating the move. After updates, re-read the relevant section to confirm the move landed cleanly.
+
+**Pushback (review-time)**. When the conversation flags something as already-known or already-decided, verify against current state before treating it as new. If the user says "we already decided X" but `explore.md` doesn't reflect that, ask whether to add it OR whether the prior claim was speculative. Don't re-litigate decisions that are already captured.
+
+## Three invocation modes
+
+| Mode | Trigger | What happens |
+|---|---|---|
+| **A — Bare** | `/opsx:explore` with no argument and no crystallization trigger | Upstream behavior. Conversational think-mode, no file created, no staging directory. |
+| **B — Named** | `/opsx:explore <name>` | Create or resume `openspec/explore/<name>/explore.md`. New: scaffold five sections. Resume: read existing file for context. |
+| **C — Crystallized** | Bare invocation that produces 2+ substantive decisions | Prompt the user: "We have enough material here to capture — what should we call this exploration?" On accept, transition to Mode B and back-fill what's been discussed. On decline, continue Mode A and don't re-prompt this shape. |
+
+### What counts as a "substantive decision" for Mode C crystallization
+
+A decision counts toward the 2+ threshold if it:
+
+- (a) Resolves between two or more named alternatives (e.g., "go with X instead of Y")
+- (b) Locks a name, structure, or format ("we'll call it Z", "the file will have these sections")
+- (c) Supersedes an earlier choice ("change our mind on X, go with Y instead")
+
+Does NOT count: exploratory thinking, speculation, "let me think about X", or restating something already established.
+
+## explore.md five-section convention
+
+When a named exploration exists (Mode B/C), `openspec/explore/<name>/explore.md` follows this structure:
+
+```markdown
+> **Status**: exploring. Promoted to proposal/design/specs via /opsx:propose when decisions firm up.
+
+# Exploration: <name>
+
+## Premise
+<the problem space; why this exploration; what we're trying to figure out>
+
+## Decisions
+<dated entries; each captures what was decided and a brief rationale>
+
+## Open questions
+<things we don't know yet; resolved later by moving to Decisions, deferred as @review: markers via /opsx:propose, or abandoned to Considered & out>
+
+## Considered & out
+<options that came up and got rejected, with brief rationale + date>
+
+## References
+<files, URLs, prior changes, prior conversations worth reading during artifact generation>
+```
+
+When creating a new file, all five sections are scaffolded (empty content under each heading). When resuming, read the existing file as authoritative.
+
+**Section-evolution rules**:
+
+- **Resolving an Open question** → move the entry to Decisions with a dated rationale; acknowledge in chat ("captured").
+- **Rejecting a considered option** → move it to Considered & out with brief rationale + date.
+- **New decision emerges** → append to Decisions proactively (with brief chat acknowledgment).
+- **Reference cited** → append to References (offer first when in doubt).
+
+## Five capture types and where each lands
+
+| Type | Trigger | Target file | Offer or auto? |
+|---|---|---|---|
+| **Decision** (Mode B/C only) | Explicit decision in named exploration | `openspec/explore/<name>/explore.md` Decisions | Auto-capture + brief chat acknowledgment ("captured") |
+| **Convention** | "we always do X" / "let's standardize on…" | `<topic>_convention.md` at project root (e.g., `naming_convention.md`) | **Offer** — one-sentence offer naming the target file |
+| **Perspective** | User describes a caller/client ("Claude Desktop calls our MCP server", "from the Swift host's POV") | `openspec/lenses/perspectives.md` | **Offer** |
+| **Critical path** | User describes a critical user flow ("the typical user flow is…", "users typically…") | `openspec/lenses/critical-paths.md` | **Offer** |
+| **Reference** | URL, file, prior change, prior conversation worth reading later | `explore.md` References section | **Offer** when in doubt; quick add when the relevance is obvious |
+
+### Convention capture format
+
+When a convention capture is accepted and writing to `<topic>_convention.md`, the file follows a four-section structured format (created on first write, appended on subsequent):
+
+```markdown
+# <Topic> Convention
+
+## Purpose
+<why this convention exists>
+
+## Rules
+- <rule 1>
+- <rule 2>
+
+## Examples
+<concrete examples showing the rule in practice>
+
+## Exceptions
+<known cases where the rule doesn't apply, with rationale>
+```
+
+Heuristic for new file vs append: if user mentions a topic and `<topic>_convention.md` already exists, **target the existing file**. Only when no matching topic file exists is a new file proposed.
+
+**Convention update on contradiction**: when the user's statement contradicts an existing rule, surface the contradiction (don't silently overwrite) and offer to update, supersede, or leave the existing rule. The user decides.
+
+### Perspective / critical-path entry shapes
+
+`openspec/lenses/perspectives.md` entries:
+
+```markdown
+## <Perspective name>
+
+**Surfaces**: <capability names this perspective interacts with>
+
+**Description**: <who this caller is, what they want>
+
+**Typical call patterns**: <how they exercise the surface>
+```
+
+`openspec/lenses/critical-paths.md` entries:
+
+```markdown
+## <Flow name>
+
+**Description**: <what the user is trying to do>
+
+**Touchpoints**: <capabilities / tools / surfaces involved, in order>
+
+**Expected behavior**: <what should happen end-to-end>
+```
+
+## Offer-don't-auto rule
+
+For **conventions, perspectives, critical paths, and references**: the command offers to capture; the user decides. **Decisions** in named explorations are the exception — they're proactively captured with brief acknowledgment.
+
+**Offer phrasing**: pause briefly and emit a one-sentence offer naming the target file. Example: `That sounds like a convention. Capture in naming_convention.md?`
+
+**Group offers when natural**: when multiple capture-worthy items of the same type emerge in close succession (e.g., three conventions in one paragraph), group them into a single offer rather than asking three times.
+
+**User veto**: if the user says "don't capture that" or similar, the proposed capture is not written and the conversation continues unaffected.
+
+## Decline tracking
+
+Within a single conversation, track recent capture declines. If the user has declined a specific convention capture, **don't re-offer** that same convention later in the same conversation. (Tracking is per-conversation; declines don't persist across sessions.)
+
+## Sibling captures supported
+
+The staging directory `openspec/explore/<name>/` can hold additional files beyond `explore.md`:
+
+- `openspec/explore/<name>/sketches/<sketch-name>.md` — design sketches that don't yet warrant being a Decision
+- `openspec/explore/<name>/<draft-convention>.md` — draft convention files that aren't ready to live at project root
+
+These sibling files persist alongside `explore.md` and move into `openspec/changes/<name>/` together when `/opsx:propose` consumes the exploration.
+
+## Composition with `/opsx:propose`
+
+When the user runs `/opsx:propose <name>` and `openspec/explore/<name>/explore.md` exists, propose switches to **consume mode**: reads `explore.md` as authoritative, prompts for Open question handling, generates `proposal.md` / `design.md` / `specs/` / `tasks.md`, and **moves** the staging directory to `openspec/changes/<name>/`. The exploration record persists as historical context alongside the generated artifacts.
+
+This means: durable capture in explore → seamless promotion to formal change. The user doesn't re-type what was already discussed; the AI doesn't paraphrase what was already decided.

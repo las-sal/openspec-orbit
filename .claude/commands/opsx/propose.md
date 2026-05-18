@@ -103,3 +103,20 @@ After completing all artifacts, summarize:
 - If context is critically unclear, ask the user - but prefer making reasonable decisions to keep momentum
 - If a change with that name already exists, ask if user wants to continue it or create a new one
 - Verify each artifact file exists after writing before proceeding to next
+
+---
+
+## Orbit additions (summary)
+
+The `openspec-propose` skill is extended by openspec-orbit with a **consume mode** that activates when `openspec/explore/<name>/explore.md` exists (typically from a prior `/opsx:explore <name>` session):
+
+- **Mode detection** runs before Step 1: if a staging directory exists for the change name, switch to consume mode.
+- **Consume mode** reads `explore.md` as the authoritative seed instead of prompting for a description. Section mapping: Premise → proposal motivation; Decisions → spec deltas + design + tasks; Considered & out → design "Alternatives considered"; References → contextual reads.
+- **Open-question handling**: per-question prompt with three resolution paths — resolve now (becomes Decision), defer (becomes `@review:` marker in generated artifacts), abandon (moves to Considered & out). Bulk-handle UX for ~5+ questions.
+- **Move staging directory** to `openspec/changes/<name>/` after artifact generation completes; `explore.md` and sibling files persist as historical record.
+- **Conflict detection**: if both `openspec/explore/<name>/` and `openspec/changes/<name>/` exist, three-way prompt (regenerate / continue / abort).
+- **Naming inference**: invoked without `<name>` when exactly one staging directory exists → propose that name.
+- **Standalone mode preserved**: when no staging directory exists, falls through to upstream behavior unchanged.
+- **Three execution disciplines** (read-before-reference / change completeness / pushback) per orbit-conventions.
+
+See `.claude/skills/openspec-propose/SKILL.md` for full consume-mode flow, section mapping, and graceful-degradation cases.

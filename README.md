@@ -626,11 +626,96 @@ Surfaces themselves are *not* in `lenses/` — capabilities in `openspec/specs/<
 
 Files grow via `/opsx:explore` capture triggers (offer, don't auto). Empty `lenses/` causes graceful degradation: system-mode Passes 4/5 skip with a note; Pass 3 still runs against derived surfaces.
 
+**Entry shape — `openspec/lenses/perspectives.md`**:
+
+```markdown
+## <Perspective name>
+
+**Surfaces**: <capability names this perspective interacts with>
+
+**Description**: <who this caller is, what they want>
+
+**Typical call patterns**: <how they exercise the surface>
+```
+
+Example:
+
+```markdown
+## Claude Desktop using MCP
+
+**Surfaces**: mcp-server, tool-registry
+
+**Description**: End-user-facing AI assistant; calls our MCP server to expose tools to the user's conversation. Cares about: low-latency tool listing, clear tool descriptions, predictable error messages.
+
+**Typical call patterns**: tools/list on startup; tools/call per user request; rarely re-fetches the registry mid-session.
+```
+
+**Entry shape — `openspec/lenses/critical-paths.md`**:
+
+```markdown
+## <Flow name>
+
+**Description**: <what the user is trying to do>
+
+**Touchpoints**: <capabilities / tools / surfaces involved, in order>
+
+**Expected behavior**: <what should happen end-to-end>
+```
+
+Example:
+
+```markdown
+## First-time user adds their first device
+
+**Description**: A user has just installed the app and wants to register a smart device. Most critical onboarding flow — failure here loses the user.
+
+**Touchpoints**: device-discovery → device-pairing → device-registry → home-state-sync
+
+**Expected behavior**: Discovery completes within 5s; pairing prompts user only for required info; registry persists immediately; subsequent app starts show the device without re-pairing.
+```
+
 ### `openspec/changes/<name>/.orbit-runs/` (per-change)
 
 Iteration history for a change. **Committed to the repo, not gitignored** — the iteration record is real evidence of the review cycle and supports team handoffs. Dot-prefix signals "orbit metadata, not part of the canonical openspec change," so upstream's view of the change directory stays clean.
 
 Contains both internal-run summaries (JSON, one per review/audit/archive invocation) and external-review findings (markdown, one per `/opsx:review-external` invocation). Travels with the change into `openspec/changes/archive/<name>/.orbit-runs/` when archived, preserving the full review history alongside the archived artifacts.
+
+**File naming inside `.orbit-runs/`**:
+
+| Filename pattern | Written by | Contents |
+|---|---|---|
+| `review-proposal-<TS>.json` | `/opsx:review --as proposal` | Proposal-mode review run summary |
+| `review-system-<TS>.json` | `/opsx:review --as system` | System-mode review run summary |
+| `audit-drift-<TS>.json` | `/opsx:audit-drift` | Drift audit run summary |
+| `address-reviews-<TS>.json` | `/opsx:address-reviews` | Marker / external-finding resolution log |
+| `external-prompt-<as>-<TS>.md` | `/opsx:review-external` | The handoff prompt for the external AI |
+| `external-<as>-<TS>.md` | External AI (per `/opsx:review-external` instructions) | The findings file, ingested via `/opsx:address-reviews --from-file` |
+| `archive-<TS>.json` (in archived location) | `/opsx:archive` | Archive run summary (audit findings, user decision, sync-specs results) |
+
+`<TS>` is ISO-8601 with hyphens, e.g., `2026-05-18T14-35-23Z`. `<as>` is `proposal` or `system`.
+
+**Internal-run JSON summary format** — every internal command writes a JSON file with a consistent shape:
+
+```jsonc
+{
+  "command": "review" | "audit-drift" | "address-reviews" | "archive",
+  "timestamp": "<ISO-8601>",
+  // command-specific fields vary, but every summary includes:
+  //   - a flags object capturing the invocation flags
+  //   - a findings_summary or resolution_summary object with severity / outcome counts
+  //   - a final_assessment string (or null when the command is a library call)
+  // See per-command schemas at .claude/skills/<skill>/references/<schema>.md
+}
+```
+
+The full per-command schemas live alongside each skill at `.claude/skills/<skill>/references/<schema>.md`:
+
+- `openspec-review/references/run-summary-schema.md`
+- `openspec-audit-drift/references/run-summary-schema.md`
+- `openspec-address-reviews/references/run-summary-schema.md`
+- `openspec-archive-change/references/archive-summary-schema.md`
+
+**External-review markdown findings format** — see the worked example in [The external review cycle](#the-external-review-cycle) section above. The format is parsed by `/opsx:address-reviews --from-file` and must follow the exact structure (severity sections + `### Title` + `**File**:` + `**Description**:` field labels) for the parser to work. Full parser contract: `.claude/skills/openspec-address-reviews/references/external-findings-format.md`.
 
 ### `<topic>_convention.md` files at project root
 
@@ -722,15 +807,25 @@ Unresolvable markers have three options (per-marker user choice):
 ├── commands/opsx/                ← slash command bodies (orbit ships overrides + new)
 │   ├── explore.md  propose.md  apply.md  archive.md  verify.md
 │   ├── new.md  continue.md  fast-forward.md  sync.md  onboard.md  bulk-archive.md
-│   └── [pending: review.md, audit-drift.md,
-│                 address-reviews.md, review-external.md]
+│   └── review.md  review-external.md  audit-drift.md  address-reviews.md   ← orbit (new)
 └── skills/                        ← skill definitions
-    ├── openspec-*/SKILL.md       (12 upstream skills)
-    └── [pending: openspec-review/, openspec-audit-drift/,
-                  openspec-address-reviews/, openspec-review-external/]
+    ├── openspec-explore/         ← upstream + orbit additions (capture types, three modes)
+    ├── openspec-propose/         ← upstream + orbit additions (consume mode)
+    ├── openspec-archive-change/  ← upstream + orbit additions (pre-archive audit + summary)
+    │   └── references/
+    ├── openspec-review/          ← orbit new (proposal + system modes)
+    │   └── references/           ← run-summary schema
+    ├── openspec-review-external/ ← orbit new
+    │   └── references/           ← prompt template, mode sections
+    ├── openspec-audit-drift/     ← orbit new
+    │   └── references/           ← run-summary schema
+    ├── openspec-address-reviews/ ← orbit new
+    │   └── references/           ← external-findings format, run-summary schema
+    └── openspec-*/                ← other upstream skills (verify-change, apply, etc.)
 
 openspec/
 ├── changes/                       ← in-flight changes + archive (upstream)
+│   └── <name>/.orbit-runs/       ← orbit addition: per-change iteration history
 ├── specs/                         ← canonical baseline specs (upstream)
 ├── explore/                       ← orbit addition: staging for /opsx:explore
 │   └── <name>/
@@ -739,8 +834,10 @@ openspec/
 ├── lenses/                        ← orbit addition: judgment layer
 │   ├── perspectives.md
 │   └── critical-paths.md
+├── .orbit-runs/                   ← orbit addition: standalone runs (not change-scoped)
 └── config.yaml                    ← openspec config (upstream)
 
+CLAUDE.md                          ← orbit addition: project-level discipline reinforcement
 LICENSE                            ← MIT
 README.md                          ← this file
 .gitignore
@@ -780,13 +877,52 @@ Plus `/opsx:distill-specs` (canonical-spec hygiene — periodic curation toward 
 
 ## Installation
 
-*Installation instructions pending — v1 implementation not yet written.* The intended pattern after `openspec init`:
+orbit is a `.claude/` overlay on `@fission-ai/openspec`. Install in three steps:
+
+### 1. Set up upstream OpenSpec first
+
+If you haven't already:
 
 ```bash
-# After upstream openspec init has set up your project's .claude/
+npx @fission-ai/openspec@latest init
+```
+
+This creates `openspec/` and `.claude/` with the 12 upstream skills/commands. Verify with `openspec list`.
+
+### 2. Overlay orbit
+
+```bash
 git clone https://github.com/las-sal/openspec-orbit /tmp/orbit
 cp -r /tmp/orbit/.claude/commands/opsx/. .claude/commands/opsx/
 cp -r /tmp/orbit/.claude/skills/. .claude/skills/
+rm -rf /tmp/orbit
+```
+
+This adds four new orbit commands (`/opsx:review`, `/opsx:review-external`, `/opsx:audit-drift`, `/opsx:address-reviews`) and layers orbit additions on top of three upstream skills (`openspec-explore`, `openspec-propose`, `openspec-archive-change`). The other nine upstream skills are unchanged.
+
+### 3. (Recommended) Add the orbit discipline reminder to your CLAUDE.md
+
+Copy the snippet from this README's [Cross-cutting disciplines](#cross-cutting-disciplines) section into your project's `CLAUDE.md`. Orbit's commands work without it (the disciplines are baked into each SKILL.md), but the snippet reinforces them at the project level for non-orbit-command AI work.
+
+### Verify
+
+After overlay, the available skills should include `openspec-review`, `openspec-review-external`, `openspec-audit-drift`, `openspec-address-reviews`, plus the existing upstream skills now showing "openspec-orbit" in their `metadata.author` for the three modified ones.
+
+```bash
+ls .claude/skills/openspec-*/SKILL.md | wc -l   # 15 total (12 upstream + 4 orbit + ... actually 16 with the four new + 12 upstream)
+ls .claude/commands/opsx/*.md                    # 15 commands
+```
+
+### Partial adoption is fine
+
+Orbit is designed to gracefully degrade. You can install just the new commands and skip the upstream-skill modifications by copying only specific files. Each new orbit command is independent of the others. Each modification to an upstream skill is purely additive (the upstream content is preserved verbatim).
+
+### Updates
+
+Re-run the overlay to pick up new orbit versions. orbit follows upstream's MIT license. Pin to a specific commit if you need stability:
+
+```bash
+git clone --branch v0.1.0 --depth 1 https://github.com/las-sal/openspec-orbit /tmp/orbit
 ```
 
 Long-term: package as a proper Claude Code plugin (Phase 2).

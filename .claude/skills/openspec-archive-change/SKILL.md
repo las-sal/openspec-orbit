@@ -111,3 +111,111 @@ All artifacts complete. All tasks complete.
 - Show clear summary of what happened
 - If sync is requested, use openspec-sync-specs approach (agent-driven)
 - If delta specs exist, always run the sync assessment and show the combined summary before prompting
+
+---
+
+# Orbit additions
+
+The sections below describe orbit-specific additions on top of upstream's archive flow. The upstream content above is unchanged. Orbit adds a **pre-archive `audit-drift` sweep**, a `--skip-audit` opt-out, an **unresolved `@review:` marker warning**, an **archive run summary** written to `.orbit-runs/`, and a small set of edge-case behaviors.
+
+## Three execution disciplines (apply throughout this command)
+
+**Read-before-reference (authoring-time)**. The archive run summary cites the pre-archive audit findings, user decision, and sync-specs results. Read the audit-drift output and the sync-specs assessment before writing the summary — don't infer counts from intent. The summary becomes the audit trail for the archived change; false claims corrupt later inspection.
+
+**Change completeness (modification-time)**. The archive flow modifies multiple artifacts: it moves the change directory, runs `sync-specs` (which writes to baseline), and writes the archive run summary. Apply these fully: a moved change should not leave dangling references in baseline; a sync-specs run should not leave delta-only requirements unreflected in baseline. Sweep after each step to confirm completion before proceeding to the next.
+
+**Pushback (review-time)**. The pre-archive audit produces findings. Before presenting them to the user, verify each against current state (audit-drift's own pushback discipline applies, but apply a second-pass check at the archive layer): is the finding still applicable given any commits since the audit ran in the current session? Stale findings get a note in the summary, not a re-prompt.
+
+## NEW Step 1.5 — Unresolved `@review:` marker warning
+
+After upstream Step 1 (selection) but before Step 2 (artifact completion check):
+
+Grep the change directory for `@review:` markers:
+
+```bash
+grep -rn "@review:" openspec/changes/<change-name>/
+```
+
+If any markers are found, warn:
+
+```
+N unaddressed `@review:` markers will land in archive — convert to `@todo:` or address before archiving?
+```
+
+Prompt via `AskUserQuestion`:
+
+- **Address now** — halt the archive; user runs `/opsx:address-reviews openspec/changes/<change-name>/` to resolve before re-invoking.
+- **Convert to `@todo:`** — run a bulk transform replacing each `@review:` with `@todo:` in place (preserves the content as known follow-up rather than unresolved review).
+- **Proceed** — archive with the markers in place; record this decision in the archive run summary.
+
+If no markers, proceed without prompting.
+
+## NEW Step 3.5 — Pre-archive audit-drift sweep
+
+After upstream Step 3 (task-completion check) but before Step 4 (sync-specs):
+
+**Unless `--skip-audit` is set**, invoke `/opsx:audit-drift` as a library function with context `pre-archive` and the current change name. Wait for the findings.
+
+### Branching on audit findings
+
+| Audit state | Action |
+|---|---|
+| **≥1 CRITICAL findings** | Prompt user via `AskUserQuestion`: "Address now / Proceed with archive / Abort?" Show the full audit findings to inform the choice. |
+| **No CRITICAL, only WARNING/SUGGESTION** | Proceed without prompting; warnings logged in the archive run summary. |
+| **No findings** | Proceed without prompting; clean audit recorded in summary. |
+| **Audit failed to run** (parse error, internal exception) | Proceed with a warning. Archive run summary records `audit.ran: false` with the failure reason. Do NOT block on audit-tool failures. |
+
+### Prompt outcomes (for the ≥1 CRITICAL case)
+
+- **Address now** → archive does not proceed. User fixes the drift issues and re-invokes `/opsx:archive`. No summary written this run.
+- **Proceed with archive** → archive proceeds normally. Summary records `user_decision: proceeded_despite_critical`.
+- **Abort** → archive is cancelled. No move, no sync-specs, no summary.
+
+### `--skip-audit` flag
+
+When `/opsx:archive --skip-audit <name>` is invoked, the entire Step 3.5 audit is skipped. The archive run summary records `audit_skipped_via_flag: true`. Use case: the user has just run `/opsx:audit-drift` manually and doesn't need to repeat it.
+
+## NEW Step 5.5 — Archive run summary
+
+After upstream Step 5 (move-to-archive) completes successfully, write a JSON summary to:
+
+```
+openspec/changes/archive/<change-name>/.orbit-runs/archive-<TS>.json
+```
+
+(The `.orbit-runs/` directory should be present already — it moved with the change content. If somehow absent, create it.)
+
+Full schema lives at `references/archive-summary-schema.md` — read that file when composing the summary.
+
+## `.orbit-runs/` moves with the change
+
+Upstream Step 5's `mv openspec/changes/<name> openspec/changes/archive/YYYY-MM-DD-<name>` already moves the entire change directory, including `.orbit-runs/`. No additional handling required — `.orbit-runs/` is just a subdirectory of the change.
+
+All prior internal-run summaries (`review-*-*.json`, `audit-drift-*.json`, `address-reviews-*.json`) and external-review findings (`external-*.md` + `external-prompt-*-*.md`) persist in the archived location at `openspec/changes/archive/<name>/.orbit-runs/`.
+
+## Edge cases
+
+### Already archived
+
+If `openspec/changes/archive/<change-name>/` already exists when the user invokes `/opsx:archive <change-name>`:
+
+Halt with a clear error:
+
+```
+Change <name> is already at openspec/changes/archive/<name>/.
+```
+
+Do NOT prompt to overwrite; the user must explicitly resolve the conflict (rename existing archive, use different date, etc.).
+
+### audit-drift fails to run
+
+Already covered in Step 3.5 — proceed with warning; summary records `audit.ran: false` + failure reason. Do NOT block on audit-tool failures.
+
+## Audit is informational, not gate
+
+Audit-drift findings are **informational** unless the user explicitly chooses to abort. The archive command does NOT:
+
+- Attempt to resolve audit findings automatically (user's responsibility via `/opsx:address-reviews` or manual edit).
+- Auto-invoke `/opsx:review --as system` even if it hasn't run for this change. System-mode review is the user's gate — their responsibility to run it before archiving if they want that signal.
+
+This is a deliberate choice (per D11 in the bootstrap design): users may legitimately archive with known drift (e.g., follow-up commit planned). orbit captures the decision in the summary for traceability, but doesn't override.

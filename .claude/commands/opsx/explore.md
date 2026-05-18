@@ -170,3 +170,17 @@ When things crystallize, you might offer a summary - but it's optional. Sometime
 - **Do visualize** - A good diagram is worth many paragraphs
 - **Do explore the codebase** - Ground discussions in reality
 - **Do question assumptions** - Including the user's and your own
+
+---
+
+## Orbit additions (summary)
+
+The `openspec-explore` skill is extended by openspec-orbit with:
+
+- **Three invocation modes**: bare (no file), named (`/opsx:explore <name>` → `openspec/explore/<name>/explore.md`), and crystallized (bare invocation that opens a name prompt after 2+ substantive decisions emerge).
+- **Five capture types** with triggers: decisions (auto-captured into `explore.md` in named mode), conventions (offer → `<topic>_convention.md`), perspectives (offer → `openspec/lenses/perspectives.md`), critical paths (offer → `openspec/lenses/critical-paths.md`), references (offer → `explore.md` References section).
+- **`explore.md` five-section convention**: Premise / Decisions / Open questions / Considered & out / References. Consumed by `/opsx:propose <name>` to seed formal change artifacts.
+- **Offer-don't-auto** for non-decision captures; decline-tracking within a single conversation.
+- **Three execution disciplines** (read-before-reference / change completeness / pushback) per orbit-conventions.
+
+See `.claude/skills/openspec-explore/SKILL.md` for full behavior, capture-trigger patterns, and section-evolution rules.
