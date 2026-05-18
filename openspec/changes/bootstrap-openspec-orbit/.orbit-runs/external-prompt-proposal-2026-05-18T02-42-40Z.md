@@ -112,3 +112,17 @@ Use this exact markdown structure:
 ```
 
 If your environment doesn't support file writes (chat-only interface), output the markdown directly so the user can save it to the path above.
+
+## After completing the review
+
+If your environment supports git operations, commit and push your findings file so the authoring AI can pick it up without manual intervention:
+
+```bash
+git add openspec/changes/bootstrap-openspec-orbit/.orbit-runs/external-proposal-<TS>.md
+git commit -m "External review (proposal, iter 1): bootstrap-openspec-orbit
+
+<one-line summary: severity counts + headline finding if any>"
+git push
+```
+
+If you don't have git access, just output the findings markdown in this chat (per the chat-only fallback above) and the user will commit it manually.

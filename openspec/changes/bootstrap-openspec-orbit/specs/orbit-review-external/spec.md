@@ -135,12 +135,38 @@ Use this exact markdown structure:
 
 If your environment doesn't support file writes (chat-only interface), output
 the markdown directly and the user will save it.
+
+## After completing the review
+
+If your environment supports git operations, commit and push your findings
+file so the authoring AI can pick it up without manual intervention:
+
+```bash
+git add openspec/changes/<change-name>/.orbit-runs/external-<as>-<TS>.md
+git commit -m "External review (<as>, iter <N>): <change-name>
+
+<one-line summary: severity counts + headline finding if any>"
+git push
+```
+
+If you don't have git access, just output the findings markdown in this chat
+(per the chat-only fallback above) and the user will commit it manually.
 ```
 
 #### Scenario: Output-format block must be verbatim
 
 - **WHEN** the prompt is generated
 - **THEN** the "Output format" block (the inner markdown showing the expected findings structure) is included verbatim, including section headers `## CRITICAL` / `## WARNING` / `## SUGGESTION` and the `**File**:` / `**Description**:` field labels; deviations would break `--from-file` parsing
+
+#### Scenario: Commit / push instructions in prompt
+
+- **WHEN** the prompt is generated
+- **THEN** it includes an "After completing the review" section instructing the external AI to commit and push the findings file if it has git access (with a `git add` / `git commit` / `git push` block showing the path and a one-line summary commit message), with a fallback note that chat-only environments should output the markdown for the user to commit manually
+
+#### Scenario: Commit message format in prompt
+
+- **WHEN** the prompt's commit instructions are generated
+- **THEN** the suggested commit message line follows the form `External review (<as>, iter <N>): <change-name>` followed by a blank line and a one-line summary of the findings (severity counts + headline finding if any); this format makes the iteration / mode visible in `git log` and pairs with the file's own iteration counter
 
 ### Requirement: Output format specification in prompt
 
