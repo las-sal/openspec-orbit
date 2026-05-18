@@ -157,6 +157,27 @@ Use this exact markdown structure:
 If your environment doesn't support file writes (chat-only interface),
 output the markdown directly and the user will save it.
 
+## After completing the review
+
+1. **Also list findings in chat** — in addition to writing the file, output
+   a concise summary in this chat so the user sees findings immediately
+   without opening the file. Per finding: severity + title + `file:line`,
+   optionally a one-line description.
+
+2. **Commit and push the findings file** (if your environment supports git):
+
+   ```bash
+   git add openspec/changes/<change-name>/.orbit-runs/external-<as>-<TS>.md
+   git commit -m "External review (<as>, iter <N>): <change-name>
+
+   <one-line summary: severity counts + headline finding if any>"
+   git push
+   ```
+
+If you don't have git access, just output the findings markdown in this
+chat (per the chat-only fallback above) and the user will commit it
+manually.
+
 ## ──────────────────────────────────────────────────────────────────
 [Mode-specific section appended below]
 ````
