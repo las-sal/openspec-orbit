@@ -1,0 +1,55 @@
+{
+  "command": "audit-drift",
+  "timestamp": "2026-05-18T20:37:59Z",
+  "context": "standalone",
+  "caller": null,
+  "depth": "full",
+  "flags": {
+    "parallel": false,
+    "focus": null,
+    "since": null,
+    "strict": false
+  },
+  "categories_run": ["1", "2", "3", "4"],
+  "categories_skipped": [
+    { "category": "1", "reason": "Residue pattern set is empty: the only archived change (bootstrap-openspec-orbit) has all-ADDED Requirements with no RENAMED or REMOVED. No FROM/REMOVED names to grep for. Degenerate, not skipped via flag." },
+    { "category": "2", "reason": "openspec/lenses/ absent. Skip Category 2 (no perspectives or critical-paths to validate)." }
+  ],
+  "findings_summary": {
+    "critical": 0,
+    "warning": 0,
+    "suggestion": 1,
+    "by_category": {
+      "1": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "2": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "3": { "critical": 0, "warning": 0, "suggestion": 1 },
+      "4": { "critical": 0, "warning": 0, "suggestion": 0 }
+    }
+  },
+  "findings": [
+    {
+      "category": "3",
+      "severity": "SUGGESTION",
+      "file": "README.md",
+      "line": 166,
+      "title": "Workflow diagram uses `<DATE>-<name>` while every other doc uses `<YYYY-MM-DD>-<name>`",
+      "recommendation": "The workflow ASCII diagram at README.md:166 uses `<DATE>-<name>` (compact form chosen for box-width constraints during iter-3 W2 cleanup). Every other doc — CLAUDE.md:30, orbit-conventions:157, orbit-archive-modifications spec (multiple lines), README.md:449, the new canonical baseline specs — uses `<YYYY-MM-DD>-<name>`. A reader who only sees the workflow diagram lacks the date format specification. Either widen the diagram to fit `<YYYY-MM-DD>-<name>`, or add a note adjacent to the diagram (\"see Installation / Persistence Layout sections for date format\"). Low priority; doesn't break any operationalizable reference, just slightly less self-explanatory in one location."
+    }
+  ],
+  "stale_suppressed": [],
+  "category_4_propagation_verification": {
+    "note": "Cat 4 verification ran against the just-archived bootstrap-openspec-orbit (the only archived change). For each of the 8 capabilities, the requirement count in the delta matched the requirement count in the canonical baseline AND the sorted requirement-name sets matched exactly. All 92 requirements propagated correctly via sync-specs.",
+    "per_capability_check": {
+      "orbit-review": "delta=13, baseline=13, names_match=true",
+      "orbit-review-external": "delta=9, baseline=9, names_match=true",
+      "orbit-audit-drift": "delta=10, baseline=10, names_match=true",
+      "orbit-address-reviews": "delta=10, baseline=10, names_match=true",
+      "orbit-explore-modifications": "delta=7, baseline=7, names_match=true",
+      "orbit-propose-modifications": "delta=8, baseline=8, names_match=true",
+      "orbit-archive-modifications": "delta=8, baseline=8, names_match=true",
+      "orbit-conventions": "delta=27, baseline=27, names_match=true"
+    }
+  },
+  "final_assessment": "No critical issues. 1 warning(s) to consider.",
+  "note": "First standalone-context audit-drift run for this repo. First-ever audit-drift run via formal skill invocation (the pre-archive library calls during /opsx:archive were inline-equivalent reasoning, not formal invocations). This run dogfoods the standalone branch + exercises Cat 4 against the freshly-archived bootstrap. Per #5 (post-archive audit hook design issue), this run is exactly the kind of check that would be auto-invoked if /opsx:archive grew a post-archive sweep — and it's what surfaced the SUGGESTION above."
+}
