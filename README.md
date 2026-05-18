@@ -16,8 +16,7 @@ An opinionated `.claude/` overlay for [@fission-ai/openspec](https://github.com/
   - [Command reference](#command-reference)
     - [`/opsx:explore [<name>]`](#opsxexplore-name)
     - [`/opsx:propose <name>`](#opsxpropose-name)
-    - [`/opsx:review-proposal <name>`](#opsxreview-proposal-name)
-    - [`/opsx:review-system <name>`](#opsxreview-system-name)
+    - [`/opsx:review <name> [--as proposal|system]`](#opsxreview-name---as-proposalsystem)
     - [`/opsx:audit-drift`](#opsxaudit-drift)
     - [`/opsx:address-reviews [<scope>]`](#opsxaddress-reviews-scope)
     - [`/opsx:review-external <change-name> [--as proposal|system]`](#opsxreview-external-change-name---as-proposalsystem)
@@ -97,7 +96,7 @@ End-to-end loop, from idea to archived change:
 │                          ▼                                          │
 │                                                                     │
 │   3. REVIEW (proposal side, internal)                               │
-│   /opsx:review-proposal <name>                                      │
+│   /opsx:review <name> --as proposal                                      │
 │      ↓                                                              │
 │   9 passes → 3-dimension scorecard (Completeness/Correctness/       │
 │   Coherence). Findings reported with file:line + recommendation.    │
@@ -136,7 +135,7 @@ End-to-end loop, from idea to archived change:
 │                          ▼                                          │
 │                                                                  │
 │   7. REVIEW (system side, internal)                                 │
-│   /opsx:review-system <name>                                        │
+│   /opsx:review <name> --as system                                        │
 │      ↓                                                              │
 │   Wraps verify-change (Pass 0) + 6 system-wide passes (baseline,    │
 │   cohesion, surface walk, perspectives, critical paths, drift).     │
@@ -248,11 +247,17 @@ Full design: [`sketches/propose.md`](./openspec/changes/bootstrap-openspec-orbit
 
 ---
 
-### `/opsx:review-proposal <name>`
+### `/opsx:review <name> [--as proposal|system]`
 
-> **What's new**: editorial review pass over change artifacts before apply. No upstream equivalent.
+> **What's new**: single editorial review command with `--as` mode flag. No upstream equivalent.
 
-Runs 9 passes over the change's pre-implementation artifacts (proposal/design/specs/tasks/explore):
+One command, two modes:
+
+- **`--as proposal`** runs 9 passes over a change's pre-implementation artifacts (proposal/design/specs/tasks/explore). Pre-apply gate.
+- **`--as system`** wraps upstream `verify-change` as Pass 0 and adds 6 system-wide passes. Post-apply, pre-archive gate.
+- When `--as` is omitted, the mode is inferred from `tasks.md` state (unchecked tasks → `proposal`; all checked + code exists → `system`; ambiguous → user is prompted).
+
+#### Proposal-mode passes
 
 | # | Pass | What it checks |
 |---|---|---|
@@ -266,29 +271,7 @@ Runs 9 passes over the change's pre-implementation artifacts (proposal/design/sp
 | 8 | Inline Review Marker Residue | Any `@review:` markers still present (must be addressed before apply) |
 | 9 | Pre-Handoff Sweep | "Anything else before I ship?" final read |
 
-Output: standard 3-dimension scorecard (Completeness / Correctness / Coherence) with CRITICAL / WARNING / SUGGESTION severities and file:line refs.
-
-Flags:
-
-```
-/opsx:review-proposal <name>
-  [--fast | --full | --thorough]    depth (default --full)
-  [--parallel]                       subagent parallelism for heavy passes
-  [--focus <lens>]                   rename | flip | refactor | extension
-  [--mark]                           drop @review: markers in artifacts for unified resolution
-  [--fresh]                          clean-context subagent for main work
-  [--strict]                         fail-fast on first CRITICAL
-```
-
-Full design: [`sketches/review-proposal.md`](./openspec/changes/bootstrap-openspec-orbit/sketches/review-proposal.md)
-
----
-
-### `/opsx:review-system <name>`
-
-> **What's new**: editorial review pass over the whole product after apply. Wraps upstream `verify-change`.
-
-Pass 0 delegates to upstream `verify-change` (task completion + spec coverage + scenario coverage). Passes 1–6 add system-wide passes:
+#### System-mode passes
 
 | # | Pass | What it checks |
 |---|---|---|
@@ -300,21 +283,22 @@ Pass 0 delegates to upstream `verify-change` (task completion + spec coverage + 
 | 5 | Critical-Path Scan | Each flow in `openspec/lenses/critical-paths.md`, walked end-to-end |
 | 6 | Drift / Residue | Calls `/opsx:audit-drift` as a library function |
 
-Same 3-dimension scorecard, same severities, same actionable findings.
+Output (both modes): standard 3-dimension scorecard (Completeness / Correctness / Coherence) with CRITICAL / WARNING / SUGGESTION severities and file:line refs. Final-assessment gate text varies by mode (`/opsx:apply` for proposal, `/opsx:archive` for system).
 
-Flags:
+#### Flags
 
 ```
-/opsx:review-system <name>
-  [--fast | --full | --thorough]
-  [--parallel]
-  [--focus <lens>]                   rename | flip | refactor | hotpath
-  [--skip-verify]                    skip Pass 0 if verify-change ran separately
-  [--fresh]
-  [--strict]
+/opsx:review <name> [--as proposal|system]
+  [--fast | --full | --thorough]    depth (default --full)
+  [--parallel]                       subagent parallelism for heavy passes
+  [--focus <lens>]                   rename / flip / refactor / extension / hotpath
+  [--fresh]                          clean-context subagent for main work
+  [--strict]                         fail-fast on first CRITICAL
+  [--mark]                           proposal mode only: drop @review: markers based on findings
+  [--skip-verify]                   system mode only: skip Pass 0 if verify-change ran separately
 ```
 
-Full design: [`sketches/review-system.md`](./openspec/changes/bootstrap-openspec-orbit/sketches/review-system.md)
+Full design: [`sketches/review.md`](./openspec/changes/bootstrap-openspec-orbit/sketches/review.md)
 
 ---
 
@@ -332,7 +316,7 @@ Four scan categories:
 Three invocation paths:
 
 - **Standalone** — user invokes when "something feels off"
-- **Library call** — `/opsx:review-system` Pass 6 invokes it internally
+- **Library call** — `/opsx:review --as system` Pass 6 invokes it internally
 - **Auto-invoked** — `/opsx:archive` calls it before completing (opt-out via `--skip-audit`)
 
 Flags:
@@ -411,8 +395,8 @@ The user pushes the prompt file, pastes the invocation snippet into the external
 
 | Mode | When to use | What the external AI reviews |
 |---|---|---|
-| `--as proposal` | Pre-apply | proposal/design/specs/tasks/explore.md — the 9 review-proposal passes |
-| `--as system` | Post-apply | full codebase + baseline + diff — the 7 review-system passes |
+| `--as proposal` | Pre-apply | proposal/design/specs/tasks/explore.md — the 9 proposal-mode passes |
+| `--as system` | Post-apply | full codebase + baseline + diff — the 7 system-mode passes |
 | (no flag) | Inferred | From `tasks.md` state: unchecked → proposal; all checked + code → system |
 
 Flags:
@@ -459,8 +443,8 @@ The reason `/opsx:review-external` and `--from-file` exist: the manual cross-AI 
 │  IN YOUR AUTHORING SESSION                                            │
 │                                                                       │
 │  1. Run the internal review first                                     │
-│     /opsx:review-proposal foo                                         │
-│     (or /opsx:review-system foo after apply)                          │
+│     /opsx:review foo --as proposal                                         │
+│     (or /opsx:review foo --as system after apply)                          │
 │     → 3-dim scorecard in chat; address what you can                   │
 │                                                                       │
 │  2. Address findings you agree with                                   │
@@ -612,7 +596,7 @@ The judgment layer — what code can't tell you, captured durably:
 
 Surfaces themselves are *not* in `lenses/` — capabilities in `openspec/specs/<capability>/` ARE the surfaces. lenses is purely the subjective layer.
 
-Files grow via `/opsx:explore` capture triggers (offer, don't auto). Empty `lenses/` causes graceful degradation: review-system Passes 4/5 skip with a note; Pass 3 still runs against derived surfaces.
+Files grow via `/opsx:explore` capture triggers (offer, don't auto). Empty `lenses/` causes graceful degradation: system-mode Passes 4/5 skip with a note; Pass 3 still runs against derived surfaces.
 
 ### `openspec/changes/<name>/.orbit-runs/` (per-change)
 
@@ -660,9 +644,9 @@ Conventions are the **AI-readable rules layer** — durable patterns that apply 
 
 | Command | What it does with conventions |
 |---|---|
-| `/opsx:review-proposal` Pass 3 | Checks proposal / design / spec deltas align with declared conventions |
-| `/opsx:review-proposal` Pass 7 | Flags vocabulary or naming that contradicts conventions |
-| `/opsx:review-system` Pass 2 | Light check that the change's code follows conventions |
+| `/opsx:review --as proposal` Pass 3 | Checks proposal / design / spec deltas align with declared conventions |
+| `/opsx:review --as proposal` Pass 7 | Flags vocabulary or naming that contradicts conventions |
+| `/opsx:review --as system` Pass 2 | Light check that the change's code follows conventions |
 | `/opsx:audit-drift` Cat. 3 | Checks conventions don't contradict each other / `CLAUDE.md` / `project.md` |
 | `/opsx:audit-drift` Cat. 1 | Flags removed terms still referenced in convention files |
 | `/opsx:explore` | Reads relevant convention files when conversation touches their topics; offers updates on contradictions |
@@ -714,7 +698,7 @@ Unresolvable markers have three options (per-marker user choice):
 │                 address-reviews.md, review-external.md]
 └── skills/                        ← skill definitions
     ├── openspec-*/SKILL.md       (12 upstream skills)
-    └── [pending: openspec-review-proposal/, openspec-review-system/,
+    └── [pending: openspec-review/, openspec-review/,
                   openspec-audit-drift/, openspec-address-reviews/,
                   openspec-review-external/]
 
@@ -743,8 +727,7 @@ The complete design exploration that produced orbit lives in this repo as a dogf
 
 - **`openspec/changes/bootstrap-openspec-orbit/explore.md`** — full design record. Guiding principles, decisions (grouped by area), considered alternatives, references.
 - **`openspec/changes/bootstrap-openspec-orbit/sketches/`** — detailed per-command sketches:
-  - [`review-proposal.md`](./openspec/changes/bootstrap-openspec-orbit/sketches/review-proposal.md)
-  - [`review-system.md`](./openspec/changes/bootstrap-openspec-orbit/sketches/review-system.md)
+  - [`review.md`](./openspec/changes/bootstrap-openspec-orbit/sketches/review.md) (unified — both modes)
   - [`audit-drift.md`](./openspec/changes/bootstrap-openspec-orbit/sketches/audit-drift.md)
   - [`address-reviews.md`](./openspec/changes/bootstrap-openspec-orbit/sketches/address-reviews.md)
   - [`review-external.md`](./openspec/changes/bootstrap-openspec-orbit/sketches/review-external.md)

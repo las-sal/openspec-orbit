@@ -10,7 +10,7 @@ Project-wide scan for **drift in captured knowledge vs. reality**. Catches the f
 Single unified command — `audit-drift` covers all drift-shaped concerns. No `audit-residue` / `audit-lenses` / `audit-coherence` family.
 
 Three invocation paths:
-- **Library call**: `/opsx:review-system` Pass 6 calls `audit-drift` internally.
+- **Library call**: `/opsx:review --as system` Pass 6 calls `audit-drift` internally.
 - **Standalone**: user invokes when "something feels off."
 - **Auto-call**: `/opsx:archive` invokes it as a pre-archive sweep (opt-out via `--skip-audit`).
 
@@ -192,7 +192,7 @@ Same shape as review commands; gate varies by invocation context:
   user reads     scorecard                 archive
 ```
 
-`/opsx:review-system` Pass 6 stops being "the drift/residue check"; it's just "calls `/opsx:audit-drift`." Composition matches Pass 0 (calls `verify-change`). Two upstream-shaped delegations in the same command — orbit's `review-system` is a thin orchestrator over upstream + orbit primitives.
+`/opsx:review --as system` Pass 6 stops being "the drift/residue check"; it's just "calls `/opsx:audit-drift`." Composition matches Pass 0 (calls `verify-change`). Two upstream-shaped delegations in the same command — orbit's `review-system` is a thin orchestrator over upstream + orbit primitives.
 
 ## Parallels with review commands
 

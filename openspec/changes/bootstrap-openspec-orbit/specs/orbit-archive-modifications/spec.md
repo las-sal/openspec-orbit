@@ -110,4 +110,4 @@ The system SHALL treat audit-drift findings as informational unless the user exp
 #### Scenario: Don't re-run reviews
 
 - **WHEN** the user invokes archive
-- **THEN** the command does NOT automatically invoke `/opsx:review-system` even if it hasn't run; review-system is the user's gate (their responsibility)
+- **THEN** the command does NOT automatically invoke `/opsx:review --as system` even if it hasn't run; review (system mode) is the user's gate (their responsibility)

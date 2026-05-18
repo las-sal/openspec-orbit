@@ -130,7 +130,7 @@ The system SHALL emit a resolution log (not a 3-dimension scorecard) summarizing
 #### Scenario: Final assessment
 
 - **WHEN** the resolution log is complete
-- **THEN** the final assessment reports remaining markers in scope (0 if clean, plus count of any deliberately persisted escalated markers) and suggests next step (e.g., "re-run /opsx:review-proposal to confirm clean baseline")
+- **THEN** the final assessment reports remaining markers in scope (0 if clean, plus count of any deliberately persisted escalated markers) and suggests next step (e.g., "re-run /opsx:review --as proposal to confirm clean baseline")
 
 ### Requirement: Marker convention across file types
 
@@ -158,4 +158,4 @@ The system SHALL NOT create new `@review:` markers as part of its own operation.
 #### Scenario: address-reviews does not write markers
 
 - **WHEN** address-reviews runs
-- **THEN** the only marker creation possible is by `/opsx:review-proposal --mark` (a different command); address-reviews never writes new markers
+- **THEN** the only marker creation possible is by `/opsx:review --as proposal --mark` (a different command); address-reviews never writes new markers

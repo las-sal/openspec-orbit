@@ -17,9 +17,9 @@ The full exploration record that produced this change lives at `openspec/changes
 - Ship a `.claude/` overlay that adds five new opsx commands and modifies three existing ones, without forking the upstream CLI.
 - Adopt upstream conventions wherever possible (vocabulary, file layout, reporting shape, CLI usage as source of truth). The acid test: a merge of orbit into upstream should read like a contributor's PR.
 - Make the review-and-capture workflow durable across AI sessions: marker convention (`@review:`), pushback discipline, marker-removal invariant, cross-AI handoff format, and exploration capture.
-- Compose with upstream `verify-change` (review-system wraps it as Pass 0) and `sync-specs` (audit-drift complements its delta-only coverage).
+- Compose with upstream `verify-change` (review (system mode) wraps it as Pass 0) and `sync-specs` (audit-drift complements its delta-only coverage).
 - Make the cross-AI review cycle frictionless: `/opsx:review-external` packages the handoff, `/opsx:address-reviews --from-file` ingests the findings; no copy-paste-per-finding.
-- Preserve graceful degradation: empty `openspec/lenses/` → review-system Passes 4/5 skip; missing `explore.md` → propose runs in standalone mode; absent prior `.orbit-runs/` → first-run path.
+- Preserve graceful degradation: empty `openspec/lenses/` → system-mode Passes 4/5 skip; missing `explore.md` → propose runs in standalone mode; absent prior `.orbit-runs/` → first-run path.
 
 **Non-Goals:**
 
@@ -29,7 +29,7 @@ The full exploration record that produced this change lives at `openspec/changes
 - Caching pass results — deferred to v2 (issue #1).
 - Defining `--thorough` mode extras precisely — deferred to v2 (issue #2).
 - Comprehensive `/opsx:address-reviews` features beyond lean v1 — deferred to v2 (issue #3); v1 ships only the four enforcement wins plus `--from-file`.
-- Source-code marker writing via `--mark` on `/opsx:review-system` — deferred to v2 (issue #3).
+- Source-code marker writing via `--mark` on `/opsx:review --as system` — deferred to v2 (issue #3).
 - Auto-cascade for ripple resolution in address-reviews — v1 only flags affected files (deferred to v2).
 - Backwards-compatibility shims for users without upstream openspec installed — orbit requires `openspec init` to have run first.
 
@@ -58,9 +58,9 @@ Four verb prefixes, each with a distinct meaning so adopters can predict where n
 
 **Alternative rejected:** symmetric `/opsx:verify-proposal` + `/opsx:verify-system` — would force-fit "verify" onto operations that are really editorial review. Verify implies a ground-truth target, which a proposal doesn't have.
 
-### D3. `/opsx:review-system` wraps `verify-change` rather than replacing it
+### D3. `/opsx:review --as system` wraps `verify-change` rather than replacing it
 
-Pass 0 of `/opsx:review-system` delegates to upstream `verify-change`. Passes 1–6 add system-wide checks on top.
+Pass 0 of `/opsx:review --as system` delegates to upstream `verify-change`. Passes 1–6 add system-wide checks on top.
 
 **Rationale:** verify-change is rigorous within its scope (the change's deltas). orbit inherits that rigor for free and layers what verify-change doesn't do (baseline compliance, cohesion, surfaces, perspectives, critical paths, drift). Future upstream improvements to verify-change flow through automatically.
 
@@ -101,7 +101,7 @@ v1 ships marker scan + walk + pushback + remove + `--from-file` ingest. Deferred
 
 ### D7. `openspec/lenses/` as the judgment layer
 
-`openspec/lenses/perspectives.md` and `openspec/lenses/critical-paths.md` are the durable home for subjective judgments code can't make. Captured during `/opsx:explore` via offer-don't-auto triggers. Consumed by review-system Passes 4 (perspectives) and 5 (critical paths).
+`openspec/lenses/perspectives.md` and `openspec/lenses/critical-paths.md` are the durable home for subjective judgments code can't make. Captured during `/opsx:explore` via offer-don't-auto triggers. Consumed by system-mode Passes 4 (perspectives) and 5 (critical paths).
 
 **Rationale:** Multiple commands need to know "which callers matter" and "which user flows are critical." Code can't tell you that; it's human judgment. Without a durable home, this knowledge stays in the user's head and is re-derived per-review. The `lenses/` directory makes it persistent and team-visible.
 
@@ -153,7 +153,7 @@ External review packaging is its own command (`/opsx:review-external <change> [-
 
 - **Text duplication across SKILL.md files for pushback discipline** → mitigation: documented as an intentional choice (per guiding principle 2 and explicit decision); CLAUDE.md snippet optional but not required for behavior.
 - **No automatic ripple cascade in lean v1 of `/opsx:address-reviews`** → mitigation: ripple "flag" lists affected files; user resolves manually or re-runs the command after fixing. Auto-cascade is v2 (issue #3).
-- **Lenses content can go stale relative to actual code** → mitigation: `/opsx:audit-drift` Category 2 (Lens Staleness) detects this; review-system Pass 6 invokes audit-drift; pre-archive auto-invocation catches it before each archive.
+- **Lenses content can go stale relative to actual code** → mitigation: `/opsx:audit-drift` Category 2 (Lens Staleness) detects this; system-mode Pass 6 invokes audit-drift; pre-archive auto-invocation catches it before each archive.
 - **External AI must understand the prompt and write the file** → mitigation: prompt is self-contained; format is rigid; if external AI has no file-write capability, prompt instructs it to output markdown for user to save manually.
 - **`.orbit-runs/` clutter as iterations accumulate** → mitigation: each file is small (JSON summaries or short markdown); no automatic cleanup in v1; users can manually prune if needed. Files persist with the archive for full traceability.
 - **9 capability specs is more files than the typical change** → mitigation: each spec is small and focused, enabling clean per-command deltas in future changes. Larger up-front cost; smaller per-delta cost over orbit's lifecycle.

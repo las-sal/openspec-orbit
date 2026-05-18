@@ -188,7 +188,7 @@ This is the "I know what I want, skip the exploration phase" path. Still valid; 
                   └── tasks.md
                         │
                         ▼
-                /opsx:review-proposal <name>
+                /opsx:review <name> --as proposal
                         │
                         ▼
                 /opsx:address-reviews [<scope>]
@@ -200,7 +200,7 @@ This is the "I know what I want, skip the exploration phase" path. Still valid; 
                 code
                         │
                         ▼
-                /opsx:review-system <name>
+                /opsx:review <name> --as system
                         │
                         ▼
                 /opsx:address-reviews [<scope>]

@@ -7,7 +7,7 @@
 
 The **resolution counterpart** to the generative review commands. Walks `@review:` markers anywhere in the repo and resolves each with pushback discipline.
 
-Where `/opsx:review-proposal` and `/opsx:review-system` *generate* findings, `/opsx:address-reviews` *acts on* `@review:` markers the user (or another tool) has left.
+Where `/opsx:review --as proposal` and `/opsx:review --as system` *generate* findings, `/opsx:address-reviews` *acts on* `@review:` markers the user (or another tool) has left.
 
 ## What it delivers over "just ask the AI"
 
@@ -169,7 +169,7 @@ A simple resolution log (not the 3-dimension scorecard used by review/audit comm
 ### Final Assessment
 0 unaddressed markers in scope (1 escalated marker is deliberately
 persisted).
-Suggested next: re-run /opsx:review-proposal to confirm clean baseline.
+Suggested next: re-run /opsx:review --as proposal to confirm clean baseline.
 ```
 
 ## Heuristics & graceful degradation
@@ -177,7 +177,7 @@ Suggested next: re-run /opsx:review-proposal to confirm clean baseline.
 - **Always remove markers on resolution** — primary invariant.
 - **Pushback before fix** — every marker passes through Step 3a.
 - **Surface options, don't pre-commit** — ask the user when a marker has design implications.
-- **Never create new markers without explicit user consent** — only `/opsx:review-proposal --mark` writes new markers, and only with user opt-in.
+- **Never create new markers without explicit user consent** — only `/opsx:review --as proposal --mark` writes new markers, and only with user opt-in.
 - **Graceful degradation**:
   - No markers found → report "no `@review:` markers in scope" and exit clean.
   - Pushback can't verify (no git history, no current file) → escalate to user rather than guess.
@@ -219,7 +219,7 @@ If parse fails (malformed file), report the parse error and exit; don't act on p
 - `--strict` (fail-fast on user-input-required markers)
 - `--parallel` (independent-marker concurrent resolution)
 - Categorized markers (`@review(blocker):`, etc.)
-- Auto re-run of `/opsx:review-proposal` after batch resolution
+- Auto re-run of `/opsx:review --as proposal` after batch resolution
 
 Each of these has real value when the workflow demands it. Lean v1 ships the four enforcement wins; v2 adds the polish.
 
@@ -232,7 +232,7 @@ Each of these has real value when the workflow demands it. Lean v1 ships the fou
    in spec.md / design.md / source code
                               │
                               │
-   /opsx:review-proposal      │
+   /opsx:review --as proposal      │
    ─────────────────────       │
    --mark flag drops          │
    @review: markers           │

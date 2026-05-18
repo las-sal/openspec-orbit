@@ -30,7 +30,7 @@ Two additions:
         │
         ▼
    2. Run /opsx:audit-drift (library call)
-        │  Same as /opsx:review-system Pass 6's
+        │  Same as /opsx:review --as system Pass 6's
         │  composition — internal invocation, full
         │  output folded into archive's report.
         │
@@ -131,7 +131,7 @@ The `.orbit-runs/` directory **moves with the change** during archive (from `ope
 
 ## Open design questions
 
-1. **Should archive also auto-invoke `review-system` if it hasn't run?** Lean: no. review-system is the user's gate before archive; if they skipped it, that's their decision. Archive auditing focuses on drift (the OPENSPEC_LESSONS lesson), not on re-running all the review passes.
+1. **Should archive also auto-invoke `review-system` if it hasn't run?** Lean: no. review (system mode) is the user's gate before archive; if they skipped it, that's their decision. Archive auditing focuses on drift (the OPENSPEC_LESSONS lesson), not on re-running all the review passes.
 2. **What about the explore.md still-Open-questions case?** If `openspec/changes/<name>/explore.md` has Open questions when archive runs, that suggests something was left unresolved during propose. Lean: warn but don't block. The change made it to apply and review-system; if Open questions in explore.md weren't material, that's user judgment. The warning surfaces it; user decides.
 3. **Auto-promote `@review:` markers to `@todo:`?** If markers still exist in change dir when archive runs (haven't been resolved), should they convert to permanent `@todo:` so they don't disappear into the archive? Lean: warn with explicit "N unaddressed `@review:` markers will land in archive — convert to `@todo:` or address before archiving?" prompt.
 
@@ -144,7 +144,7 @@ The `.orbit-runs/` directory **moves with the change** during archive (from `ope
 code generated; tasks marked
         │
         ▼
-/opsx:review-system <change>           (internal review)
+/opsx:review <change> --as system           (internal review)
         │
         ▼
 /opsx:review-external <change> --as system  (optional external review)

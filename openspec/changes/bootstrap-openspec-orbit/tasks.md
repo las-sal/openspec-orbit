@@ -1,4 +1,4 @@
-> **Convention**: tasks should reference the spec requirement they implement using the form `[R<#> in <capability>]` at the end of the task description, e.g., `[R3 in orbit-review-proposal]`. Tasks without spec references are **operational** (build/release/docs/testing) — they implement orbit's delivery rather than orbit's behavior, and are explicitly distinguished from spec-tied work in the group's introduction line. Annotations are added incrementally as implementation lands; tasks below are seeded without them.
+> **Convention**: tasks should reference the spec requirement they implement using the form `[R<#> in <capability>]` at the end of the task description, e.g., `[R3 in orbit-review]`. Tasks without spec references are **operational** (build/release/docs/testing) — they implement orbit's delivery rather than orbit's behavior, and are explicitly distinguished from spec-tied work in the group's introduction line. Annotations are added incrementally as implementation lands; tasks below are seeded without them.
 
 ## 1. Repository scaffolding (operational)
 
@@ -6,27 +6,21 @@
 - [ ] 1.2 Verify `openspec/config.yaml` reflects orbit-coherent settings (schema, optional project context, any orbit-specific rules)
 - [ ] 1.3 Add a top-level `CLAUDE.md` snippet (or document in README) that adopters can copy as project-level context, including the pushback-discipline reminder
 
-## 2. New skill: `/opsx:review-proposal`
+## 2. New skill: `/opsx:review` (unified, mode-aware)
 
-- [ ] 2.1 Author `.claude/skills/openspec-review-proposal/SKILL.md` describing the 9 passes, scorecard rollup, flag family, pushback discipline, and graceful degradation per `specs/orbit-review-proposal/spec.md`
-- [ ] 2.2 Author `.claude/commands/opsx/review-proposal.md` slash command body that surfaces the skill behavior to users with concise arg/flag descriptions
-- [ ] 2.3 Implement `.orbit-runs/review-proposal-<TS>.json` summary writer (per-command summary fields per `orbit-conventions`)
-- [ ] 2.4 Implement iteration-note generation when prior `review-proposal-<TS>.json` files exist
-- [ ] 2.5 Implement `--mark` writer that converts each finding into a `@review:` marker at the finding's file:line
-- [ ] 2.6 Implement `--parallel` subagent spawning for Passes 2, 4, 6
-- [ ] 2.7 Test happy path against the orbit dev sandbox (this very repo) for change `bootstrap-openspec-orbit`
-
-## 3. New skill: `/opsx:review-system`
-
-- [ ] 3.1 Author `.claude/skills/openspec-review-system/SKILL.md` describing Pass 0 (verify-change delegation), Passes 1–6 (system-wide), scorecard rollup, flag family
-- [ ] 3.2 Author `.claude/commands/opsx/review-system.md` slash command body
-- [ ] 3.3 Implement Pass 0 delegation to upstream `/opsx:verify-change` via the openspec-verify-change skill
-- [ ] 3.4 Implement `.orbit-runs/review-system-<TS>.json` summary writer
-- [ ] 3.5 Implement iteration-note generation when prior `review-system-<TS>.json` files exist
-- [ ] 3.6 Implement `--skip-verify` handling
-- [ ] 3.7 Implement `--parallel` subagent spawning for Passes 2, 3, 4, 5
-- [ ] 3.8 Implement Pass 6 invocation of `/opsx:audit-drift` as a library function
-- [ ] 3.9 Test happy path on a small applied change in the orbit dev sandbox
+- [ ] 2.1 Author `.claude/skills/openspec-review/SKILL.md` describing both modes (proposal: 9 passes; system: verify-change Pass 0 + 6 system-wide passes), `--as` flag with mode inference, shared scorecard rollup, flag family, pushback discipline, graceful degradation per `specs/orbit-review/spec.md`
+- [ ] 2.2 Author `.claude/commands/opsx/review.md` slash command body that surfaces both modes with concise arg/flag descriptions
+- [ ] 2.3 Implement `--as proposal|system` flag with state-based mode inference from `tasks.md` (unchecked → proposal; all checked + code → system; ambiguous → `AskUserQuestion`)
+- [ ] 2.4 Implement proposal-mode passes 1–9 (Structure & Delta, Internal Coherence, Cross-Doc, Archive Consistency, Codegen Readiness, Gap Hunt, Drift Hunt, Inline Review Marker Residue, Pre-Handoff Sweep)
+- [ ] 2.5 Implement system-mode Pass 0: delegate to upstream `/opsx:verify-change` via the `openspec-verify-change` skill
+- [ ] 2.6 Implement system-mode passes 1–6 (Baseline Compliance, Cohesion, Surface Walk, Perspective Reviews, Critical-Path Scan, Drift/Residue)
+- [ ] 2.7 Implement system-mode Pass 6 invocation of `/opsx:audit-drift` as a library function
+- [ ] 2.8 Implement `.orbit-runs/review-<mode>-<TS>.json` summary writer (per-mode iteration counter, fields per `orbit-conventions`)
+- [ ] 2.9 Implement iteration-note generation when prior `review-<mode>-<TS>.json` files exist for the same mode
+- [ ] 2.10 Implement `--mark` writer (proposal mode only) that converts each finding into a `@review:` marker at the finding's file:line; produce a clear note when invoked in system mode (v2 territory per issue #3)
+- [ ] 2.11 Implement `--skip-verify` handling (system mode only) that bypasses Pass 0 with an explanatory note; silently accepted in proposal mode (no effect)
+- [ ] 2.12 Implement `--parallel` subagent spawning — proposal mode parallelizes Passes 2, 4, 6; system mode parallelizes Passes 2, 3, 4, 5
+- [ ] 2.13 Test happy path against the orbit dev sandbox in proposal mode (change `bootstrap-openspec-orbit`) and system mode (a small applied change)
 
 ## 4. New skill: `/opsx:review-external`
 
@@ -35,8 +29,8 @@
 - [ ] 4.3 Implement `--as proposal|system` flag with state-based inference from `tasks.md`
 - [ ] 4.4 Implement iteration counting per mode (count of matching `external-<as>-*.md` files in `.orbit-runs/`)
 - [ ] 4.5 Implement cycle-context population from prior `.orbit-runs/` files (open findings, resolved since last)
-- [ ] 4.6 Author the proposal-mode prompt skeleton (lists the 9 review-proposal passes)
-- [ ] 4.7 Author the system-mode prompt skeleton (lists the 7 review-system passes)
+- [ ] 4.6 Author the proposal-mode prompt skeleton (lists the 9 proposal-mode passes)
+- [ ] 4.7 Author the system-mode prompt skeleton (lists the 7 system-mode passes)
 - [ ] 4.8 Include uncommitted-changes warning in chat output
 - [ ] 4.9 Test prompt generation for both modes; manually validate that codex can follow it
 
@@ -125,10 +119,10 @@
 
 - [ ] 11.1 End-to-end: run `/opsx:explore` to crystallization, capture conventions/perspectives/critical-paths, write `explore.md`
 - [ ] 11.2 End-to-end: run `/opsx:propose <name>` to consume the exploration; verify directory move and artifact generation
-- [ ] 11.3 End-to-end: run `/opsx:review-proposal <name>` and confirm 9 passes execute with the scorecard
+- [ ] 11.3 End-to-end: run `/opsx:review <name> --as proposal` and confirm 9 passes execute with the scorecard
 - [ ] 11.4 End-to-end: run `/opsx:review-external <name> --as proposal`; manually paste prompt into codex; ingest findings via `/opsx:address-reviews --from-file <path>`
 - [ ] 11.5 End-to-end: run `/opsx:apply <name>` (upstream behavior, no orbit changes)
-- [ ] 11.6 End-to-end: run `/opsx:review-system <name>` and confirm Pass 0 + Passes 1–6 execute
+- [ ] 11.6 End-to-end: run `/opsx:review <name> --as system` and confirm Pass 0 + Passes 1–6 execute
 - [ ] 11.7 End-to-end: run `/opsx:review-external <name> --as system`; ingest external findings
 - [ ] 11.8 End-to-end: run `/opsx:archive <name>` and confirm pre-archive audit-drift sweep runs; verify archive run summary written
 - [ ] 11.9 End-to-end: run `/opsx:audit-drift` standalone; verify findings across all four categories

@@ -86,7 +86,7 @@ The system SHALL emit a recommendation about which external-AI session the user 
 #### Scenario: Mode-specific sections
 
 - **WHEN** the prompt file is written in `--as proposal` mode
-- **THEN** the "what to look for" section enumerates the 9 review-proposal passes; in `--as system` mode it enumerates the 7 review-system passes
+- **THEN** the "what to look for" section enumerates the 9 proposal-mode passes; in `--as system` mode it enumerates the 7 system-mode passes
 
 #### Scenario: Reference prompt template
 

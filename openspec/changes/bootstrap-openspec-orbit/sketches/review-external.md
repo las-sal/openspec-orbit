@@ -7,7 +7,7 @@
 
 Packages a review request for an external AI (codex, fresh Claude, GPT, etc.) to run a second-opinion review. Writes the full prompt to a versioned committed file in `.orbit-runs/`, emits a short invocation snippet to chat for the user to paste into the external AI, and defines the file-based findings format so results come back as a parseable file — no copy-paste-per-issue.
 
-Sister command to `/opsx:review-proposal` and `/opsx:review-system`:
+Sister command to `/opsx:review --as proposal` and `/opsx:review --as system`:
 - `review-proposal` = internal review of proposal artifacts (pre-apply)
 - `review-system` = internal review of whole system (post-apply)
 - **`review-external`** = generate the packaging for an external AI to run a review pass
@@ -332,7 +332,7 @@ When `review-external` runs, it counts the existing files matching the mode patt
 ## Composition
 
 ```
-/opsx:review-proposal <change>          (internal)
+/opsx:review <change> --as proposal          (internal)
         │
         ▼
 findings in chat + Final Assessment
@@ -363,4 +363,4 @@ resolution log; markers walked with pushback discipline
  or re-run review-external for another external pass)
 ```
 
-The same shape applies for the system-side cycle (`/opsx:review-system` → `/opsx:review-external --as system` → `/opsx:address-reviews --from-file ...`).
+The same shape applies for the system-side cycle (`/opsx:review --as system` → `/opsx:review-external --as system` → `/opsx:address-reviews --from-file ...`).

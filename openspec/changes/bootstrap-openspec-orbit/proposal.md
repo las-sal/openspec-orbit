@@ -8,24 +8,23 @@ openspec-orbit makes the pattern durable: a `.claude/` overlay shipped as a stan
 
 ## What Changes
 
-- **New command** `/opsx:review-proposal` — editorial review pass over change artifacts before apply (9 passes rolled into a 3-dimension scorecard with CRITICAL/WARNING/SUGGESTION severities).
-- **New command** `/opsx:review-system` — editorial review pass over the whole product after apply (wraps upstream `verify-change` as Pass 0; adds 6 system-wide passes covering baseline compliance, cohesion, surface walk, perspectives, critical paths, drift).
+- **New command** `/opsx:review --as proposal` — editorial review pass over change artifacts before apply (9 passes rolled into a 3-dimension scorecard with CRITICAL/WARNING/SUGGESTION severities).
+- **New command** `/opsx:review --as system` — editorial review pass over the whole product after apply (wraps upstream `verify-change` as Pass 0; adds 6 system-wide passes covering baseline compliance, cohesion, surface walk, perspectives, critical paths, drift).
 - **New command** `/opsx:review-external` — packages a review request for an external AI (codex, fresh Claude, etc.); writes the full prompt to a versioned file (`.orbit-runs/external-prompt-<as>-<TS>.md`, committed) and emits a short invocation snippet to chat; defines the file-based findings format that closes the cross-AI loop without copy-paste-per-finding.
-- **New command** `/opsx:audit-drift` — project-wide scan for drift between captured knowledge and reality (vocabulary residue, lens staleness, cross-doc consistency, archive coherence). Composes as a library function called by `/opsx:review-system` Pass 6 and auto-invoked by `/opsx:archive` as a pre-archive sweep.
+- **New command** `/opsx:audit-drift` — project-wide scan for drift between captured knowledge and reality (vocabulary residue, lens staleness, cross-doc consistency, archive coherence). Composes as a library function called by `/opsx:review --as system` Pass 6 and auto-invoked by `/opsx:archive` as a pre-archive sweep.
 - **New command** `/opsx:address-reviews` (lean v1) — resolution counterpart to the review commands. Walks `@review:` markers anywhere in the repo (or ingests external-review findings via `--from-file`) with pushback discipline; removes markers on resolution.
 - **Modified `/opsx:explore`** — preserves the upstream "stance, not workflow" character; adds capture affordances (5 types: conventions, perspectives, critical paths, decisions, references) and `explore.md` authoring; supports three invocation modes (bare / named / crystallized).
 - **Modified `/opsx:propose`** — preserves upstream's standalone behavior; adds consume mode that reads `openspec/explore/<name>/explore.md`, prompts for Open question handling, generates artifacts, then *moves* the staging directory to `openspec/changes/<name>/`.
 - **Modified `/opsx:archive`** — preserves upstream archive behavior; auto-invokes `/opsx:audit-drift` as a pre-archive sweep (opt-out via `--skip-audit`); writes archive run summary to `.orbit-runs/` capturing audit outcome and user decision.
 - **New marker convention** `@review: <content>` — single inline-review marker syntax across markdown, source code, configs (each file type's own comment syntax wraps it where needed).
-- **New project-level structure** `openspec/lenses/` — judgment layer containing `perspectives.md` and `critical-paths.md`; grown via explore capture triggers; consumed by review-system Passes 4 and 5.
+- **New project-level structure** `openspec/lenses/` — judgment layer containing `perspectives.md` and `critical-paths.md`; grown via explore capture triggers; consumed by system-mode Passes 4 and 5.
 - **New per-change persistence** `openspec/changes/<name>/.orbit-runs/` — committed, dot-prefixed directory holding internal-run summaries (JSON) and external-review findings (markdown). Travels with the change into archive.
 
 ## Capabilities
 
 ### New Capabilities
 
-- `orbit-review-proposal`: The `/opsx:review-proposal` command — its 9 passes, 3-dimension scorecard, flag family, special-case lenses, generative-completeness probe.
-- `orbit-review-system`: The `/opsx:review-system` command — `verify-change` delegation as Pass 0, 6 system-wide passes, scorecard rollup, flag family.
+- `orbit-review`: The unified `/opsx:review <name> [--as proposal|system]` command — both modes (proposal-side 9 passes, system-side `verify-change` + 6 system-wide passes), shared 3-dimension scorecard, shared flag family (`--fast`/`--full`/`--thorough`/`--parallel`/`--focus`/`--fresh`/`--strict`), mode-specific flags (`--mark` for proposal, `--skip-verify` for system), state-based mode inference.
 - `orbit-review-external`: The `/opsx:review-external` command — `--as` mode flag with state-inference default, mode-specific prompt content, defined external-findings file format, iteration counting.
 - `orbit-audit-drift`: The `/opsx:audit-drift` command — 4 scan categories, library + standalone + auto-invoke composition, drift-pattern sourcing from archived deltas.
 - `orbit-address-reviews`: The `/opsx:address-reviews` command (lean v1) — marker discovery, pushback discipline, classification, marker removal, `--from-file` ingest of external findings, resolution log output.

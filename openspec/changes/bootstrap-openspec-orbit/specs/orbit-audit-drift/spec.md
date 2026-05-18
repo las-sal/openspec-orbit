@@ -11,8 +11,8 @@ The system SHALL expose a `/opsx:audit-drift` command that performs a project-wi
 
 #### Scenario: Invoke as library function
 
-- **WHEN** `/opsx:review-system` Pass 6 invokes audit-drift internally
-- **THEN** audit-drift runs with the same logic and its findings are folded into the review-system report under the Coherence dimension
+- **WHEN** `/opsx:review --as system` Pass 6 invokes audit-drift internally
+- **THEN** audit-drift runs with the same logic and its findings are folded into the review report (system mode) under the Coherence dimension
 
 #### Scenario: Invoke from archive pre-sweep
 

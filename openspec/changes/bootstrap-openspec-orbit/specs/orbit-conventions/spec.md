@@ -284,17 +284,17 @@ The system SHALL use a defined light-structured format for convention files: fou
 
 The system SHALL have multiple orbit commands consume convention files, with each consumer's behavior defined.
 
-#### Scenario: `/opsx:review-proposal` Pass 3 — cross-doc coherence
+#### Scenario: `/opsx:review --as proposal` Pass 3 — cross-doc coherence
 
 - **WHEN** Pass 3 (Cross-Doc Coherence) runs
 - **THEN** it reads all `*_convention.md` files at project root and checks that the change's proposal, design, and spec deltas align with declared conventions; violations are reported as findings
 
-#### Scenario: `/opsx:review-proposal` Pass 7 — drift hunt
+#### Scenario: `/opsx:review --as proposal` Pass 7 — drift hunt
 
 - **WHEN** Pass 7 (Drift Hunt) runs
 - **THEN** it cross-checks the change's artifacts against current conventions, flagging vocabulary or naming that contradicts a declared convention
 
-#### Scenario: `/opsx:review-system` Pass 2 — cohesion
+#### Scenario: `/opsx:review --as system` Pass 2 — cohesion
 
 - **WHEN** Pass 2 (Cohesion) runs
 - **THEN** it lightly checks that the change's code follows declared conventions; heavy syntactic enforcement is out of scope (that's a linter's job)
@@ -368,7 +368,7 @@ The system SHALL define convention files as an AI-readable rules layer that coex
 
 #### Scenario: Light vs heavy enforcement boundary
 
-- **WHEN** an orbit command (e.g., `/opsx:review-system` Pass 2) "lightly checks" code against conventions
+- **WHEN** an orbit command (e.g., `/opsx:review --as system` Pass 2) "lightly checks" code against conventions
 - **THEN** "light" means: grep-pattern matching against expected names; spot-checks against named rules; spot-reading of representative files. "Heavy" means: full AST analysis; exhaustive walk of every line; per-file conformance certification — these are the linter's job, not orbit's. Light checks surface SUGGESTIONS for the user to investigate; the AI does not certify full conformance
 
 ### Requirement: Distribution model — overlay, not CLI fork
