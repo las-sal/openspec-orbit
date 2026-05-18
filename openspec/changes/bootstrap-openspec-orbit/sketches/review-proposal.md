@@ -212,7 +212,7 @@ review ─── /opsx:review-proposal [<name>] [--focus …] [--mark] [--fresh]
 resolve ── /opsx:address-reviews
               │
               ├── consumes @review: markers
-              ├── consumes external-feedback pastes (--from-paste)
+              ├── consumes external-review findings (--from-file)
               ├── applies pushback discipline (verify against current state)
               └── removes markers on resolution
                       │

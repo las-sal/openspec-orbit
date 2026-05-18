@@ -45,7 +45,7 @@ Mode B:  /opsx:explore <name>
 Mode C:  Bare invocation → crystallizes
 ─────────────────────────────────────────────────
          User starts in Mode A.
-         After ~2-3 substantive decisions emerge,
+         After 2+ substantive decisions emerge,
          explore offers:
            "We have enough material to capture here —
            what should we call this exploration?"

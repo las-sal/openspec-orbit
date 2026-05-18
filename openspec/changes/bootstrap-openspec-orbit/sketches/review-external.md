@@ -302,15 +302,16 @@ findings in chat + Final Assessment
 /opsx:review-external <change>          (package for external)
         │  (--as inferred or explicit)
         ▼
-prompt in chat
+prompt file written to .orbit-runs/external-prompt-<as>-<TS>.md
++ tiny invocation snippet emitted to chat
         │
         ▼
-user copies → pastes into codex
+user pushes prompt file; pastes invocation snippet into codex
         │
         ▼
-codex reads change + context + lenses
-codex writes findings to
-.orbit-runs/external-<as>-<TS>.md
+codex pulls repo, reads prompt file, reads change + context + lenses
+codex writes findings to .orbit-runs/external-<as>-<TS>.md
+codex lists findings in chat + commits + pushes
         │
         ▼
 /opsx:address-reviews --from-file <path>

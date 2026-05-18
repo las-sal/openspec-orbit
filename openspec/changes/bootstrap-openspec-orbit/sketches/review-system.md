@@ -229,7 +229,7 @@ review ─── /opsx:review-system [<name>] [--focus …] [--skip-verify] [--s
 resolve ── /opsx:address-reviews
             │
             ├── consumes @review: markers
-            ├── consumes external-feedback pastes (--from-paste)
+            ├── consumes external-review findings (--from-file)
             └── pushback discipline; removes markers on resolution
                     │
                     └─── cycle (review → address → review …) until clean

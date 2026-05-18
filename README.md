@@ -200,7 +200,7 @@ In rough workflow order. Each command has a full design sketch in [`openspec/cha
 >
 > - **Five capture types**, each with a trigger pattern and a target file: decisions (→ `explore.md`), perspectives (→ `openspec/lenses/perspectives.md`), critical paths (→ `openspec/lenses/critical-paths.md`), conventions (→ `<topic>_convention.md`), references (→ `explore.md`). Decisions are captured proactively with a brief acknowledgment; the other four are *offered*, and the user decides.
 > - **`explore.md`** — a five-section file (Premise / Decisions / Open questions / Considered & out / References) maintained proactively as the conversation progresses. Becomes the seed that `/opsx:propose` consumes to generate the formal change artifacts.
-> - **Three invocation modes**: bare (`/opsx:explore`) for pure think-mode with no file; named (`/opsx:explore <name>`) to start or resume a captured exploration; crystallized — bare invocation that opens a name prompt after ~2 substantive decisions emerge, so think-mode work doesn't get lost when it turns out to matter.
+> - **Three invocation modes**: bare (`/opsx:explore`) for pure think-mode with no file; named (`/opsx:explore <name>`) to start or resume a captured exploration; crystallized — bare invocation that opens a name prompt after 2+ substantive decisions emerge, so think-mode work doesn't get lost when it turns out to matter.
 
 Think mode for a change. orbit adds capture triggers: when conversation produces a durable convention, perspective, critical path, or decision, explore offers to write it to the right file. Offer, don't auto-capture.
 

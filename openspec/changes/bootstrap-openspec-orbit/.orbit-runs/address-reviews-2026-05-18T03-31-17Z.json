@@ -1,0 +1,112 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-18T03:31:17Z",
+  "change": "bootstrap-openspec-orbit",
+  "iteration": 3,
+  "source": "from-file",
+  "source_file": "openspec/changes/bootstrap-openspec-orbit/.orbit-runs/external-proposal-2026-05-18T05-15-00Z.md",
+  "external_reviewer": "Claude (in-session subagent, clean context — Option 2 dogfood)",
+  "input_findings_summary": {
+    "critical": 0,
+    "warning": 7,
+    "suggestion": 5
+  },
+  "executed_by": "manual dogfood (orbit not yet implemented)",
+  "pushback_verification": "all 12 findings verified against current state via grep / file inspection before fixing; 1 finding suppressed with pushback (S3 conflated local checkout dir name with proposal content)",
+  "resolution_summary": {
+    "resolved": 11,
+    "stale_suppressed": 1,
+    "deferred": 0,
+    "escalated": 0
+  },
+  "resolutions": [
+    {
+      "severity": "WARNING",
+      "title": "design.md still claims exploration record under pre-propose path",
+      "files_updated": ["design.md (Context section)"],
+      "action": "Updated path to openspec/changes/bootstrap-openspec-orbit/{explore.md,sketches/} with a parenthetical noting openspec/explore/<name>/ was the pre-propose staging location. Mirror of codex's iter-1 README path fix (W6) that this same blind-spot pattern missed.",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "WARNING",
+      "title": "review-external sketch composition diagram still reflects chat-paste handoff",
+      "files_updated": ["sketches/review-external.md (composition diagram)"],
+      "action": "Updated diagram nodes: 'prompt in chat → user copies → pastes into codex' → 'prompt file written + tiny invocation snippet in chat / user pushes prompt file + pastes snippet / codex pulls repo + reads prompt + writes findings + lists in chat + commits + pushes'. Now matches the file-backed flow.",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "WARNING",
+      "title": "review-proposal sketch diagram shows --from-paste as external-feedback path",
+      "files_updated": ["sketches/review-proposal.md (composition diagram)"],
+      "action": "Changed 'consumes external-feedback pastes (--from-paste)' to 'consumes external-review findings (--from-file)'. --from-file is the v1 path; --from-paste is v2.",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "WARNING",
+      "title": "review-system sketch diagram shows --from-paste",
+      "files_updated": ["sketches/review-system.md (composition diagram)"],
+      "action": "Same fix as W3.",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "WARNING",
+      "title": "orbit-review-proposal Pass 8 not defined operationally",
+      "files_updated": ["specs/orbit-review-proposal/spec.md"],
+      "action": "Added new scenario 'Pass 8 marker residue detection (operational)' that defines (a) actual unresolved markers (CRITICAL, must address before apply) vs. (b) documentation appearances of @review: syntax (NOT findings); distinguishing criterion is whether the marker is inside a code block/inline-code/explicit-example context; when ambiguous, classify as CRITICAL and let user decide during address-reviews. Net-new finding from subagent; not caught by codex.",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "WARNING",
+      "title": "Pass 8 vs documentation marker disambiguation absent",
+      "files_updated": ["specs/orbit-review-proposal/spec.md"],
+      "action": "Same scenario as previous resolution (W5/W6 are the same gap from two angles).",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "WARNING",
+      "title": "explore.md Decisions still references /opsx:audit-residue as Pass 6 + sibling command in normative content",
+      "files_updated": ["explore.md (3 current-state references)"],
+      "action": "Fixed 3 current-state references: line 93 (Pass 6 description) /opsx:audit-residue → /opsx:audit-drift; line 95 (convention applies to) /opsx:audit-residue → /opsx:audit-drift; line 192 (References section) /opsx:audit-residue → /opsx:audit-drift. Lines 172/183/187 left as-is (they're in Considered & out — legitimate historical context per drift-hunt discipline).",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "Mode-C crystallization threshold drifts across artifacts",
+      "files_updated": ["sketches/explore.md", "tasks.md (task 7.5)", "README.md (Three invocation modes)"],
+      "action": "Standardized on '2+ substantive decisions' across all three places: sketches/explore.md (was '~2-3'), tasks.md task 7.5 (was '~2'), README (was '~2'). The spec scenario keeps its normative wording 'the conversation has produced 2 or more substantive decisions' (the formal SHALL/THEN phrasing).",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "explore.md Decisions section still uses pre-rename verb in untagged bullets",
+      "files_updated": ["(same as W7 resolution)"],
+      "action": "Resolved as part of W7 — the three current-state /opsx:audit-residue references in untagged Decisions / References sections were updated to /opsx:audit-drift.",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "proposal.md repo URL doesn't match local checkout path",
+      "files_updated": [],
+      "action": "PUSHBACK SUPPRESSED. The finding conflates two distinct things: (1) the proposal.md content (which correctly states 'github.com/las-sal/openspec-orbit' — the canonical repo name) and (2) the local checkout directory name (`/Users/sal/code/openspec-review/` — a legacy local choice). Local checkout directory names do not need to match remote repo names; they're a per-user choice. proposal.md is correct as-written. No edit needed.",
+      "outcome": "stale_suppressed"
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "Task 6.10 doesn't make --from-file v1 status explicit",
+      "files_updated": ["tasks.md (task 6.10)"],
+      "action": "Expanded task description to '(lean v1 inclusion; required to close the cross-AI loop with /opsx:review-external without per-finding copy-paste)'.",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "orbit-review-system roll-up text references 'verify-change's own mapping' without pinning it",
+      "files_updated": ["specs/orbit-review-system/spec.md (Roll-up mapping scenario)"],
+      "action": "Pinned the mapping inline: 'verify-change's own mapping (Completeness: task-completion + spec-coverage findings; Correctness: requirement-implementation-mapping + scenario-coverage findings; Coherence: design-adherence + code-pattern-consistency findings)'.",
+      "outcome": "resolved"
+    }
+  ],
+  "post_resolution_state": "11 findings resolved, 1 suppressed with pushback evidence; openspec validate clean",
+  "final_assessment": "All actionable findings from the in-session subagent (iteration-2 external review) resolved. 1 finding suppressed with documented pushback. Change is ready for /opsx:apply.",
+  "next_recommended": "Move to /opsx:apply bootstrap-openspec-orbit. Optionally run /opsx:review-external again (iteration 3) to confirm clean baseline — but with 0 CRITICAL across two external passes and a thorough resolution log, the marginal value is low.",
+  "comparison_notes": "Iteration-2 (in-session subagent) caught 7 findings that mirrored iteration-1's blind-spot pattern ('renamed in some places, not others'): codex's own resolution of W6 (README links) missed the design.md mirror; codex's verification of --from-paste→--from-file in the address-reviews sketch text missed three OTHER sketches' composition diagrams. Net-new finding: Pass 8 operational disambiguation (W5/W6) — neither internal review nor codex caught this. Confirms the value of multiple independent reviewers even when same-model. Same-model fresh-context isn't as independent as cross-model, but still surfaces real issues."
+}

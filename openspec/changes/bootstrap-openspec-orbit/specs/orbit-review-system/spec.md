@@ -123,7 +123,7 @@ The system SHALL roll Passes 0–6 into the standard 3-dimension scorecard.
 #### Scenario: Roll-up mapping
 
 - **WHEN** findings are reported
-- **THEN** Pass 0 contributes to all three dimensions per verify-change's own mapping; Pass 1 contributes to Correctness; Pass 2 contributes to Correctness; Pass 3 contributes to Coherence; Pass 4 contributes to Coherence; Pass 5 contributes to both Completeness and Correctness; Pass 6 contributes to Coherence
+- **THEN** Pass 0 contributes to all three dimensions per verify-change's own mapping (Completeness: task-completion + spec-coverage findings; Correctness: requirement-implementation-mapping + scenario-coverage findings; Coherence: design-adherence + code-pattern-consistency findings); Pass 1 contributes to Correctness; Pass 2 contributes to Correctness; Pass 3 contributes to Coherence; Pass 4 contributes to Coherence; Pass 5 contributes to both Completeness and Correctness; Pass 6 contributes to Coherence
 
 ### Requirement: Final assessment phrasings (gate is /opsx:archive)
 

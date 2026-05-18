@@ -64,7 +64,7 @@
 - [ ] 6.7 Implement marker removal invariant (and `--keep-resolved-markers` debug override)
 - [ ] 6.8 Implement ripple flag (list affected related files without auto-cascading)
 - [ ] 6.9 Implement unresolvable-marker handling (default file as task in `tasks.md`; alternatives: `@todo:`, `@review(escalated):`)
-- [ ] 6.10 Implement `--from-file <path>` parsing of external-review markdown into virtual markers
+- [ ] 6.10 Implement `--from-file <path>` parsing of external-review markdown into virtual markers (lean v1 inclusion; required to close the cross-AI loop with `/opsx:review-external` without per-finding copy-paste)
 - [ ] 6.11 Implement resolution-log output (Resolved/Stale/Deferred/Escalated sections)
 - [ ] 6.12 Test happy path: drop `@review:` markers in this very repo and run the command
 
@@ -74,7 +74,7 @@
 - [ ] 7.2 Update `.claude/commands/opsx/explore.md` slash command body accordingly
 - [ ] 7.3 Implement Mode A behavior (bare invocation — pure think; no file)
 - [ ] 7.4 Implement Mode B behavior (named — create or resume `openspec/explore/<name>/explore.md`)
-- [ ] 7.5 Implement Mode C behavior (bare-then-crystallized — prompt for name after ~2 substantive decisions emerge)
+- [ ] 7.5 Implement Mode C behavior (bare-then-crystallized — prompt for name after 2+ substantive decisions emerge)
 - [ ] 7.6 Implement convention-capture trigger and `<topic>_convention.md` writer
 - [ ] 7.7 Implement perspective-capture trigger and `openspec/lenses/perspectives.md` appender (uses orbit-conventions entry shape)
 - [ ] 7.8 Implement critical-path-capture trigger and `openspec/lenses/critical-paths.md` appender

@@ -8,7 +8,7 @@ The workflow exists today as discipline applied by the user during conversations
 
 orbit packages this workflow as a `.claude/` overlay on upstream `@fission-ai/openspec`. Upstream provides the change-driven scaffold (explore → propose → apply → archive); orbit adds editorial review and resolution layers around it. The user explicitly does not intend to upstream orbit — it stays as a downstream opinionated companion.
 
-The full exploration record that produced this change lives at `openspec/explore/bootstrap-openspec-orbit/explore.md` and `openspec/explore/bootstrap-openspec-orbit/sketches/`. The exploration record is the authoritative design source; this design document summarizes the key technical decisions for implementers.
+The full exploration record that produced this change lives at `openspec/changes/bootstrap-openspec-orbit/explore.md` and `openspec/changes/bootstrap-openspec-orbit/sketches/` (moved into the change directory by `/opsx:propose`'s consume mode; `openspec/explore/<name>/` was the pre-propose staging location). The exploration record is the authoritative design source; this design document summarizes the key technical decisions for implementers.
 
 ## Goals / Non-Goals
 
