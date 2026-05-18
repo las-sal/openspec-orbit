@@ -73,6 +73,43 @@ typically be later than the prompt file's timestamp (the external AI's
 wall-clock when it finishes). Prompt and findings files pair implicitly by
 chronology and mode.
 
+### Recommended-session note in chat output
+
+The chat invocation snippet includes a short recommendation about which
+external-AI session the user should paste into:
+
+- **Iter 1**: fresh session in any AI (set independent baseline)
+- **Iter 2**: fresh session in a DIFFERENT AI than iter 1 (model diversity)
+- **Iter 3+**: either (a) carry context from a same-AI prior session — lets
+  that reviewer verify its earlier findings were actually addressed, or (b)
+  fresh session in a previously-unused AI — maximum independence
+
+Computed from iteration count + the `**Reviewer**:` field of prior
+`external-<as>-*.md` files in `.orbit-runs/`. Read by the user to choose
+where to paste the invocation.
+
+The same-vs-fresh trade-off, in one line: **fresh sessions maximize
+independence (better at finding net-new issues); same-AI continuation
+sessions maximize verification (better at checking whether prior findings
+were actually addressed).** Mix both across the cycle.
+
+### Example chat output
+
+```
+Recommended session: Iter 3 — either (a) carry context from your iter-1 codex chat (codex verifies its own prior 7 findings actually landed), or (b) fresh GPT-4 / fresh Claude. (a) is the lighter-friction choice for this iter.
+
+Prompt file written to:
+  openspec/changes/foo/.orbit-runs/external-prompt-proposal-2026-05-18T03-38-42Z.md
+
+Paste this into your external AI:
+  Pull https://github.com/<you>/<repo> and read openspec/changes/foo/.orbit-runs/external-prompt-proposal-2026-05-18T03-38-42Z.md. Follow its instructions; write findings to the path specified inside.
+
+When the external AI completes, run:
+  /opsx:address-reviews --from-file openspec/changes/foo/.orbit-runs/external-proposal-<TS>.md
+```
+
+### Chat-only fallback
+
 If the external AI has no file-write capability (pure chat interface), the
 prompt file instructs it to output the findings markdown so the user can save
 to the path manually.

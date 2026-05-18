@@ -50,7 +50,30 @@ The system SHALL write the full handoff prompt to a versioned, committed file in
 #### Scenario: Chat invocation snippet
 
 - **WHEN** the file is written
-- **THEN** the chat output contains exactly: (1) the prompt file path, (2) a 1-3 sentence copy-paste-ready invocation that tells the external AI to pull the repo and read the prompt file ("Pull <repo URL> and read <prompt-file-path>. Follow its instructions; write findings to the path specified inside."), (3) the path the user passes to `/opsx:address-reviews --from-file` once findings come back, and (4) — only when present — the optional uncommitted-changes warning required by the Repo-state-validation requirement, which precedes items (1)–(3) when emitted
+- **THEN** the chat output contains exactly: (1) the prompt file path, (2) a 1-3 sentence copy-paste-ready invocation that tells the external AI to pull the repo and read the prompt file ("Pull <repo URL> and read <prompt-file-path>. Follow its instructions; write findings to the path specified inside."), (3) the path the user passes to `/opsx:address-reviews --from-file` once findings come back, (4) — only when present — the optional uncommitted-changes warning required by the Repo-state-validation requirement, which precedes items (1)–(3) when emitted, and (5) the recommended-session note required by the Recommended-session requirement below
+
+### Requirement: Recommended-session note in chat output
+
+The system SHALL emit a recommendation about which external-AI session the user should paste the invocation into, based on iteration number and prior reviewer history.
+
+#### Scenario: Recommendation appears in chat
+
+- **WHEN** the chat invocation snippet is emitted
+- **THEN** it includes a single short line labeled `Recommended session:` (or equivalent) before the prompt file path, summarizing whether to use a fresh session, continue a same-AI prior-iteration session, or pick a previously-unused AI
+
+#### Scenario: Recommendation logic by iteration
+
+- **WHEN** the command computes the recommendation
+- **THEN** it uses this logic:
+  - **Iteration 1**: `Fresh session recommended — first external pass; sets independent baseline. Pick any AI (codex / fresh Claude / GPT / etc.).`
+  - **Iteration 2**: `Fresh session in a DIFFERENT AI than iter 1's reviewer recommended (model diversity catches different blind spots). If iter 1 was <prior reviewer>, try <suggest different model>.`
+  - **Iteration 3+**: `Either (a) carry context from a same-AI prior session — lets that reviewer verify its earlier findings were actually addressed (ideal when concerns from that reviewer dominated prior iterations); or (b) fresh session in a previously-unused AI — maximum independence (ideal when looking for net-new issues). For this iter, consider <specific suggestion based on prior-reviewer pattern>.`
+  - Prior-reviewer identity is read from the `**Reviewer**:` field of existing `external-<as>-*.md` files in `.orbit-runs/`
+
+#### Scenario: No prior data → iter 1 recommendation
+
+- **WHEN** `.orbit-runs/` contains no prior `external-<as>-*.md` files for the current mode
+- **THEN** the iter 1 recommendation is emitted regardless of how many runs exist for other modes
 
 #### Scenario: Mode-specific sections
 
