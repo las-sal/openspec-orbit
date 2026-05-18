@@ -7,10 +7,10 @@
 
 Packages a review request for an external AI (codex, fresh Claude, GPT, etc.) to run a second-opinion review. Writes the full prompt to a versioned committed file in `.orbit-runs/`, emits a short invocation snippet to chat for the user to paste into the external AI, and defines the file-based findings format so results come back as a parseable file — no copy-paste-per-issue.
 
-Sister command to `/opsx:review --as proposal` and `/opsx:review --as system`:
-- `review-proposal` = internal review of proposal artifacts (pre-apply)
-- `review-system` = internal review of whole system (post-apply)
-- **`review-external`** = generate the packaging for an external AI to run a review pass
+Sister command to `/opsx:review`:
+- `/opsx:review <name> --as proposal` = internal review of proposal artifacts (pre-apply)
+- `/opsx:review <name> --as system` = internal review of whole system (post-apply)
+- **`/opsx:review-external <name> [--as proposal|system]`** = generate the packaging for an external AI to run a review pass
 
 The external AI's findings flow back through `/opsx:address-reviews --from-file <path>` for resolution.
 
@@ -224,7 +224,7 @@ manually.
 ### `--as proposal` appendix
 
 ````markdown
-## What to read for THIS review (proposal mode)
+## What to read for THIS proposal-mode review
 
 - `openspec/changes/<change-name>/proposal.md` — motivation, scope
 - `openspec/changes/<change-name>/design.md` — decisions, trade-offs
@@ -264,7 +264,7 @@ manually.
 ### `--as system` appendix
 
 ````markdown
-## What to read for THIS review (system mode)
+## What to read for THIS system-mode review
 
 - `openspec/changes/<change-name>/` — same artifacts as proposal mode
 - The codebase — what does this change actually touch?
@@ -359,7 +359,7 @@ codex lists findings in chat + commits + pushes
 resolution log; markers walked with pushback discipline
         │
         ▼
-(cycle: re-run review-proposal to confirm clean,
+(cycle: re-run proposal-mode review to confirm clean,
  or re-run review-external for another external pass)
 ```
 

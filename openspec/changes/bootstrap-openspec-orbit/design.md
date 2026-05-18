@@ -17,7 +17,7 @@ The full exploration record that produced this change lives at `openspec/changes
 - Ship a `.claude/` overlay that adds five new opsx commands and modifies three existing ones, without forking the upstream CLI.
 - Adopt upstream conventions wherever possible (vocabulary, file layout, reporting shape, CLI usage as source of truth). The acid test: a merge of orbit into upstream should read like a contributor's PR.
 - Make the review-and-capture workflow durable across AI sessions: marker convention (`@review:`), pushback discipline, marker-removal invariant, cross-AI handoff format, and exploration capture.
-- Compose with upstream `verify-change` (review (system mode) wraps it as Pass 0) and `sync-specs` (audit-drift complements its delta-only coverage).
+- Compose with upstream `verify-change` (system-mode review wraps it as Pass 0) and `sync-specs` (audit-drift complements its delta-only coverage).
 - Make the cross-AI review cycle frictionless: `/opsx:review-external` packages the handoff, `/opsx:address-reviews --from-file` ingests the findings; no copy-paste-per-finding.
 - Preserve graceful degradation: empty `openspec/lenses/` → system-mode Passes 4/5 skip; missing `explore.md` → propose runs in standalone mode; absent prior `.orbit-runs/` → first-run path.
 
@@ -50,7 +50,7 @@ Four verb prefixes, each with a distinct meaning so adopters can predict where n
 | Verb | Meaning | Examples |
 |---|---|---|
 | `verify-*` (upstream) | structural correctness checks at a defined scope | `verify-change` |
-| `review-*` (orbit) | opinionated editorial passes layered on top | `review-proposal`, `review-system`, `review-external` |
+| `review-*` (orbit) | opinionated editorial passes layered on top | `review` (with `--as proposal\|system`), `review-external` |
 | `audit-*` (orbit) | scan for drift / residue / staleness | `audit-drift` |
 | `distill-*` (orbit, v2) | reduce to essential | `distill-specs` |
 
@@ -129,7 +129,7 @@ The directory moves with the change into `openspec/changes/archive/<name>/.orbit
 
 ### D10. `--parallel` opt-in in v1; subagents for context partitioning, not just speed
 
-Heavy review-system passes (cohesion, perspectives, critical paths) can spawn subagents for concurrent execution. Opt-in via `--parallel` flag. Default sequential.
+Heavy system-mode review passes (cohesion, perspectives, critical paths) can spawn subagents for concurrent execution. Opt-in via `--parallel` flag. Default sequential.
 
 **Rationale:** On real-sized codebases, single-context review hits ceiling. Parallel subagents partition context, not just speed up wall-clock. Per guiding principle 2 (cost up front trumps downstream cost), the higher per-run token cost is worth the better signal and ability to scale to larger projects.
 

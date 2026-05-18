@@ -152,7 +152,7 @@ Same shape as review commands; gate varies by invocation context:
 | Pre-archive auto-call | ≥1 CRITICAL | `X critical issue(s) found. Address before \`/opsx:archive\`?` (prompt, not gate) |
 | Pre-archive auto-call | Only WARNING/SUGGESTION | `No critical issues. Y warning(s) noted. Proceeding with archive.` |
 | Pre-archive auto-call | All clear | `Drift audit clean. Proceeding with archive.` |
-| Library call (from review-system) | (any) | Findings folded into review-system's report; no standalone assessment. |
+| Library call (from system-mode review) | (any) | Findings folded into system-mode review's report; no standalone assessment. |
 
 ## Heuristics & graceful degradation
 
@@ -182,28 +182,28 @@ Same shape as review commands; gate varies by invocation context:
        │           │                            │
        │       library                    pre-archive
    standalone    call from              auto-call from
-    invocation  review-system            /opsx:archive
+    invocation  system-mode review            /opsx:archive
                 Pass 6                  (opt-out --skip-audit)
 
        │           │                            │
        ▼           ▼                            ▼
   reports        folds findings           reports + prompt
-  findings;      into review-system        before completing
+  findings;      into system-mode review        before completing
   user reads     scorecard                 archive
 ```
 
-`/opsx:review --as system` Pass 6 stops being "the drift/residue check"; it's just "calls `/opsx:audit-drift`." Composition matches Pass 0 (calls `verify-change`). Two upstream-shaped delegations in the same command — orbit's `review-system` is a thin orchestrator over upstream + orbit primitives.
+`/opsx:review --as system` Pass 6 stops being "the drift/residue check"; it's just "calls `/opsx:audit-drift`." Composition matches Pass 0 (calls `verify-change`). Two upstream-shaped delegations in the same command — orbit's system-mode review is a thin orchestrator over upstream + orbit primitives.
 
 ## Parallels with review commands
 
 By design:
 
-| | `review-proposal` | `review-system` | `audit-drift` |
+| | `review --as proposal` | `review --as system` | `audit-drift` |
 |---|---|---|---|
 | Scope | one change's artifacts | one change's whole-system impact | project-wide |
 | Stage | pre-apply | post-apply | continuous + pre-archive |
 | Wraps | nothing upstream | `verify-change` | (nothing — orbit primitive) |
-| Library use | — | calls `audit-drift` | called by review-system + archive |
+| Library use | — | calls `audit-drift` | called by system-mode review + archive |
 | Standard | 3-dim scorecard, severity | 3-dim scorecard, severity | 3-dim scorecard, severity |
 | Flag family | --fast/--full/--thorough, --parallel, … | (same) | (same, with --since for window) |
 

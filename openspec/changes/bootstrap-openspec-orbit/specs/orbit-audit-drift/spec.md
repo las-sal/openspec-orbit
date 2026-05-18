@@ -117,10 +117,10 @@ The system SHALL emit a final-assessment line whose gate text depends on how aud
 - **WHEN** invoked as an archive pre-sweep with at least one CRITICAL finding
 - **THEN** the final assessment reads `X critical issue(s) found. Address before /opsx:archive?` (prompt, not gate)
 
-#### Scenario: Library call from review-system
+#### Scenario: Library call from system-mode review
 
-- **WHEN** invoked as a library function by review-system
-- **THEN** no standalone final-assessment line is emitted; findings are folded into review-system's report
+- **WHEN** invoked as a library function by system-mode review
+- **THEN** no standalone final-assessment line is emitted; findings are folded into system-mode review's report
 
 ### Requirement: Flag family parity with review commands
 
@@ -138,7 +138,7 @@ The system SHALL support `--fast` / `--full` / `--thorough`, `--parallel`, `--fo
 
 ### Requirement: Internal run summary persisted
 
-The system SHALL write a JSON run summary to `openspec/changes/<change-name>/.orbit-runs/audit-drift-<TS>.json` when invoked in a change context (e.g., from review-system or pre-archive); when invoked standalone with no change context, summaries are written to a project-level location (e.g., `openspec/.orbit-runs/audit-drift-<TS>.json`).
+The system SHALL write a JSON run summary to `openspec/changes/<change-name>/.orbit-runs/audit-drift-<TS>.json` when invoked in a change context (e.g., from system-mode review or pre-archive); when invoked standalone with no change context, summaries are written to a project-level location (e.g., `openspec/.orbit-runs/audit-drift-<TS>.json`).
 
 #### Scenario: Summary written after run
 

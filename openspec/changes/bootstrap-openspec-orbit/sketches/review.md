@@ -1,6 +1,6 @@
 # Sketch: `/opsx:review <name> [--as proposal|system]`
 
-> **Status**: design sketch. Not implementation. Captured from explore-mode conversation 2026-05-17, merged from `review-proposal.md` + `review-system.md` on 2026-05-18 when the two commands collapsed into one with `--as` mode.
+> **Status**: design sketch. Not implementation. Captured from explore-mode conversation 2026-05-17, merged from `proposal-mode review.md` + `system-mode review.md` on 2026-05-18 when the two commands collapsed into one with `--as` mode.
 > **Aligns to**: orbit guiding principle 1 (openspec coherence — adopts `verify-change`'s reporting convention verbatim). System mode composes with upstream `verify-change` rather than replacing it.
 
 ## Purpose

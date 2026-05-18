@@ -694,7 +694,7 @@ Unresolvable markers have three options (per-marker user choice):
 ├── commands/opsx/                ← slash command bodies (orbit ships overrides + new)
 │   ├── explore.md  propose.md  apply.md  archive.md  verify.md
 │   ├── new.md  continue.md  fast-forward.md  sync.md  onboard.md  bulk-archive.md
-│   └── [pending: review-proposal.md, review-system.md, audit-drift.md,
+│   └── [pending: proposal-mode review.md, system-mode review.md, audit-drift.md,
 │                 address-reviews.md, review-external.md]
 └── skills/                        ← skill definitions
     ├── openspec-*/SKILL.md       (12 upstream skills)
@@ -743,7 +743,7 @@ This repo eats its own dogfood: the exploration that produced orbit was conducte
 
 Tracked as GitHub issues:
 
-- [#1](https://github.com/las-sal/openspec-orbit/issues/1) — Caching of pass results in review-system (and review-proposal)
+- [#1](https://github.com/las-sal/openspec-orbit/issues/1) — Caching of pass results in system-mode review (and proposal-mode review)
 - [#2](https://github.com/las-sal/openspec-orbit/issues/2) — Define `--thorough` mode extras precisely for review commands
 - [#3](https://github.com/las-sal/openspec-orbit/issues/3) — Comprehensive `/opsx:address-reviews` features (paste, cascade, severity filtering, strict, parallel, categorized markers, system-side `--mark`, auto-rerun)
 

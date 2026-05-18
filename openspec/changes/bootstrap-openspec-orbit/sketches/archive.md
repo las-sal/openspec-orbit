@@ -131,8 +131,8 @@ The `.orbit-runs/` directory **moves with the change** during archive (from `ope
 
 ## Open design questions
 
-1. **Should archive also auto-invoke `review-system` if it hasn't run?** Lean: no. review (system mode) is the user's gate before archive; if they skipped it, that's their decision. Archive auditing focuses on drift (the OPENSPEC_LESSONS lesson), not on re-running all the review passes.
-2. **What about the explore.md still-Open-questions case?** If `openspec/changes/<name>/explore.md` has Open questions when archive runs, that suggests something was left unresolved during propose. Lean: warn but don't block. The change made it to apply and review-system; if Open questions in explore.md weren't material, that's user judgment. The warning surfaces it; user decides.
+1. **Should archive also auto-invoke `/opsx:review --as system` if it hasn't run?** Lean: no. System-mode review is the user's gate before archive; if they skipped it, that's their decision. Archive auditing focuses on drift (the OPENSPEC_LESSONS lesson), not on re-running all the review passes.
+2. **What about the explore.md still-Open-questions case?** If `openspec/changes/<name>/explore.md` has Open questions when archive runs, that suggests something was left unresolved during propose. Lean: warn but don't block. The change made it to apply and system-mode review; if Open questions in explore.md weren't material, that's user judgment. The warning surfaces it; user decides.
 3. **Auto-promote `@review:` markers to `@todo:`?** If markers still exist in change dir when archive runs (haven't been resolved), should they convert to permanent `@todo:` so they don't disappear into the archive? Lean: warn with explicit "N unaddressed `@review:` markers will land in archive — convert to `@todo:` or address before archiving?" prompt.
 
 ## Composition with related commands
