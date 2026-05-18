@@ -108,8 +108,10 @@ End-to-end loop, from idea to archived change:
 │   4. REVIEW (proposal side, external)                               │
 │   /opsx:review-external <name> --as proposal                        │
 │      ↓                                                              │
-│   Prompt emitted to chat → user pastes into codex/etc → codex       │
-│   writes findings to .orbit-runs/external-proposal-<TS>.md          │
+│   Prompt file written to .orbit-runs/external-prompt-proposal-      │
+│   <TS>.md (committed). Tiny invocation snippet emitted to chat →    │
+│   user pushes + pastes snippet into codex → codex pulls + reads     │
+│   prompt → writes findings to .orbit-runs/external-proposal-<TS>.md │
 │                                                                     │
 │                          │                                          │
 │                          ▼                                          │
@@ -398,9 +400,12 @@ Full design: [`sketches/address-reviews.md`](./openspec/explore/bootstrap-opensp
 
 > **What's new**: packages a review request for an external AI. No upstream equivalent.
 
-Generates a ready-to-paste prompt for an external AI (codex, fresh Claude, GPT, etc.) to run a second-opinion review. Output goes to chat (no file persistence for the prompt).
+Packages a review request for an external AI (codex, fresh Claude, GPT, etc.) to run a second-opinion review. Output is two things:
 
-The external AI reads the change + project context + lenses + iteration history, then writes findings to `openspec/changes/<name>/.orbit-runs/external-<as>-<TS>.md` (or outputs markdown for the user to save if chat-only).
+1. **A versioned prompt file** written to `openspec/changes/<name>/.orbit-runs/external-prompt-<as>-<TS>.md` — committed to the repo so the external AI can fetch it from GitHub.
+2. **A short invocation snippet** emitted to chat (3-5 lines): the prompt file path, a 1-3 sentence copy-paste-ready instruction for the external AI ("Pull <repo URL> and read <prompt-file-path>; follow its instructions"), and the eventual findings path for the user to pass to `/opsx:address-reviews --from-file`.
+
+The user pushes the prompt file, pastes the invocation snippet into the external AI, it pulls the repo and reads the prompt file, then writes findings to `openspec/changes/<name>/.orbit-runs/external-<as>-<TS>.md` (or outputs markdown for the user to save if chat-only).
 
 `--as` mode picks the focus:
 
@@ -462,31 +467,38 @@ The reason `/opsx:review-external` and `--from-file` exist: the manual cross-AI 
 │     /opsx:address-reviews                                             │
 │     (walks any @review: markers you've left in artifacts)             │
 │                                                                       │
-│  3. Push current state to GitHub                                      │
-│     git commit && git push                                            │
-│                                                                       │
-│  4. Generate the handoff package                                      │
+│  3. Generate the handoff package                                      │
 │     /opsx:review-external foo --as proposal                           │
-│     → prompt is printed to chat (multi-paragraph)                     │
+│     → prompt file written:                                            │
+│       openspec/changes/foo/.orbit-runs/                               │
+│         external-prompt-proposal-<TS>.md                              │
+│     → tiny invocation snippet printed to chat (3-5 lines)             │
+│                                                                       │
+│  4. Push prompt file to GitHub so external AI can fetch it            │
+│     git add openspec/changes/foo/.orbit-runs/ && git commit && push   │
 │                                                                       │
 └──────────────────────────────────────────────────────────────────────┘
 
          │
-         │  copy entire prompt
+         │  copy the 3-5 line invocation snippet
          ▼
 
 ┌──────────────────────────────────────────────────────────────────────┐
 │                                                                       │
 │  IN CODEX (or fresh Claude / other AI)                                │
 │                                                                       │
-│  5. Paste the prompt                                                  │
-│     (orbit's prompt tells codex: pull this repo, read change foo +    │
-│      CLAUDE.md + project.md + lenses + iteration history, run the     │
-│      9 proposal passes, write findings in the specified format)       │
+│  5. Paste the invocation snippet                                      │
+│     (something like:                                                  │
+│       "Pull https://github.com/<you>/<repo> and read                  │
+│        openspec/changes/foo/.orbit-runs/external-prompt-proposal-     │
+│        <TS>.md. Follow the instructions inside.")                     │
 │                                                                       │
-│  6. Codex pulls the repo (if needed)                                  │
+│  6. External AI pulls the repo and reads the prompt file              │
+│     (the prompt file tells it: read change foo + CLAUDE.md +          │
+│      project.md + lenses + iteration history, run the 9 proposal      │
+│      passes, write findings in the specified format)                  │
 │                                                                       │
-│  7. Codex reviews and WRITES findings to:                             │
+│  7. External AI WRITES findings to:                                   │
 │     openspec/changes/foo/.orbit-runs/external-proposal-<TS>.md        │
 │                                                                       │
 │  Format codex writes:                                                 │

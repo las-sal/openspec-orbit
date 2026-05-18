@@ -33,18 +33,28 @@ The system SHALL accept a `--as proposal|system` flag and, when omitted, infer t
 - **WHEN** the inference cannot determine mode unambiguously (e.g., partial implementation)
 - **THEN** the command prompts the user via `AskUserQuestion` to choose proposal or system
 
-### Requirement: Self-contained prompt emitted to chat
+### Requirement: Prompt written to versioned file with chat invocation snippet
 
-The system SHALL emit the handoff prompt to chat output (not to a file). The prompt SHALL be complete and copy-paste-ready.
+The system SHALL write the full handoff prompt to a versioned, committed file in the change's `.orbit-runs/` directory and emit a short invocation snippet to chat that points the user at the file and tells them what to do after.
 
-#### Scenario: Prompt structure
+#### Scenario: Prompt file path
 
-- **WHEN** the prompt is emitted
-- **THEN** it includes: role description, repo URL or path, project context file pointers (`CLAUDE.md`, `openspec/project.md`, `*_convention.md`, `openspec/lenses/`), iteration history pointer (`.orbit-runs/`), cycle context (iteration N, prior findings count, resolved-since-last), mode-specific "what to read" and "what to look for" sections, output format specification
+- **WHEN** the command runs
+- **THEN** the full prompt is written to `openspec/changes/<change-name>/.orbit-runs/external-prompt-<as>-<TS>.md` where `<TS>` is an ISO timestamp; the file is intended to be committed (not gitignored)
+
+#### Scenario: Prompt file contents
+
+- **WHEN** the file is written
+- **THEN** it contains the full self-contained prompt: role description, repo URL or path, project context file pointers (`CLAUDE.md`, `openspec/project.md`, `*_convention.md`, `openspec/lenses/`), iteration history pointer (`.orbit-runs/`), cycle context (iteration N, prior findings count, resolved-since-last), mode-specific "what to read" and "what to look for" sections, output format specification
+
+#### Scenario: Chat invocation snippet
+
+- **WHEN** the file is written
+- **THEN** the chat output contains three things and nothing else: (1) the prompt file path, (2) a 1-3 sentence copy-paste-ready invocation that tells the external AI to pull the repo and read the prompt file ("Pull <repo URL> and read <prompt-file-path>. Follow its instructions; write findings to the path specified inside."), (3) the path the user passes to `/opsx:address-reviews --from-file` once findings come back
 
 #### Scenario: Mode-specific sections
 
-- **WHEN** the prompt is emitted in `--as proposal` mode
+- **WHEN** the prompt file is written in `--as proposal` mode
 - **THEN** the "what to look for" section enumerates the 9 review-proposal passes; in `--as system` mode it enumerates the 7 review-system passes
 
 #### Scenario: Reference prompt template

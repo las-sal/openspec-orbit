@@ -41,17 +41,41 @@ No depth flags, no `--parallel` — this command emits text and exits.
 
 ## What it produces
 
-Output goes to **chat, not a file**. The prompt is regenerated quickly each time; persisting it would just be clutter. The user copies the chat output into their external AI's interface.
+Output is **two things**:
 
-If the external AI has file-write capability (codex with file tools, Claude Code as the external reviewer, etc.), it writes findings directly to the specified path. If chat-only (pure GPT/Claude web), the external AI outputs the findings markdown and the user saves it to the path manually.
+1. **A versioned prompt file written into the repo**:
 
-Either way, the destination path is:
+   ```
+   openspec/changes/<change-name>/.orbit-runs/external-prompt-<as>-<TS>.md
+   ```
+
+   This is the full handoff prompt as a committed file. Committing it (a) gives
+   the external AI a fixed URL to read instead of receiving a paste, (b) creates
+   an audit trail of exactly what prompt was given for each external pass, (c)
+   keeps the chat-side surface tiny.
+
+2. **A short invocation snippet to chat** (typically 3-5 lines): the prompt
+   file path, a 1-3 sentence copy-paste-ready instruction for the external AI
+   ("Pull <repo URL> and read <prompt-file-path>; follow its instructions"),
+   and the eventual findings path for the user to pass to
+   `/opsx:address-reviews --from-file` once findings come back.
+
+The user pushes the prompt file (so the external AI can read it from GitHub),
+pastes the short invocation snippet into the external AI, it pulls the repo
+and reads the prompt file, then writes findings to:
 
 ```
 openspec/changes/<change-name>/.orbit-runs/external-<as>-<TS>.md
 ```
 
-Where `<as>` is `proposal` or `system`, and `<TS>` is an ISO timestamp.
+Where `<as>` is `proposal` or `system`, and the findings file's timestamp will
+typically be later than the prompt file's timestamp (the external AI's
+wall-clock when it finishes). Prompt and findings files pair implicitly by
+chronology and mode.
+
+If the external AI has no file-write capability (pure chat interface), the
+prompt file instructs it to output the findings markdown so the user can save
+to the path manually.
 
 ## The prompt content (mode-specific)
 
