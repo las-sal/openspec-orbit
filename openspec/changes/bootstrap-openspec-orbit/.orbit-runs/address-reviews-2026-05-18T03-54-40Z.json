@@ -1,0 +1,59 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-18T03:54:40Z",
+  "change": "bootstrap-openspec-orbit",
+  "iteration": 4,
+  "source": "from-file",
+  "source_file": "openspec/changes/bootstrap-openspec-orbit/.orbit-runs/external-proposal-2026-05-18T03-49-19Z.md",
+  "external_reviewer": "GPT-5 Codex (iter 3 — same chat as iter 1, per recommended-session note logic)",
+  "input_findings_summary": {
+    "critical": 0,
+    "warning": 3,
+    "suggestion": 1
+  },
+  "executed_by": "manual dogfood (orbit not yet implemented)",
+  "pushback_verification": "all 4 findings verified against current state via grep / file inspection before fixing; 0 stale suppressions",
+  "resolution_summary": {
+    "resolved": 4,
+    "stale_suppressed": 0,
+    "deferred": 0,
+    "escalated": 0
+  },
+  "resolutions": [
+    {
+      "severity": "WARNING",
+      "title": "proposal.md + sketch purpose still describe review-external as 'emits a prompt to chat'",
+      "files_updated": [
+        "proposal.md (What Changes — review-external bullet)",
+        "sketches/review-external.md (Purpose section)"
+      ],
+      "action": "Updated both to describe the file-backed contract: 'writes the full prompt to a versioned file in .orbit-runs/ and emits a short invocation snippet to chat'. The README, design.md D12, and spec already had the file-backed wording; proposal.md and sketch purpose were the last residue of the chat-paste model.",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "WARNING",
+      "title": "Chat-output 'exactly' wording omits required inferred-mode note",
+      "files_updated": ["specs/orbit-review-external/spec.md (Chat invocation snippet scenario)"],
+      "action": "Rewrote the scenario from 'contains exactly: (1)..(5)' to an ordered list with explicit (optional) / (required) markers for each item: optional inferred-mode note, optional uncommitted-changes warning, then required recommended-session + prompt file path + invocation + findings path. Resolves the contradiction between the 'exactly N items' constraint and the multiple required diagnostics across other scenarios.",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "WARNING",
+      "title": "README external cycle walkthrough doesn't reflect full-chat-output + commit/push contracts",
+      "files_updated": ["README.md (external-review cycle walkthrough, step 7 + new step 8)"],
+      "action": "Updated step 7 to note that the external AI writes findings AND outputs the full findings markdown in chat (same content). Added a new step 8 covering the commit/push contract. The walkthrough now matches the post-pivot 'full findings markdown in chat + file remains canonical + commit/push if possible' contract.",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "README workflow diagram still uses '~2 decisions' for Mode-C threshold",
+      "files_updated": ["README.md (workflow ASCII diagram, step 1)"],
+      "action": "Changed '~2 decisions emerge' to '2+ decisions emerge'. The README prose was standardized in iter 2; this is the residue in the workflow-diagram ASCII art that the iter-2 fix didn't reach.",
+      "outcome": "resolved"
+    }
+  ],
+  "post_resolution_state": "4 findings resolved; openspec validate clean",
+  "final_assessment": "All 4 findings from iter-3 codex resolved. Diminishing-returns convergence: iter 1 surfaced 7 findings, iter 2 surfaced 12 findings (different reviewer, found different residue), iter 3 surfaced 4 findings — each a smaller subset of the same 'renamed in some places, not others' blind-spot pattern.",
+  "next_recommended": "Change is ready for /opsx:apply bootstrap-openspec-orbit. With three external passes (one cross-model, one same-model fresh-context, one same-AI continuation) all resolved cleanly and zero CRITICAL across the cycle, marginal value of another external pass is very low.",
+  "convergence_note": "Three external iterations + one internal iteration. Finding count trajectory: 12 → 7 → 12 → 4 (internal → codex iter 1 → subagent iter 2 → codex iter 3). The non-monotonic shape (iter 2 found more than iter 1) reflects different reviewer types catching different blind spots, not regression. By iter 3 (codex with continuity), findings dropped to 4 — clear diminishing-returns signal. Stop here."
+}

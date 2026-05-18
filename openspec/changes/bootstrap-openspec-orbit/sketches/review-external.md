@@ -5,7 +5,7 @@
 
 ## Purpose
 
-Packages a review request for an external AI (codex, fresh Claude, GPT, etc.) to run a second-opinion review. Generates a ready-to-paste prompt and a defined output format so the external AI's findings come back as a parseable file — no copy-paste-per-issue.
+Packages a review request for an external AI (codex, fresh Claude, GPT, etc.) to run a second-opinion review. Writes the full prompt to a versioned committed file in `.orbit-runs/`, emits a short invocation snippet to chat for the user to paste into the external AI, and defines the file-based findings format so results come back as a parseable file — no copy-paste-per-issue.
 
 Sister command to `/opsx:review-proposal` and `/opsx:review-system`:
 - `review-proposal` = internal review of proposal artifacts (pre-apply)

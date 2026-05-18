@@ -81,7 +81,7 @@ End-to-end loop, from idea to archived change:
 │   User accepts or declines each offer; declines aren't re-offered   │
 │   within the same conversation. Three invocation modes: bare        │
 │   (think-only, no file), named (creates/resumes explore.md),        │
-│   crystallized (bare → name prompt after ~2 decisions emerge).      │
+│   crystallized (bare → name prompt after 2+ decisions emerge).      │
 │                                                                     │
 │                          │                                          │
 │                          ▼                                          │
@@ -501,7 +501,12 @@ The reason `/opsx:review-external` and `--from-file` exist: the manual cross-AI 
 │  7. External AI WRITES findings to:                                   │
 │     openspec/changes/foo/.orbit-runs/external-proposal-<TS>.md        │
 │                                                                       │
-│  Format codex writes:                                                 │
+│     PLUS outputs the FULL findings markdown in chat (same content     │
+│     as the file — every severity section, every finding's title,     │
+│     file:line, and description). The chat output is your immediate    │
+│     read; the file is the canonical record for --from-file parsing.  │
+│                                                                       │
+│     Format codex writes (in both places):                             │
 │                                                                       │
 │     # External Review: foo (iteration 2)                              │
 │     **Reviewer**: codex                                               │
@@ -517,6 +522,11 @@ The reason `/opsx:review-external` and `--from-file` exist: the manual cross-AI 
 │                                                                       │
 │     ## WARNING                                                        │
 │     ...                                                                │
+│                                                                       │
+│  8. External AI COMMITS AND PUSHES the findings file (if git access). │
+│     Commit message: "External review (<as>, iter <N>): <change>"      │
+│     + one-line summary. Authoring AI can then pull and ingest         │
+│     without manual intervention.                                       │
 │                                                                       │
 │  (If codex environment is chat-only and can't write files, codex      │
 │   outputs the markdown above; user copy-pastes it to the path.)       │

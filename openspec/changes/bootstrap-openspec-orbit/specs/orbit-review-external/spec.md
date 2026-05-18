@@ -50,7 +50,15 @@ The system SHALL write the full handoff prompt to a versioned, committed file in
 #### Scenario: Chat invocation snippet
 
 - **WHEN** the file is written
-- **THEN** the chat output contains exactly: (1) the prompt file path, (2) a 1-3 sentence copy-paste-ready invocation that tells the external AI to pull the repo and read the prompt file ("Pull <repo URL> and read <prompt-file-path>. Follow its instructions; write findings to the path specified inside."), (3) the path the user passes to `/opsx:address-reviews --from-file` once findings come back, (4) — only when present — the optional uncommitted-changes warning required by the Repo-state-validation requirement, which precedes items (1)–(3) when emitted, and (5) the recommended-session note required by the Recommended-session requirement below
+- **THEN** the chat output contains the following items, in this order:
+  - **(optional)** Mode-inference note when `--as` was omitted (per the State-based inference scenario): `Generating external-review prompt as \`<as>\` (inferred from tasks state).`
+  - **(optional)** Uncommitted-changes warning when applicable (per the Repo-state-validation requirement): `Repo has uncommitted changes; external review will be against committed state.`
+  - **(required)** Recommended-session note (per the Recommended-session requirement): a single line summarizing which AI session the user should paste into.
+  - **(required)** The prompt file path.
+  - **(required)** A 1-3 sentence copy-paste-ready invocation that tells the external AI to pull the repo and read the prompt file: `Pull <repo URL> and read <prompt-file-path>. Follow its instructions; write findings to the path specified inside.`
+  - **(required)** The eventual findings path the user will pass to `/opsx:address-reviews --from-file` once findings come back.
+
+  No other items are emitted; required items are always present in the specified order.
 
 ### Requirement: Recommended-session note in chat output
 
