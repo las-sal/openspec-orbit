@@ -887,7 +887,7 @@ If you haven't already:
 npx @fission-ai/openspec@latest init
 ```
 
-This creates `openspec/` and `.claude/` with the 12 upstream skills/commands. Verify with `openspec list`.
+This creates `openspec/` and `.claude/` with the 11 upstream openspec-* skills (plus the `feedback` skill). Verify with `openspec list`.
 
 ### 2. Overlay orbit
 
@@ -909,7 +909,7 @@ Copy the snippet from this README's [Cross-cutting disciplines](#cross-cutting-d
 After overlay, the available skills should include `openspec-review`, `openspec-review-external`, `openspec-audit-drift`, `openspec-address-reviews`, plus the existing upstream skills now showing "openspec-orbit" in their `metadata.author` for the three modified ones.
 
 ```bash
-ls .claude/skills/openspec-*/SKILL.md | wc -l   # 15 total (12 upstream + 4 orbit + ... actually 16 with the four new + 12 upstream)
+ls .claude/skills/openspec-*/SKILL.md | wc -l   # 15 total (11 upstream openspec-* + 4 new orbit)
 ls .claude/commands/opsx/*.md                    # 15 commands
 ```
 

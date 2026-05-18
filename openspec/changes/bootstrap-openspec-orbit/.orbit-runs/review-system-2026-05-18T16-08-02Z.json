@@ -1,0 +1,55 @@
+{
+  "command": "review",
+  "timestamp": "2026-05-18T16:08:02Z",
+  "change": "bootstrap-openspec-orbit",
+  "mode": "system",
+  "iteration": 1,
+  "depth": "full",
+  "flags": {
+    "parallel": false,
+    "focus": null,
+    "strict": false,
+    "fresh": false,
+    "mark": false,
+    "skip_verify": false
+  },
+  "passes_run": ["0", "2", "3", "6"],
+  "passes_skipped": [
+    { "pass": "1", "reason": "no openspec/specs/ baseline (this IS the bootstrap)" },
+    { "pass": "4", "reason": "no openspec/lenses/perspectives.md; skip Pass 4" },
+    { "pass": "5", "reason": "no openspec/lenses/critical-paths.md; skip Pass 5" }
+  ],
+  "pass_0_note": "Did equivalent structural check inline (openspec status + tasks.md count + spec-to-implementation mapping + design-decision adherence) rather than literally invoking the upstream openspec-verify-change skill; equivalent for a prompts-only change. Slight deviation from the SKILL's stated invocation pattern; noted for traceability.",
+  "findings_summary": {
+    "critical": 0,
+    "warning": 1,
+    "suggestion": 1,
+    "by_pass": {
+      "0": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "2": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "3": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "6": { "critical": 0, "warning": 1, "suggestion": 1 }
+    }
+  },
+  "findings": [
+    {
+      "pass": "6",
+      "severity": "WARNING",
+      "file": "README.md",
+      "line": 912,
+      "title": "Broken self-correction residue in install verify-step",
+      "recommendation": "Replace the comment `# 15 total (12 upstream + 4 orbit + ... actually 16 with the four new + 12 upstream)` with the correct, clean comment `# 15 total (11 upstream openspec-* skills + 4 new orbit skills)`. The current text is a mid-edit self-correction left in place; the math `12 + 4 = 16` is wrong, and the prose is broken. This is exactly the residue class the change-completeness discipline (now codified in orbit-conventions and CLAUDE.md) is designed to prevent. Meta-validation: the very command running this review is part of the same overlay whose authoring left this residue."
+    },
+    {
+      "pass": "6",
+      "severity": "SUGGESTION",
+      "file": "README.md",
+      "line": 890,
+      "title": "\"12 upstream skills/commands\" count is fuzzy",
+      "recommendation": "Tighten to \"the 11 upstream openspec-* skills plus the feedback skill\" or simply \"the upstream openspec skill set\". As written, whether `feedback` counts as one of the 12 is ambiguous; readers verifying with `ls .claude/skills/openspec-*/` get 11 (matching glob), which contradicts the stated count of 12. Low-priority cosmetic; install will work either way."
+    }
+  ],
+  "stale_suppressed": [],
+  "final_assessment": "No critical issues. 1 warning(s) to consider. Ready to archive (with noted improvements).",
+  "iteration_note": "First system-mode run for this change."
+}
