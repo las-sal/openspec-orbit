@@ -2,6 +2,7 @@
 OPENSPEC_LESSONS.md
 home_env_review_requests_claude.md
 review_requests_transcripts_codex.md
+orbit_for_rdkb.md
 
 # Local-only settings
 .claude/settings.local.json

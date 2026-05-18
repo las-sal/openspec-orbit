@@ -1,0 +1,108 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-18T02:15:00Z",
+  "change": "bootstrap-openspec-orbit",
+  "iteration": 1,
+  "source": "from-internal-review",
+  "input_findings_summary": {
+    "critical": 0,
+    "warning": 4,
+    "suggestion": 8
+  },
+  "executed_by": "manual dogfood (orbit not yet implemented)",
+  "resolution_summary": {
+    "resolved": 12,
+    "stale_suppressed": 0,
+    "deferred": 0,
+    "escalated": 0
+  },
+  "resolutions": [
+    {
+      "severity": "WARNING",
+      "title": "'substantive decisions' threshold undefined",
+      "spec": "orbit-explore-modifications",
+      "action": "Added 'Definition of substantive decision' scenario with heuristics (resolves named alternatives / locks name-structure-format / supersedes earlier choice; excludes exploratory thinking)",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "WARNING",
+      "title": "marker classification heuristics rely on AI judgment",
+      "spec": "orbit-address-reviews",
+      "action": "Added 'Classification heuristics' scenario with ordered rules: stale (from pushback) → trivial (single-line, obvious) → decision required (ambiguity/design/scope) → unresolvable (missing info)",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "WARNING",
+      "title": "external-review prompt not specified as literal template",
+      "spec": "orbit-review-external",
+      "action": "Added 'Reference prompt template' scenario with the full prompt structure embedded; added 'Output-format block must be verbatim' scenario to prevent parsing breakage",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "WARNING",
+      "title": "pushback discipline procedure not algorithmically detailed",
+      "spec": "orbit-address-reviews",
+      "action": "Added 'Pushback decision procedure' scenario with 6-step algorithm (identify symbol → grep → git log -S → read file → compare → report evidence)",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "tasks don't back-reference specific requirement IDs",
+      "spec": "tasks.md",
+      "action": "Added a convention header to tasks.md describing the [R<#> in <capability>] annotation format and the operational-vs-spec-tied distinction; annotations to be added incrementally as implementation lands",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "D1 distribution model not encoded as spec requirement",
+      "spec": "orbit-conventions",
+      "action": "Added 'Distribution model — overlay, not CLI fork' requirement with two scenarios (overlay shape, consumers install after openspec init)",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "D2 naming taxonomy implicit only",
+      "spec": "orbit-conventions",
+      "action": "Added 'Verb-prefix naming taxonomy preserved' requirement with two scenarios (verb categories, new verb requires justification)",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "some tasks not tied to spec requirements",
+      "spec": "tasks.md",
+      "action": "Marked Groups 1, 11, and 12 as '(operational)' to distinguish delivery work from spec-tied behavior implementation; convention header documents the distinction",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "'heavy' vs 'light' enforcement boundary undefined",
+      "spec": "orbit-conventions",
+      "action": "Added 'Light vs heavy enforcement boundary' scenario with concrete examples (light = grep + spot-checks; heavy = full AST + exhaustive walk — latter is the linter's job)",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "Pass 6 Gap Hunt success criterion tautological",
+      "spec": "orbit-review-proposal",
+      "action": "Added 'Pass 6 Gap Hunt operational heuristic' scenario with four concrete checks per requirement (unstated assumptions, error paths, state transitions, two-implementer agreement)",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "README on .orbit-runs/ committed status could be more explicit",
+      "spec": "README.md",
+      "action": "Rewrote the .orbit-runs/ subsection: 'Committed to the repo, not gitignored' with rationale (iteration record is real evidence; supports team handoffs; dot-prefix signals 'orbit metadata, not part of canonical openspec change')",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "'structured claims' extraction undocumented",
+      "spec": "orbit-audit-drift",
+      "action": "Added 'Structured claim extraction' scenario in Category 3 with four claim categories (named entities, quantitative claims, architectural assertions, rules/conventions referenced in non-convention docs)",
+      "outcome": "resolved"
+    }
+  ],
+  "post_resolution_state": "0 unaddressed markers; openspec validate clean",
+  "final_assessment": "All 12 findings resolved. Change is ready for /opsx:apply.",
+  "next_recommended": "Optionally re-run /opsx:review-proposal to confirm clean baseline (iteration 2), then /opsx:apply bootstrap-openspec-orbit."
+}

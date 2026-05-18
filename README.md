@@ -8,18 +8,35 @@ An opinionated `.claude/` overlay for [@fission-ai/openspec](https://github.com/
 
 ## Table of contents
 
-- [What this is](#what-this-is)
-- [The orbit workflow](#the-orbit-workflow)
-- [Guiding principles](#guiding-principles)
-- [Command reference](#command-reference)
-- [The external review cycle](#the-external-review-cycle)
-- [Project-level structures orbit relies on](#project-level-structures-orbit-relies-on)
-- [Marker convention: `@review:`](#marker-convention-review)
-- [Repo layout](#repo-layout)
-- [Design records](#design-records)
-- [v2 / deferred work](#v2--deferred-work)
-- [Installation](#installation)
-- [License](#license)
+- [openspec-orbit](#openspec-orbit)
+  - [Table of contents](#table-of-contents)
+  - [What this is](#what-this-is)
+  - [The orbit workflow](#the-orbit-workflow)
+  - [Guiding principles](#guiding-principles)
+  - [Command reference](#command-reference)
+    - [`/opsx:explore [<name>]`](#opsxexplore-name)
+    - [`/opsx:propose <name>`](#opsxpropose-name)
+    - [`/opsx:review-proposal <name>`](#opsxreview-proposal-name)
+    - [`/opsx:review-system <name>`](#opsxreview-system-name)
+    - [`/opsx:audit-drift`](#opsxaudit-drift)
+    - [`/opsx:address-reviews [<scope>]`](#opsxaddress-reviews-scope)
+    - [`/opsx:review-external <change-name> [--as proposal|system]`](#opsxreview-external-change-name---as-proposalsystem)
+    - [`/opsx:archive <change-name>`](#opsxarchive-change-name)
+  - [The external review cycle](#the-external-review-cycle)
+    - [The full cycle, concretely](#the-full-cycle-concretely)
+    - [Why the format is rigid](#why-the-format-is-rigid)
+    - [Iteration tracking across runs](#iteration-tracking-across-runs)
+    - [Pushback discipline matters most here](#pushback-discipline-matters-most-here)
+  - [Project-level structures orbit relies on](#project-level-structures-orbit-relies-on)
+    - [`openspec/explore/<name>/`](#openspecexplorename)
+    - [`openspec/lenses/`](#openspeclenses)
+    - [`openspec/changes/<name>/.orbit-runs/` (per-change)](#openspecchangesnameorbit-runs-per-change)
+  - [Marker convention: `@review:`](#marker-convention-review)
+  - [Repo layout](#repo-layout)
+  - [Design records](#design-records)
+  - [v2 / deferred work](#v2--deferred-work)
+  - [Installation](#installation)
+  - [License](#license)
 
 ---
 
@@ -49,11 +66,22 @@ End-to-end loop, from idea to archived change:
 │   1. THINK                                                          │
 │   /opsx:explore [<name>]                                            │
 │      ↓                                                              │
-│   Conversation produces decisions, captured to:                     │
-│   • openspec/explore/<name>/explore.md (5 sections)                 │
-│   • openspec/lenses/{perspectives,critical-paths}.md (project-      │
-│     level — captured during explore when relevant)                  │
-│   • naming_convention.md / *_convention.md (project root)           │
+│   As conversation produces capture-worthy content, /opsx:explore    │
+│   offers (doesn't auto-write) to capture each to its right home:    │
+│                                                                     │
+│   Trigger pattern              → Target file                        │
+│   ───────────────────────────────────────────────────────────────   │
+│   "we decided X over Y"        → explore.md  Decisions              │
+│                                  (proactively captured w/ ack)      │
+│   "X calls our Y"              → openspec/lenses/perspectives.md    │
+│   "the typical user flow is…"  → openspec/lenses/critical-paths.md  │
+│   "we always do X" / "name as" → <topic>_convention.md (root)       │
+│   "see file/transcript X"      → explore.md  References             │
+│                                                                     │
+│   User accepts or declines each offer; declines aren't re-offered   │
+│   within the same conversation. Three invocation modes: bare        │
+│   (think-only, no file), named (creates/resumes explore.md),        │
+│   crystallized (bare → name prompt after ~2 decisions emerge).      │
 │                                                                     │
 │                          │                                          │
 │                          ▼                                          │
@@ -73,7 +101,7 @@ End-to-end loop, from idea to archived change:
 │      ↓                                                              │
 │   9 passes → 3-dimension scorecard (Completeness/Correctness/       │
 │   Coherence). Findings reported with file:line + recommendation.    │
-│                                                                     │
+│                                                                  │
 │                          │                                          │
 │                          ▼                                          │
 │                                                                     │
@@ -104,7 +132,7 @@ End-to-end loop, from idea to archived change:
 │                                                                     │
 │                          │                                          │
 │                          ▼                                          │
-│                                                                     │
+│                                                                  │
 │   7. REVIEW (system side, internal)                                 │
 │   /opsx:review-system <name>                                        │
 │      ↓                                                              │
@@ -164,7 +192,13 @@ In rough workflow order. Each command has a full design sketch in [`openspec/exp
 
 ### `/opsx:explore [<name>]`
 
-> **What's new**: capture affordances + `explore.md` authoring + three invocation modes. Preserves upstream's "thinking partner stance."
+> **What's new**: orbit turns conversational explore-mode work into durable design records, without changing what explore *is*. The upstream "thinking partner stance" is preserved: no fixed steps, no required outputs, no implementation. What's added is a set of **capture affordances** that activate as the conversation produces capture-worthy content — so the discipline-of-write-it-down doesn't have to be re-explained to the AI each session.
+>
+> Specifically:
+>
+> - **Five capture types**, each with a trigger pattern and a target file: decisions (→ `explore.md`), perspectives (→ `openspec/lenses/perspectives.md`), critical paths (→ `openspec/lenses/critical-paths.md`), conventions (→ `<topic>_convention.md`), references (→ `explore.md`). Decisions are captured proactively with a brief acknowledgment; the other four are *offered*, and the user decides.
+> - **`explore.md`** — a five-section file (Premise / Decisions / Open questions / Considered & out / References) maintained proactively as the conversation progresses. Becomes the seed that `/opsx:propose` consumes to generate the formal change artifacts.
+> - **Three invocation modes**: bare (`/opsx:explore`) for pure think-mode with no file; named (`/opsx:explore <name>`) to start or resume a captured exploration; crystallized — bare invocation that opens a name prompt after ~2 substantive decisions emerge, so think-mode work doesn't get lost when it turns out to matter.
 
 Think mode for a change. orbit adds capture triggers: when conversation produces a durable convention, perspective, critical path, or decision, explore offers to write it to the right file. Offer, don't auto-capture.
 
@@ -173,6 +207,7 @@ Three invocation modes:
 - **Bare** (`/opsx:explore`) — pure think; no file.
 - **Named** (`/opsx:explore foo`) — creates `openspec/explore/foo/explore.md` or resumes an existing one.
 - **Crystallized** — bare invocation that crystallizes into a name midway. After 2+ substantive decisions emerge, explore asks: "We have enough material here to capture — what should we call this exploration?"
+@review - not sure this makes sense? is this really an invocation mode? is there an argument associated with it?
 
 Five capture types and their target files:
 
@@ -317,7 +352,9 @@ Full design: [`sketches/audit-drift.md`](./openspec/explore/bootstrap-openspec-o
 
 > **What's new**: resolves `@review:` markers and external-review findings. No upstream equivalent.
 
-The resolution counterpart to the generative review commands. Scans `@review:` markers anywhere in the repo (or ingests external findings) and walks each with pushback discipline.
+The resolution counterpart to the generative review commands. Its **primary use case** is closing the cross-AI review cycle: ingest the external-review findings file produced by codex (or any external AI following the orbit handoff format) via `--from-file`, and walk each finding with pushback discipline — verify against current state, classify (trivial fix / decision / stale / unresolvable), apply or defer, log.
+
+A **secondary mode** scans the repo for inline `@review:` markers anywhere (default whole repo with safe exclusions). Useful when you've annotated specs, code, or configs during your own read-through and want a structured walk-through with the same pushback discipline. Markers are removed on resolution so they don't leak into canonical artifacts.
 
 Four enforcement wins justify the skill over "just ask the AI":
 
@@ -557,9 +594,60 @@ Files grow via `/opsx:explore` capture triggers (offer, don't auto). Empty `lens
 
 ### `openspec/changes/<name>/.orbit-runs/` (per-change)
 
-Iteration history for a change. Committed; dot-prefixed signals "orbit metadata."
+Iteration history for a change. **Committed to the repo, not gitignored** — the iteration record is real evidence of the review cycle and supports team handoffs. Dot-prefix signals "orbit metadata, not part of the canonical openspec change," so upstream's view of the change directory stays clean.
 
-Contains both internal-run summaries (JSON) and external-review findings (markdown). Travels with the change into `openspec/changes/archive/<name>/.orbit-runs/` when archived.
+Contains both internal-run summaries (JSON, one per review/audit/archive invocation) and external-review findings (markdown, one per `/opsx:review-external` invocation). Travels with the change into `openspec/changes/archive/<name>/.orbit-runs/` when archived, preserving the full review history alongside the archived artifacts.
+
+### `<topic>_convention.md` files at project root
+
+Conventions are the **AI-readable rules layer** — durable patterns that apply broadly across the codebase (e.g., "files use kebab-case", "errors look like X"). Distinct from:
+
+- `CLAUDE.md` (orientation; references convention files)
+- `openspec/specs/<cap>/spec.md` (capability-specific behavior)
+- `openspec/lenses/` (subjective judgment about what matters for review)
+- Linters / pre-commit hooks (syntactic enforcement — orbit doesn't replace these; convention files carry rationale and apply to broader rules tooling can't catch)
+
+**Where they live**: at the project root, named `<topic>_convention.md` (e.g., `naming_convention.md`, `error_handling_convention.md`).
+
+**Internal format** — four sections in fixed order; sections optional when not applicable:
+
+```markdown
+# <Topic> Convention
+
+## Purpose
+<1-2 sentences: why this convention exists>
+
+## Rules
+1. <rule> — <rationale>
+2. <rule> — <rationale>
+
+## Examples
+**Correct:**
+- <example>
+
+**Incorrect:**
+- <example>
+
+## Exceptions
+<cases where this convention doesn't apply, if any>
+```
+
+**Captured during `/opsx:explore`**: when the user describes a durable rule, explore offers to write it to the appropriate `<topic>_convention.md` using the structured format. If a matching file exists, the new rule is appended; if the statement contradicts an existing rule, explore surfaces the contradiction and offers to update.
+
+**Consumed by orbit commands** — conventions aren't just documentation, they're read by review and audit commands:
+
+| Command | What it does with conventions |
+|---|---|
+| `/opsx:review-proposal` Pass 3 | Checks proposal / design / spec deltas align with declared conventions |
+| `/opsx:review-proposal` Pass 7 | Flags vocabulary or naming that contradicts conventions |
+| `/opsx:review-system` Pass 2 | Light check that the change's code follows conventions |
+| `/opsx:audit-drift` Cat. 3 | Checks conventions don't contradict each other / `CLAUDE.md` / `project.md` |
+| `/opsx:audit-drift` Cat. 1 | Flags removed terms still referenced in convention files |
+| `/opsx:explore` | Reads relevant convention files when conversation touches their topics; offers updates on contradictions |
+| `/opsx:propose` | Honors conventions during artifact generation (e.g., kebab-case capability names) |
+| `/opsx:address-reviews` | Ripple-flag lists relevant `*_convention.md` files when resolutions touch their topics |
+
+**Staleness handling**: `/opsx:audit-drift` Category 3 reports conventions that contradict current state — convention says kebab-case but most files are snake_case, etc. — with a recommendation to update the convention or migrate the code.
 
 ---
 
@@ -675,4 +763,4 @@ Long-term: package as a proper Claude Code plugin (Phase 2).
 
 ## License
 
-MIT. See [LICENSE](./LICENSE).
+MIT — same as upstream [@fission-ai/openspec](https://github.com/Fission-AI/OpenSpec). See [LICENSE](./LICENSE).
