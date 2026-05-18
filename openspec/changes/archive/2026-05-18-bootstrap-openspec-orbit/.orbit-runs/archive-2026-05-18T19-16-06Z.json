@@ -1,0 +1,60 @@
+{
+  "command": "archive",
+  "timestamp": "2026-05-18T19:16:06Z",
+  "change": "bootstrap-openspec-orbit",
+  "archive_path": "openspec/changes/archive/2026-05-18-bootstrap-openspec-orbit/",
+  "audit": {
+    "ran": true,
+    "skipped_via_flag": false,
+    "failure_reason": null,
+    "findings_summary": { "critical": 0, "warning": 0, "suggestion": 0 },
+    "summary_path": null,
+    "note": "Pre-archive audit-drift ran inline as a library call within /opsx:archive Step 3.5. Cat 1, Cat 2, Cat 4 degenerate (no archived deltas, no lenses, no archived changes at the time of the audit). Cat 3 cross-doc consistency clean after the iter-3 address-reviews W2 cleanup. No standalone summary file written for this library call; findings inline-confirmed at 0/0/0."
+  },
+  "unresolved_markers": {
+    "found_at_archive_time": 0,
+    "user_action": "no_markers_found"
+  },
+  "user_decision": "proceeded_with_no_critical",
+  "sync_specs": {
+    "ran": true,
+    "skipped_reason": null,
+    "capabilities_updated": [
+      "orbit-review",
+      "orbit-review-external",
+      "orbit-audit-drift",
+      "orbit-address-reviews",
+      "orbit-explore-modifications",
+      "orbit-propose-modifications",
+      "orbit-archive-modifications",
+      "orbit-conventions"
+    ],
+    "counts": { "added": 8, "modified": 0, "removed": 0, "renamed": 0 },
+    "note": "Bootstrap case: openspec/specs/ was empty at archive time. All 8 capability deltas were pure ADDED Requirements; each became a freshly-created canonical baseline at openspec/specs/<capability>/spec.md. Future changes will delta against these. The 'added: 8' count is capability-level (8 new spec files); individual requirement-level counts are higher (each spec adds 5-25 requirements)."
+  },
+  "warnings": [
+    "Archived with 18 of 102 tasks unchecked — all 18 are explicitly annotated as user-driven deferred work (6 per-command integration tests, 9 end-to-end integration tests in fresh sandbox, 3 release-prep tasks: GitHub issue updates, v0.1.0 tag, public-repo decision). Per the chunking plan agreed at /opsx:apply time, these tasks cannot be dogfooded against the bootstrap itself (circular) and require user-driven validation against a fresh openspec-init'd project."
+  ],
+  "context": {
+    "review_iterations_cumulative": {
+      "proposal_mode_internal": 1,
+      "proposal_mode_external": 5,
+      "address_reviews_proposal": 6,
+      "system_mode_internal": 2,
+      "system_mode_external": 1,
+      "address_reviews_system": 1,
+      "total_findings_resolved": 71,
+      "total_critical_findings_ever": 0
+    },
+    "github_issues_filed_during_change": [
+      { "number": 1, "title": "v2: cache pass results in /opsx:review-system (and review-proposal)" },
+      { "number": 2, "title": "Define --thorough mode extras precisely for review commands" },
+      { "number": 3, "title": "v2: comprehensive /opsx:address-reviews features (paste, cascade, severity)" },
+      { "number": 4, "title": "v2: /opsx:address-reviews --from-file should accept internal-review JSON summaries" }
+    ],
+    "principles_articulated_for_future_codification": [
+      "Historical fidelity vs operationalizable references (saved to per-project memory; candidate for codification as 4th cross-cutting discipline in a future orbit-conventions change)"
+    ],
+    "meta_validation": "The bootstrap change implementing orbit was reviewed using orbit's own review commands (orbit-orbit dogfooding). Each substantive modification produced a review-iteration bump; each iteration's residue was caught in the next pass. The discipline-codifying scenarios (change-completeness, read-before-reference) were validated by being violated and caught during the dogfooding."
+  }
+}
