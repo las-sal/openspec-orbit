@@ -143,7 +143,7 @@ Pre-archive sweep catches the OPENSPEC_LESSONS doc-residue failure mode. Critica
 
 ### D12. Cross-AI external review via `/opsx:review-external` + `/opsx:address-reviews --from-file`
 
-External review packaging is its own command (`/opsx:review-external <change> [--as proposal|system]`). It emits a self-contained prompt to chat (not a file — regenerated each invocation). External AI writes findings to `.orbit-runs/external-<as>-<TS>.md` in a defined markdown format. Ingest via `/opsx:address-reviews --from-file <path>`.
+External review packaging is its own command (`/opsx:review-external <change> [--as proposal|system]`). It writes the self-contained prompt to a committed file at `.orbit-runs/external-prompt-<as>-<TS>.md` and emits only a short invocation snippet to chat (file path + paste-ready instruction for the external AI + the eventual findings path). External AI pulls the repo, reads the prompt file, writes findings to `.orbit-runs/external-<as>-<TS>.md`, and (if it has git access) commits and pushes. Ingest via `/opsx:address-reviews --from-file <path>`.
 
 **Rationale:** The cross-AI cycle was already working ad-hoc; the only friction was copy-paste-per-finding. Defining the prompt + findings file format closes the loop. `--from-file` is in v1 (revising earlier v2 deferral) because the user's workflow requires it.
 

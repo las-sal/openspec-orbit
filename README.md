@@ -2,7 +2,7 @@
 
 An opinionated `.claude/` overlay for [@fission-ai/openspec](https://github.com/Fission-AI/OpenSpec) that bakes a tested review-and-capture workflow into spec-driven development.
 
-> **Status**: v1 design exploration. Command/skill sketches complete; implementation pending. Repo currently contains design records under `openspec/explore/bootstrap-openspec-orbit/`.
+> **Status**: v1 design exploration. Command/skill sketches complete; implementation pending. Repo currently contains design records under `openspec/changes/bootstrap-openspec-orbit/`.
 
 ---
 
@@ -52,7 +52,7 @@ The overlay adds five new opsx commands and modifies three existing ones to bake
 - **External-AI handoff packaging** so the cross-AI review cycle has no copy-paste friction
 - **An exploration capture layer** so think-mode work becomes durable design records
 
-orbit is developed with the discipline that *if* it were ever upstreamed, the diff should read like a contributor's PR — not like two products mashed together. See [`openspec/explore/bootstrap-openspec-orbit/explore.md`](./openspec/explore/bootstrap-openspec-orbit/explore.md) for the full set of guiding principles and decisions.
+orbit is developed with the discipline that *if* it were ever upstreamed, the diff should read like a contributor's PR — not like two products mashed together. See [`openspec/changes/bootstrap-openspec-orbit/explore.md`](./openspec/changes/bootstrap-openspec-orbit/explore.md) for the full set of guiding principles and decisions.
 
 ---
 
@@ -190,7 +190,7 @@ Three stances that shape every design decision in orbit:
 
 ## Command reference
 
-In rough workflow order. Each command has a full design sketch in [`openspec/explore/bootstrap-openspec-orbit/sketches/`](./openspec/explore/bootstrap-openspec-orbit/sketches/).
+In rough workflow order. Each command has a full design sketch in [`openspec/changes/bootstrap-openspec-orbit/sketches/`](./openspec/changes/bootstrap-openspec-orbit/sketches/).
 
 ### `/opsx:explore [<name>]`
 
@@ -208,8 +208,8 @@ Three invocation modes:
 
 - **Bare** (`/opsx:explore`) — pure think; no file.
 - **Named** (`/opsx:explore foo`) — creates `openspec/explore/foo/explore.md` or resumes an existing one.
-- **Crystallized** — bare invocation that crystallizes into a name midway. After 2+ substantive decisions emerge, explore asks: "We have enough material here to capture — what should we call this exploration?"
-@review - not sure this makes sense? is this really an invocation mode? is there an argument associated with it?
+
+Plus a state transition: a **bare invocation can crystallize into a named exploration mid-conversation**. After 2+ substantive decisions emerge, explore offers: "We have enough material here to capture — what should we call this exploration?" On accept, explore creates `openspec/explore/<name>/explore.md`, back-fills with what's been discussed, and continues as the named mode. This is not a separate invocation — it's a transition from bare → named driven by what the conversation produces.
 
 Five capture types and their target files:
 
@@ -221,7 +221,7 @@ Five capture types and their target files:
 | Decision | `openspec/explore/<name>/explore.md` Decisions section |
 | Reference | `openspec/explore/<name>/explore.md` References section |
 
-Full design: [`sketches/explore.md`](./openspec/explore/bootstrap-openspec-orbit/sketches/explore.md)
+Full design: [`sketches/explore.md`](./openspec/changes/bootstrap-openspec-orbit/sketches/explore.md)
 
 ---
 
@@ -244,7 +244,7 @@ Section mapping (consume mode):
 | Considered & out | `design.md` "Alternatives considered" |
 | References | Contextual reads during generation |
 
-Full design: [`sketches/propose.md`](./openspec/explore/bootstrap-openspec-orbit/sketches/propose.md)
+Full design: [`sketches/propose.md`](./openspec/changes/bootstrap-openspec-orbit/sketches/propose.md)
 
 ---
 
@@ -280,7 +280,7 @@ Flags:
   [--strict]                         fail-fast on first CRITICAL
 ```
 
-Full design: [`sketches/review-proposal.md`](./openspec/explore/bootstrap-openspec-orbit/sketches/review-proposal.md)
+Full design: [`sketches/review-proposal.md`](./openspec/changes/bootstrap-openspec-orbit/sketches/review-proposal.md)
 
 ---
 
@@ -314,7 +314,7 @@ Flags:
   [--strict]
 ```
 
-Full design: [`sketches/review-system.md`](./openspec/explore/bootstrap-openspec-orbit/sketches/review-system.md)
+Full design: [`sketches/review-system.md`](./openspec/changes/bootstrap-openspec-orbit/sketches/review-system.md)
 
 ---
 
@@ -346,7 +346,7 @@ Flags:
   [--strict]
 ```
 
-Full design: [`sketches/audit-drift.md`](./openspec/explore/bootstrap-openspec-orbit/sketches/audit-drift.md)
+Full design: [`sketches/audit-drift.md`](./openspec/changes/bootstrap-openspec-orbit/sketches/audit-drift.md)
 
 ---
 
@@ -392,7 +392,7 @@ Flags:
   [--keep-resolved-markers]           debug; don't remove on resolution
 ```
 
-Full design: [`sketches/address-reviews.md`](./openspec/explore/bootstrap-openspec-orbit/sketches/address-reviews.md)
+Full design: [`sketches/address-reviews.md`](./openspec/changes/bootstrap-openspec-orbit/sketches/address-reviews.md)
 
 ---
 
@@ -424,7 +424,7 @@ Flags:
 
 See [The external review cycle](#the-external-review-cycle) below for the full walkthrough.
 
-Full design: [`sketches/review-external.md`](./openspec/explore/bootstrap-openspec-orbit/sketches/review-external.md)
+Full design: [`sketches/review-external.md`](./openspec/changes/bootstrap-openspec-orbit/sketches/review-external.md)
 
 ---
 
@@ -443,7 +443,7 @@ Flags:
   [--skip-audit]                     bypass the audit-drift sweep
 ```
 
-Full design: [`sketches/archive.md`](./openspec/explore/bootstrap-openspec-orbit/sketches/archive.md)
+Full design: [`sketches/archive.md`](./openspec/changes/bootstrap-openspec-orbit/sketches/archive.md)
 
 ---
 
@@ -731,16 +731,16 @@ README.md                          ← this file
 
 The complete design exploration that produced orbit lives in this repo as a dogfooded example of the workflow:
 
-- **`openspec/explore/bootstrap-openspec-orbit/explore.md`** — full design record. Guiding principles, decisions (grouped by area), considered alternatives, references.
-- **`openspec/explore/bootstrap-openspec-orbit/sketches/`** — detailed per-command sketches:
-  - [`review-proposal.md`](./openspec/explore/bootstrap-openspec-orbit/sketches/review-proposal.md)
-  - [`review-system.md`](./openspec/explore/bootstrap-openspec-orbit/sketches/review-system.md)
-  - [`audit-drift.md`](./openspec/explore/bootstrap-openspec-orbit/sketches/audit-drift.md)
-  - [`address-reviews.md`](./openspec/explore/bootstrap-openspec-orbit/sketches/address-reviews.md)
-  - [`review-external.md`](./openspec/explore/bootstrap-openspec-orbit/sketches/review-external.md)
-  - [`explore.md`](./openspec/explore/bootstrap-openspec-orbit/sketches/explore.md)
-  - [`propose.md`](./openspec/explore/bootstrap-openspec-orbit/sketches/propose.md)
-  - [`archive.md`](./openspec/explore/bootstrap-openspec-orbit/sketches/archive.md)
+- **`openspec/changes/bootstrap-openspec-orbit/explore.md`** — full design record. Guiding principles, decisions (grouped by area), considered alternatives, references.
+- **`openspec/changes/bootstrap-openspec-orbit/sketches/`** — detailed per-command sketches:
+  - [`review-proposal.md`](./openspec/changes/bootstrap-openspec-orbit/sketches/review-proposal.md)
+  - [`review-system.md`](./openspec/changes/bootstrap-openspec-orbit/sketches/review-system.md)
+  - [`audit-drift.md`](./openspec/changes/bootstrap-openspec-orbit/sketches/audit-drift.md)
+  - [`address-reviews.md`](./openspec/changes/bootstrap-openspec-orbit/sketches/address-reviews.md)
+  - [`review-external.md`](./openspec/changes/bootstrap-openspec-orbit/sketches/review-external.md)
+  - [`explore.md`](./openspec/changes/bootstrap-openspec-orbit/sketches/explore.md)
+  - [`propose.md`](./openspec/changes/bootstrap-openspec-orbit/sketches/propose.md)
+  - [`archive.md`](./openspec/changes/bootstrap-openspec-orbit/sketches/archive.md)
 
 This repo eats its own dogfood: the exploration that produced orbit was conducted using the very workflow orbit captures.
 

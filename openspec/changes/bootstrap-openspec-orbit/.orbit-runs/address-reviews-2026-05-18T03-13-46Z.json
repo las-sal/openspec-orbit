@@ -1,0 +1,93 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-18T03:13:46Z",
+  "change": "bootstrap-openspec-orbit",
+  "iteration": 2,
+  "source": "from-file",
+  "source_file": "openspec/changes/bootstrap-openspec-orbit/.orbit-runs/external-proposal-2026-05-18T03-00-12Z.md",
+  "external_reviewer": "GPT-5 Codex",
+  "input_findings_summary": {
+    "critical": 0,
+    "warning": 6,
+    "suggestion": 1
+  },
+  "executed_by": "manual dogfood (orbit not yet implemented)",
+  "pushback_verification": "all 7 findings verified against current state via grep / file inspection before fixing; no stale suppressions",
+  "resolution_summary": {
+    "resolved": 7,
+    "stale_suppressed": 0,
+    "deferred": 0,
+    "escalated": 0
+  },
+  "resolutions": [
+    {
+      "severity": "WARNING",
+      "title": "Review-external prompt delivery contract is still split between chat-paste and file-backed modes",
+      "files_updated": [
+        "specs/orbit-review-external/spec.md (Scenario: Invoke with change name and mode)",
+        "design.md (D12)",
+        "sketches/review-external.md (The prompt content header)"
+      ],
+      "action": "Updated all three locations to describe the file-backed contract: writes prompt to .orbit-runs/external-prompt-<as>-<TS>.md, emits short invocation snippet to chat. No more chat-paste wording in current-state content.",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "WARNING",
+      "title": "Snippet-only chat output conflicts with the required dirty-tree warning",
+      "files_updated": [
+        "specs/orbit-review-external/spec.md (Scenario: Chat invocation snippet)"
+      ],
+      "action": "Reworded the scenario from 'three things and nothing else' to 'exactly four items, one optional': the three core items remain mandatory; the uncommitted-changes warning is an explicitly-allowed fourth item that PRECEDES the three when emitted. Both requirements now satisfiable together.",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "WARNING",
+      "title": "address-reviews sketch contradicts v1 --from-file ingest",
+      "files_updated": [
+        "sketches/address-reviews.md (lean v1 scope description)",
+        "sketches/address-reviews.md (external-review findings flow)"
+      ],
+      "action": "Updated both passages: lean v1 explicitly includes --from-file as v1; v2 deferral applies only to --from-paste / cascade / severity / etc. External findings flow through --from-file in v1, not manual marker dropping.",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "WARNING",
+      "title": "review-external sketch omits the Inline Review Marker Residue pass",
+      "files_updated": [
+        "sketches/review-external.md (proposal-mode 'What to look for' appendix)"
+      ],
+      "action": "Inserted Pass 8 (Inline review marker residue) between Drift hunt and Pre-handoff sweep; renumbered Pre-handoff sweep to 9. Now matches the 9-pass count required by orbit-review-external and by orbit-review-proposal's own spec.",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "WARNING",
+      "title": "README still contains an unresolved review note outside the canonical marker syntax",
+      "files_updated": [
+        "README.md (Three invocation modes section)"
+      ],
+      "action": "Addressed the user's question (which was legitimate: the 'Crystallized' mode is not a separate invocation, it's a state transition from bare → named). Rewrote the section to describe two invocation modes plus a state transition explicitly, removing the orphan @review note in the process.",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "WARNING",
+      "title": "README links still point to the pre-propose explore staging path",
+      "files_updated": [
+        "README.md (status header, multiple Full design links, Design records section)"
+      ],
+      "action": "Replaced all 18 occurrences of openspec/explore/bootstrap-openspec-orbit/ with openspec/changes/bootstrap-openspec-orbit/ via sed. The exploration was promoted to a change; the old staging path no longer exists.",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "Archive skip-audit scenario has a typo in normative text",
+      "files_updated": [
+        "specs/orbit-archive-modifications/spec.md"
+      ],
+      "action": "Fixed 'Pass-archive audit is skipped' → 'Pre-archive audit is skipped'.",
+      "outcome": "resolved"
+    }
+  ],
+  "post_resolution_state": "0 unaddressed external findings; openspec validate clean",
+  "final_assessment": "All 7 external findings from GPT-5 Codex resolved. Change is ready for /opsx:apply.",
+  "next_recommended": "Optionally run /opsx:review-external again (iteration 2) to confirm clean baseline, or move directly to /opsx:apply bootstrap-openspec-orbit."
+}

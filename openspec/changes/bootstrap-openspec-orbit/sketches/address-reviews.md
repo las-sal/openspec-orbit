@@ -20,7 +20,7 @@ Four enforcement wins. Each maps to a documented failure mode in the home-contro
 | **Marker removal invariant** — resolved markers get deleted | Markers leak into canonical specs (your codex feedback flagged this) |
 | **Multi-file-type uniformity** — same marker in markdown, code, configs | Per-file-type marker conventions diverge, lose searchability |
 
-Lean v1 is scoped to these four. Paste/file input sources, automatic ripple cascade, and severity-tracked output are deferred to v2 (issue tracked).
+Lean v1 is scoped to these four enforcement wins **plus `--from-file`** (needed to close the cross-AI loop without per-finding copy-paste). `--from-paste` (stdin), automatic ripple cascade, severity-tracked output, and other comprehensive features remain deferred to v2 (issue tracked).
 
 ## Marker convention
 
@@ -252,7 +252,7 @@ Each of these has real value when the workflow demands it. Lean v1 ships the fou
                        /opsx:apply or /opsx:archive
 ```
 
-External review findings (codex, fresh-claude) in lean v1 flow through the user: user reads findings, drops `@review:` markers in the affected files, then runs `/opsx:address-reviews`. v2's `--from-paste` removes the manual step.
+External review findings (codex, fresh-claude) in lean v1 are ingested directly via `--from-file <path>`: the external AI writes its findings markdown to a file (per the `/opsx:review-external` handoff format), and `/opsx:address-reviews --from-file` parses each finding as a virtual marker and walks it through the standard lifecycle (pushback → classify → apply → log). No per-finding copy-paste. v2's `--from-paste` adds an stdin-style entry point for ad-hoc findings.
 
 ## Parallels with review / audit commands
 

@@ -7,7 +7,7 @@ The system SHALL expose a `/opsx:review-external` command that packages a review
 #### Scenario: Invoke with change name and mode
 
 - **WHEN** the user invokes `/opsx:review-external <change-name> --as proposal` (or `--as system`)
-- **THEN** the command generates a self-contained markdown prompt and emits it to chat for the user to copy
+- **THEN** the command writes a self-contained markdown prompt to `openspec/changes/<change-name>/.orbit-runs/external-prompt-<as>-<TS>.md` and emits a short invocation snippet to chat (file path + paste-ready instruction for the external AI + the eventual findings path); the file is intended to be committed
 
 #### Scenario: Invoke without change name
 
@@ -50,7 +50,7 @@ The system SHALL write the full handoff prompt to a versioned, committed file in
 #### Scenario: Chat invocation snippet
 
 - **WHEN** the file is written
-- **THEN** the chat output contains three things and nothing else: (1) the prompt file path, (2) a 1-3 sentence copy-paste-ready invocation that tells the external AI to pull the repo and read the prompt file ("Pull <repo URL> and read <prompt-file-path>. Follow its instructions; write findings to the path specified inside."), (3) the path the user passes to `/opsx:address-reviews --from-file` once findings come back
+- **THEN** the chat output contains exactly: (1) the prompt file path, (2) a 1-3 sentence copy-paste-ready invocation that tells the external AI to pull the repo and read the prompt file ("Pull <repo URL> and read <prompt-file-path>. Follow its instructions; write findings to the path specified inside."), (3) the path the user passes to `/opsx:address-reviews --from-file` once findings come back, and (4) — only when present — the optional uncommitted-changes warning required by the Repo-state-validation requirement, which precedes items (1)–(3) when emitted
 
 #### Scenario: Mode-specific sections
 

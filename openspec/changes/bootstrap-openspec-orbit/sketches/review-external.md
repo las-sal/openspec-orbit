@@ -79,7 +79,7 @@ to the path manually.
 
 ## The prompt content (mode-specific)
 
-The chat output is a self-contained markdown block the user copy-pastes. Two mode-specific variants share a common skeleton.
+The prompt file's content is a self-contained markdown block the external AI reads after pulling the repo. Two mode-specific variants share a common skeleton.
 
 ### Common skeleton (both modes)
 
@@ -194,7 +194,11 @@ output the markdown directly and the user will save it.
    What questions would arise?
 7. **Drift hunt** — old vocabulary still present in any artifacts?
    Special focus if this is a rename / refactor change.
-8. **Pre-handoff sweep** — small things easily missed on a first read.
+8. **Inline review marker residue** — any `@review:` markers still
+   present in the change-dir artifacts? They must be addressed before
+   apply (excluding markers in orbit-conventions or orbit-address-
+   reviews specs that document the marker syntax itself).
+9. **Pre-handoff sweep** — small things easily missed on a first read.
 ````
 
 ### `--as system` appendix

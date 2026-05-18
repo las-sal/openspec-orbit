@@ -21,7 +21,7 @@ The system SHALL auto-invoke `/opsx:audit-drift` as a pre-archive sweep before c
 #### Scenario: `--skip-audit` bypass
 
 - **WHEN** the command runs with `--skip-audit`
-- **THEN** Pass-archive audit is skipped; the archive run summary records `audit_skipped_via_flag: true`
+- **THEN** Pre-archive audit is skipped; the archive run summary records `audit_skipped_via_flag: true`
 
 ### Requirement: Critical-drift prompt, not gate
 
