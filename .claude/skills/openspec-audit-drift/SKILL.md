@@ -117,7 +117,7 @@ Empty or absent lens files → skip Category 2 with the note `lenses empty or ab
 
 **Walk archived changes within window** (default last 5; `--since <ref>` overrides):
 
-- List archived changes at `openspec/changes/archive/<name>/` ordered by archive date.
+- List archived changes at `openspec/changes/archive/<YYYY-MM-DD>-<name>/` (upstream's dated archive form) ordered by archive date.
 - Take the first N (or all since `<ref>`).
 
 **For each archived change**, compare its spec deltas to live baseline:

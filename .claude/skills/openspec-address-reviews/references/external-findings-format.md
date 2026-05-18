@@ -64,6 +64,7 @@ The parser SHOULD be lenient on:
 - Whitespace between sections (blank lines OK)
 - `**Reviewer**:` and `**Date**:` field absence (warn, don't fail; reviewer attribution falls back to "unknown external AI")
 - Optional `## Notes` section absent (treated as no notes)
+- **Empty-severity sentinel**: when a severity section contains the single body line `None.` (or equivalent — `None`, `none.`, `(none)`) with no `### <Title>` entries underneath, the section parses cleanly to zero findings at that severity. This matches what external reviewers naturally write when there are no findings at a given severity.
 
 The parser MUST be strict on:
 
@@ -72,3 +73,38 @@ The parser MUST be strict on:
 - `**File**:` and `**Description**:` field labels (exact)
 
 The reason for the strict/lenient split: the strict items are what the orbit format guarantees and what allows cross-AI loops to work; the lenient items vary across reviewers without breaking semantics.
+
+## Quick worked example of valid input
+
+```markdown
+# External Review: <change-name> (iteration 1)
+
+**Reviewer**: GPT-5 Codex
+**Date**: 2026-05-18
+
+## CRITICAL
+
+None.
+
+## WARNING
+
+### First finding title
+**File**: path/to/file.md:42
+**Description**: What's wrong + recommendation.
+
+### Second finding title
+**File**: another/path.md:88
+**Description**: Detail.
+
+## SUGGESTION
+
+### A suggestion
+**File**: README.md:909
+**Description**: Detail.
+
+## Notes
+
+Overall impression goes here.
+```
+
+This example has 0 CRITICAL (using `None.` sentinel), 2 WARNING, 1 SUGGESTION. The codex-pushed iter-1 system-mode findings file (`openspec/changes/bootstrap-openspec-orbit/.orbit-runs/external-system-2026-05-18T17-33-40Z.md`) is a real-world example produced by GPT-5 Codex.

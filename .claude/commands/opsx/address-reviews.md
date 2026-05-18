@@ -20,9 +20,10 @@ Resolve `@review:` markers anywhere in the repo (or ingest external-review findi
 ## Flags
 
 ```
---only <pattern>                 restrict scope to a glob or path pattern
 --keep-resolved-markers          debug: don't remove markers after resolution
 ```
+
+(Scope restriction is handled by the positional `<scope>` argument, which accepts a path, glob pattern, or change name. `--only` and `--list` were considered but cut from lean v1; see issue #3.)
 
 ## What it does
 

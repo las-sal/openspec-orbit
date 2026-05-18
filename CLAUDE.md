@@ -27,7 +27,7 @@ Markers are resolved via `/opsx:address-reviews` (lean v1: discover → triage �
 ## Persistence layout
 
 - `openspec/lenses/perspectives.md` and `openspec/lenses/critical-paths.md` — judgment layer (subjective per-system "which callers matter" / "which flows are critical"); grown via `/opsx:explore` capture triggers; consumed by `/opsx:review --as system` Passes 4 and 5.
-- `openspec/changes/<name>/.orbit-runs/` — per-change iteration audit trail (review-summary JSON files, external-review findings markdown, archive run summaries). Committed, dot-prefixed, travels with the change into `openspec/changes/archive/<name>/.orbit-runs/`.
+- `openspec/changes/<name>/.orbit-runs/` — per-change iteration audit trail (review-summary JSON files, external-review findings markdown, archive run summaries). Committed, dot-prefixed, travels with the change into `openspec/changes/archive/<YYYY-MM-DD>-<name>/.orbit-runs/` (date prefix added by upstream's archive move).
 - `openspec/explore/<name>/` — pre-propose staging for in-progress explorations. `/opsx:propose <name>` consume mode reads `explore.md`, generates artifacts, and *moves* the staging directory to `openspec/changes/<name>/`.
 
 ## When in doubt

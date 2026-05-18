@@ -1,0 +1,70 @@
+{
+  "command": "review",
+  "timestamp": "2026-05-18T18:29:46Z",
+  "change": "bootstrap-openspec-orbit",
+  "mode": "system",
+  "iteration": 2,
+  "depth": "full",
+  "flags": {
+    "parallel": false,
+    "focus": null,
+    "strict": false,
+    "fresh": false,
+    "mark": false,
+    "skip_verify": false
+  },
+  "passes_run": ["0", "2", "3", "6"],
+  "passes_skipped": [
+    { "pass": "1", "reason": "no openspec/specs/ baseline (this IS the bootstrap)" },
+    { "pass": "4", "reason": "no openspec/lenses/perspectives.md; skip Pass 4" },
+    { "pass": "5", "reason": "no openspec/lenses/critical-paths.md; skip Pass 5" }
+  ],
+  "findings_summary": {
+    "critical": 0,
+    "warning": 4,
+    "suggestion": 0,
+    "by_pass": {
+      "0": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "2": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "3": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "6": { "critical": 0, "warning": 4, "suggestion": 0 }
+    }
+  },
+  "findings": [
+    {
+      "pass": "6",
+      "severity": "WARNING",
+      "file": ".claude/skills/openspec-archive-change/SKILL.md",
+      "line": 200,
+      "title": "W2 residue: 'Already archived' section path missing date prefix",
+      "recommendation": "Update `If openspec/changes/archive/<change-name>/ already exists when the user invokes /opsx:archive <change-name>:` to use the dated form `openspec/changes/archive/<YYYY-MM-DD>-<change-name>/`. This is the literal already-archived-check path; needs the prefix for the check to match what upstream actually created."
+    },
+    {
+      "pass": "6",
+      "severity": "WARNING",
+      "file": ".claude/skills/openspec-archive-change/SKILL.md",
+      "line": 205,
+      "title": "W2 residue: error message in 'Already archived' shows non-dated path",
+      "recommendation": "Update `Change <name> is already at openspec/changes/archive/<name>/.` to `Change <name> is already at openspec/changes/archive/<YYYY-MM-DD>-<name>/.` so the error message names the actual location."
+    },
+    {
+      "pass": "6",
+      "severity": "WARNING",
+      "file": ".claude/commands/opsx/archive.md",
+      "line": 169,
+      "title": "W2 residue: orbit-additions 'Already-archived halt' uses non-dated path",
+      "recommendation": "Update `clear error if openspec/changes/archive/<name>/ already exists` to `clear error if openspec/changes/archive/<YYYY-MM-DD>-<name>/ already exists`."
+    },
+    {
+      "pass": "6",
+      "severity": "WARNING",
+      "file": "openspec/changes/bootstrap-openspec-orbit/specs/orbit-archive-modifications/spec.md",
+      "line": 5,
+      "title": "W2 residue: upstream-preservation requirement names non-dated archive target",
+      "recommendation": "The requirement describes upstream's `/opsx:archive` core behavior — should say `move the change directory to openspec/changes/archive/<YYYY-MM-DD>-<name>/` to accurately reflect what upstream does (per upstream archive.md Step 5)."
+    }
+  ],
+  "stale_suppressed": [],
+  "final_assessment": "No critical issues. 4 warning(s) to consider. Ready to archive (with noted improvements).",
+  "iteration_note": "Note: 0 findings repeat from iter 1 (all iter-1 findings — internal 2 + codex 5 — are resolved). 4 new findings, ALL W2 residue at locations not surfaced by codex iter 1; the iter-2 sweep caught them. Meta-note: this is the change-completeness discipline catching incomplete application of the W2 fix — exactly the failure mode the discipline is codified to prevent. The discipline is doing what it should; the iter-1 mechanical fix wasn't thorough enough."
+}

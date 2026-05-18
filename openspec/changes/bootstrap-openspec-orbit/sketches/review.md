@@ -42,7 +42,7 @@ The merge happened after 4 review cycles converged cleanly on the v1 design; the
   - `--strict` — fail-fast on first CRITICAL.
   - `--fresh` — clean-context subagent for main work; opt-in.
   - `--mark` (proposal mode only) — drop `@review:` markers in artifacts based on findings.
-  - `--skip-verify` (system mode only) — skip Pass 0 if `/opsx:verify-change` ran separately.
+  - `--skip-verify` (system mode only) — skip Pass 0 if `/opsx:verify` ran separately.
 
 ## What it reads
 

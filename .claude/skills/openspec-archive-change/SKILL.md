@@ -180,10 +180,10 @@ When `/opsx:archive --skip-audit <name>` is invoked, the entire Step 3.5 audit i
 After upstream Step 5 (move-to-archive) completes successfully, write a JSON summary to:
 
 ```
-openspec/changes/archive/<change-name>/.orbit-runs/archive-<TS>.json
+openspec/changes/archive/<YYYY-MM-DD>-<change-name>/.orbit-runs/archive-<TS>.json
 ```
 
-(The `.orbit-runs/` directory should be present already — it moved with the change content. If somehow absent, create it.)
+Where `<YYYY-MM-DD>` is the date prefix upstream's move step added (per `mv openspec/changes/<name> openspec/changes/archive/YYYY-MM-DD-<name>` at Step 5). The `.orbit-runs/` directory should be present already — it moved with the change content. If somehow absent, create it.
 
 Full schema lives at `references/archive-summary-schema.md` — read that file when composing the summary.
 
@@ -191,18 +191,18 @@ Full schema lives at `references/archive-summary-schema.md` — read that file w
 
 Upstream Step 5's `mv openspec/changes/<name> openspec/changes/archive/YYYY-MM-DD-<name>` already moves the entire change directory, including `.orbit-runs/`. No additional handling required — `.orbit-runs/` is just a subdirectory of the change.
 
-All prior internal-run summaries (`review-*-*.json`, `audit-drift-*.json`, `address-reviews-*.json`) and external-review findings (`external-*.md` + `external-prompt-*-*.md`) persist in the archived location at `openspec/changes/archive/<name>/.orbit-runs/`.
+All prior internal-run summaries (`review-*-*.json`, `audit-drift-*.json`, `address-reviews-*.json`) and external-review findings (`external-*.md` + `external-prompt-*-*.md`) persist in the archived location at `openspec/changes/archive/<YYYY-MM-DD>-<change-name>/.orbit-runs/`.
 
 ## Edge cases
 
 ### Already archived
 
-If `openspec/changes/archive/<change-name>/` already exists when the user invokes `/opsx:archive <change-name>`:
+If `openspec/changes/archive/<YYYY-MM-DD>-<change-name>/` already exists when the user invokes `/opsx:archive <change-name>` (i.e., a same-day prior archive for the same change name):
 
 Halt with a clear error:
 
 ```
-Change <name> is already at openspec/changes/archive/<name>/.
+Change <name> is already at openspec/changes/archive/<YYYY-MM-DD>-<name>/.
 ```
 
 Do NOT prompt to overwrite; the user must explicitly resolve the conflict (rename existing archive, use different date, etc.).

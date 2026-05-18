@@ -1,0 +1,106 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-18T18:22:37Z",
+  "source": "from-file",
+  "source_path": "openspec/changes/bootstrap-openspec-orbit/.orbit-runs/external-system-2026-05-18T17-33-40Z.md",
+  "external_reviewer": "GPT-5 Codex",
+  "input_findings_summary": {
+    "critical": 0,
+    "warning": 4,
+    "suggestion": 1
+  },
+  "pushback_verification": "All 5 findings verified against current state via grep + targeted reads; all confirmed real and applicable; 0 stale suppressions. Notable: this is the first GPT-5 Codex review on the repo, and the first external system-mode review — each surfaced different classes of finding than the proposal-mode reviewers did.",
+  "resolution_summary": {
+    "resolved": 5,
+    "stale_suppressed": 0,
+    "deferred": 0,
+    "escalated": 0
+  },
+  "resolutions": [
+    {
+      "severity": "WARNING",
+      "title": "/opsx:verify-change naming drift (skill name leaked into slash-command invocations)",
+      "marker_source": "external",
+      "file": ".claude/commands/opsx/review.md",
+      "line": 45,
+      "classification": "trivial_fix",
+      "action": "Mechanical replacement: `/opsx:verify-change <name>` → `/opsx:verify <name>` across 6 occurrences. The skill name `openspec-verify-change` is preserved where it's actually the skill being referenced (vs the slash-command invocation, which is `/opsx:verify`). Per codex's recommendation: 'reserve `openspec-verify-change` for the skill name.'",
+      "files_updated": [
+        ".claude/commands/opsx/review.md (line 45)",
+        "openspec/changes/bootstrap-openspec-orbit/specs/orbit-review/spec.md (lines 53 + 193)",
+        "openspec/changes/bootstrap-openspec-orbit/tasks.md (task 2.5)",
+        "openspec/changes/bootstrap-openspec-orbit/explore.md (line 141)",
+        "openspec/changes/bootstrap-openspec-orbit/sketches/review.md (line 45)"
+      ],
+      "ripple_flagged": [],
+      "outcome": "resolved"
+    },
+    {
+      "severity": "WARNING",
+      "title": "Archive-summary paths missing the YYYY-MM-DD- date prefix that upstream's archive move adds",
+      "marker_source": "external",
+      "file": ".claude/skills/openspec-archive-change/SKILL.md",
+      "line": 183,
+      "classification": "trivial_fix",
+      "action": "Updated all orbit-additions references to the archived location to use the dated form `openspec/changes/archive/<YYYY-MM-DD>-<change-name>/.orbit-runs/`, matching upstream Step 5's `mv` target. Added clarifying notes that the date prefix is added by upstream's archive move step. Updates span 10 occurrences across SKILL, references/, command body, spec, tasks, design, README, CLAUDE.md.",
+      "files_updated": [
+        ".claude/skills/openspec-archive-change/SKILL.md (Step 5.5 path + .orbit-runs/ description)",
+        ".claude/skills/openspec-archive-change/references/archive-summary-schema.md (path header)",
+        ".claude/commands/opsx/archive.md (Step 5.5 summary)",
+        "openspec/changes/bootstrap-openspec-orbit/specs/orbit-archive-modifications/spec.md (3 scenarios)",
+        "openspec/changes/bootstrap-openspec-orbit/tasks.md (task 9.6)",
+        "openspec/changes/bootstrap-openspec-orbit/design.md (D9 archive-move)",
+        "README.md (workflow diagram + archive section + .orbit-runs/ section)",
+        "CLAUDE.md (persistence layout)"
+      ],
+      "ripple_flagged": [],
+      "outcome": "resolved"
+    },
+    {
+      "severity": "WARNING",
+      "title": "address-reviews flag surface inconsistent across README / command body / SKILL / spec",
+      "marker_source": "external",
+      "file": "README.md",
+      "line": 400,
+      "classification": "decision_required",
+      "action": "User chose option (a): drop `--list` and `--only` from README + command body as redundant with the positional `<scope>` argument (which already accepts paths, globs, and change names). `--list` (preview-only) deferred to v2 per issue #3 — YAGNI for lean v1 (D6). Updated README's Flags table, command body's Flags section, and tasks.md task 6.4 description to reflect the cut.",
+      "files_updated": [
+        "README.md (Flags table for /opsx:address-reviews)",
+        ".claude/commands/opsx/address-reviews.md (Flags section)",
+        "openspec/changes/bootstrap-openspec-orbit/tasks.md (task 6.4 description)"
+      ],
+      "ripple_flagged": [],
+      "outcome": "resolved"
+    },
+    {
+      "severity": "WARNING",
+      "title": "External-findings parser contract has ambiguity: prompt-template uses `...` ellipsis; empty-section sentinel undocumented",
+      "marker_source": "external",
+      "file": ".claude/skills/openspec-review-external/references/prompt-template.md",
+      "line": 71,
+      "classification": "trivial_fix",
+      "action": "Expanded prompt-template.md's WARNING and SUGGESTION sections to show the full `### <Title>` + `**File**:` + `**Description**:` triple shape (replacing the `...` ellipsis). Added explicit guidance to use `None.` as the empty-section sentinel. Also added a 'Tolerated variations' entry to external-findings-format.md documenting `None.` (and the case-insensitive variants `None` / `none.` / `(none)`) as the empty-severity sentinel. Added a quick worked-example block to external-findings-format.md citing this very codex run as the real-world reference.",
+      "files_updated": [
+        ".claude/skills/openspec-review-external/references/prompt-template.md (expanded WARNING/SUGGESTION shape)",
+        ".claude/skills/openspec-address-reviews/references/external-findings-format.md (None. sentinel + worked example)"
+      ],
+      "ripple_flagged": [],
+      "outcome": "resolved"
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "README install-verify claims modified skills show `openspec-orbit` in metadata.author; actual files preserve upstream `author: openspec`",
+      "marker_source": "external",
+      "file": "README.md",
+      "line": 909,
+      "classification": "decision_required",
+      "action": "User chose option (a): drop the author-change claim from README; rely on the presence of the `## Orbit additions` section appended at the bottom of each modified SKILL.md as the verification signal. This preserves the 'purely additive, upstream content + frontmatter metadata verbatim' design property rather than mutating upstream metadata.",
+      "files_updated": ["README.md (install verify-step phrasing)"],
+      "ripple_flagged": [],
+      "outcome": "resolved"
+    }
+  ],
+  "remaining_markers_in_scope": 0,
+  "persisted_escalations": [],
+  "next_recommended": "Commit the 5 resolutions; optionally run /opsx:review --as system iter 2 to confirm clean baseline before /opsx:archive. Or proceed straight to archive — this iteration's findings were all genuinely real-class issues, but the convergence signal is strong: a second iter-2 review pass is unlikely to surface new categories of finding. Pragmatic next step is straight to archive."
+}

@@ -164,9 +164,9 @@ The `openspec-archive-change` skill is extended by openspec-orbit with:
 - **Unresolved `@review:` marker warning** (new Step 1.5): grep the change directory for markers before proceeding; prompt user to address now / convert to `@todo:` / proceed with markers.
 - **Pre-archive `/opsx:audit-drift` sweep** (new Step 3.5): auto-invoked unless `--skip-audit` is set. CRITICAL findings trigger a three-way prompt (address now / proceed despite critical / abort). Warnings logged but do not gate. Audit failures result in proceed-with-warning, not block.
 - **`--skip-audit` flag**: bypass the pre-archive sweep entirely (use case: user already ran `/opsx:audit-drift` manually). Decision recorded in the archive run summary.
-- **Archive run summary** (new Step 5.5): JSON written to `openspec/changes/archive/<name>/.orbit-runs/archive-<TS>.json` capturing audit outcome, user decision, sync-specs results, and any warnings. Schema lives at `references/archive-summary-schema.md`.
+- **Archive run summary** (new Step 5.5): JSON written to `openspec/changes/archive/<YYYY-MM-DD>-<name>/.orbit-runs/archive-<TS>.json` (date prefix added by upstream's archive move step) capturing audit outcome, user decision, sync-specs results, and any warnings. Schema lives at `references/archive-summary-schema.md`.
 - **`.orbit-runs/` moves with the change**: no special handling required; the directory is part of the change content moved in upstream Step 5.
-- **Already-archived halt**: clear error if `openspec/changes/archive/<name>/` already exists; do NOT auto-overwrite.
+- **Already-archived halt**: clear error if `openspec/changes/archive/<YYYY-MM-DD>-<name>/` already exists; do NOT auto-overwrite.
 - **Three execution disciplines** (read-before-reference / change completeness / pushback) per orbit-conventions.
 
 **Important**: orbit treats audit findings as **informational, not gate**. The archive command does NOT auto-resolve findings, does NOT auto-invoke `/opsx:review --as system` (that's the user's gate to run separately if desired), and does NOT block on audit-tool failures.

@@ -163,7 +163,7 @@ End-to-end loop, from idea to archived change:
 │      ↓                                                              │
 │   Auto-invokes /opsx:audit-drift as pre-archive sweep. Critical-    │
 │   drift findings prompt user (not block). On confirm: runs sync-    │
-│   specs; moves change to openspec/changes/archive/<name>/.          │
+│   specs; moves change to openspec/changes/archive/<DATE>-<name>/.   │
 │                                                                     │
 └─────────────────────────────────────────────────────────────────────┘
 
@@ -399,10 +399,10 @@ Flags:
 ```
 /opsx:address-reviews [<scope>]
   [--from-file <path>]               ingest external-review findings as virtual markers
-  [--list]                            preview only; don't act
-  [--only <pattern>]                  narrow scan scope
-  [--keep-resolved-markers]           debug; don't remove on resolution
+  [--keep-resolved-markers]          debug; don't remove on resolution
 ```
+
+`<scope>` accepts a path, a pattern (glob), or a change name — covers what `--only` would do. Preview / dry-run (`--list`) and other extras are deferred to v2 per issue #3.
 
 Full design: [`sketches/address-reviews.md`](./openspec/changes/bootstrap-openspec-orbit/sketches/address-reviews.md)
 
@@ -446,7 +446,7 @@ Full design: [`sketches/review-external.md`](./openspec/changes/bootstrap-opensp
 
 Auto-invokes `/opsx:audit-drift` as a pre-archive sweep. Critical-drift findings trigger a three-way prompt (address now / proceed / abort) — not a hard gate. User can archive with known drift if intentional. Writes an archive run summary to `.orbit-runs/archive-<TS>.json` capturing the audit outcome and user decision.
 
-After the audit step: standard upstream behavior — runs `sync-specs`, moves change to `openspec/changes/archive/<name>/`.
+After the audit step: standard upstream behavior — runs `sync-specs`, moves change to `openspec/changes/archive/<YYYY-MM-DD>-<name>/`.
 
 Flags:
 
@@ -678,7 +678,7 @@ Example:
 
 Iteration history for a change. **Committed to the repo, not gitignored** — the iteration record is real evidence of the review cycle and supports team handoffs. Dot-prefix signals "orbit metadata, not part of the canonical openspec change," so upstream's view of the change directory stays clean.
 
-Contains both internal-run summaries (JSON, one per review/audit/archive invocation) and external-review findings (markdown, one per `/opsx:review-external` invocation). Travels with the change into `openspec/changes/archive/<name>/.orbit-runs/` when archived, preserving the full review history alongside the archived artifacts.
+Contains both internal-run summaries (JSON, one per review/audit/archive invocation) and external-review findings (markdown, one per `/opsx:review-external` invocation). Travels with the change into `openspec/changes/archive/<YYYY-MM-DD>-<name>/.orbit-runs/` when archived (the `<YYYY-MM-DD>-` prefix is added by upstream's archive move step), preserving the full review history alongside the archived artifacts.
 
 **File naming inside `.orbit-runs/`**:
 
@@ -906,7 +906,7 @@ Copy the snippet from this README's [Cross-cutting disciplines](#cross-cutting-d
 
 ### Verify
 
-After overlay, the available skills should include `openspec-review`, `openspec-review-external`, `openspec-audit-drift`, `openspec-address-reviews`, plus the existing upstream skills now showing "openspec-orbit" in their `metadata.author` for the three modified ones.
+After overlay, the available skills should include `openspec-review`, `openspec-review-external`, `openspec-audit-drift`, `openspec-address-reviews`, plus the three modified upstream skills (`openspec-explore`, `openspec-propose`, `openspec-archive-change`) which now have an `## Orbit additions` section appended at the bottom of each SKILL.md. The upstream content + frontmatter metadata is preserved verbatim — orbit's additions are purely additive.
 
 ```bash
 ls .claude/skills/openspec-*/SKILL.md | wc -l   # 15 total (11 upstream openspec-* + 4 new orbit)

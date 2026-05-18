@@ -50,7 +50,7 @@ The system SHALL execute 7 review passes in system mode: Pass 0 delegates to ups
 #### Scenario: Pass 0 delegates to upstream verify-change
 
 - **WHEN** the command runs as `--as system` and `--skip-verify` is not specified
-- **THEN** Pass 0 invokes `/opsx:verify-change <change-name>` (via the upstream `openspec-verify-change` skill) and folds its CRITICAL/WARNING/SUGGESTION findings into the report under the appropriate scorecard dimensions
+- **THEN** Pass 0 invokes `/opsx:verify <change-name>` (via the upstream `openspec-verify-change` skill) and folds its CRITICAL/WARNING/SUGGESTION findings into the report under the appropriate scorecard dimensions
 
 #### Scenario: System mode default depth runs all passes
 
@@ -190,7 +190,7 @@ The system SHALL support a `--mark` flag that, after the review report is genera
 
 ### Requirement: `--skip-verify` flag is system-mode only
 
-The system SHALL support a `--skip-verify` flag in system mode to bypass Pass 0 when the user has already run `/opsx:verify-change` separately.
+The system SHALL support a `--skip-verify` flag in system mode to bypass Pass 0 when the user has already run `/opsx:verify` separately.
 
 #### Scenario: `--skip-verify` flag in system mode
 

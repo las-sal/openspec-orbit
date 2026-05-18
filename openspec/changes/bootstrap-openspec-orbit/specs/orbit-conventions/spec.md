@@ -148,7 +148,7 @@ The system SHALL define `openspec/changes/<change-name>/.orbit-runs/` as the per
 #### Scenario: Travels with archive
 
 - **WHEN** the change is archived
-- **THEN** the `.orbit-runs/` directory moves to `openspec/changes/archive/<name>/.orbit-runs/` as part of the change content
+- **THEN** the `.orbit-runs/` directory moves to `openspec/changes/archive/<YYYY-MM-DD>-<name>/.orbit-runs/` as part of the change content
 
 ### Requirement: Internal-run JSON summary format
 

@@ -12,7 +12,7 @@
 - [x] 2.2 Author `.claude/commands/opsx/review.md` slash command body that surfaces both modes with concise arg/flag descriptions
 - [x] 2.3 Implement `--as proposal|system` flag with state-based mode inference from `tasks.md` (unchecked → proposal; all checked + code → system; ambiguous → `AskUserQuestion`)
 - [x] 2.4 Implement proposal-mode passes 1–9 (Structure & Delta, Internal Coherence, Cross-Doc, Archive Consistency, Codegen Readiness, Gap Hunt, Drift Hunt, Inline Review Marker Residue, Pre-Handoff Sweep)
-- [x] 2.5 Implement system-mode Pass 0: delegate to upstream `/opsx:verify-change` via the `openspec-verify-change` skill
+- [x] 2.5 Implement system-mode Pass 0: delegate to upstream `/opsx:verify` via the `openspec-verify-change` skill
 - [x] 2.6 Implement system-mode passes 1–6 (Baseline Compliance, Cohesion, Surface Walk, Perspective Reviews, Critical-Path Scan, Drift/Residue)
 - [x] 2.7 Implement system-mode Pass 6 invocation of `/opsx:audit-drift` as a library function
 - [x] 2.8 Implement `.orbit-runs/review-<mode>-<TS>.json` summary writer (per-mode iteration counter, fields per `orbit-conventions`)
@@ -55,7 +55,7 @@
 - [x] 6.1 Author `.claude/skills/openspec-address-reviews/SKILL.md` describing the lean v1 lifecycle (discover → triage → walk → ripple flag → report). **Embed all three execution disciplines** as self-contained reminder sections in the prompt: read-before-reference (when applying fixes that reference existing code/specs), change completeness (when a marker's resolution touches related artifacts), pushback (verify each marker against current state before fixing — the primary discipline for this command).
 - [x] 6.2 Author `.claude/commands/opsx/address-reviews.md` slash command body
 - [x] 6.3 Implement default whole-repo `@review:` marker discovery with safe exclusions
-- [x] 6.4 Implement `--only <pattern>` scoping
+- [x] 6.4 Implement scoping (positional `<scope>` accepts path / glob / change name; `--only` cut from v1 as redundant with positional — see issue #3)
 - [x] 6.5 Implement pushback discipline step (verify against current state before fixing)
 - [x] 6.6 Implement classification flow (trivial fix / decision / stale / unresolvable) with `AskUserQuestion` integration
 - [x] 6.7 Implement marker removal invariant (and `--keep-resolved-markers` debug override)
@@ -101,7 +101,7 @@
 - [x] 9.3 Implement pre-archive `/opsx:audit-drift` invocation as a library call
 - [x] 9.4 Implement critical-drift three-way prompt (address now / proceed / abort) via `AskUserQuestion`
 - [x] 9.5 Implement `--skip-audit` flag handling
-- [x] 9.6 Implement archive-run-summary writer at `openspec/changes/archive/<name>/.orbit-runs/archive-<TS>.json` with audit and sync-specs results plus user decision
+- [x] 9.6 Implement archive-run-summary writer at `openspec/changes/archive/<YYYY-MM-DD>-<name>/.orbit-runs/archive-<TS>.json` with audit and sync-specs results plus user decision
 - [x] 9.7 Implement `.orbit-runs/` directory move alongside the change content
 - [x] 9.8 Implement unresolved-`@review:`-marker warning before completing archive
 - [x] 9.9 Implement edge cases: already-archived halt; audit-drift failure → proceed with warning

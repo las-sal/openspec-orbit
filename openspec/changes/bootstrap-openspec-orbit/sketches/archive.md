@@ -7,7 +7,7 @@
 
 Upstream's `/opsx:archive` does the work of moving an applied change into the historical archive:
 
-- Moves `openspec/changes/<name>/` → `openspec/changes/archive/<name>/`
+- Moves `openspec/changes/<name>/` → `openspec/changes/archive/<YYYY-MM-DD>-<name>/`
 - Runs `sync-specs` to merge delta specs into the canonical `openspec/specs/<capability>/spec.md`
 - Marks the change as archived
 
@@ -63,7 +63,7 @@ Two additions:
         │
         ▼
    5. Write archive run summary to
-      openspec/changes/archive/<name>/.orbit-runs/
+      openspec/changes/archive/<YYYY-MM-DD>-<name>/.orbit-runs/
       archive-<TS>.json
         │
         ▼
@@ -87,7 +87,7 @@ Bypasses Step 2 entirely. Used when:
 
 ## Archive run summary format
 
-Written to `openspec/changes/archive/<name>/.orbit-runs/archive-<TS>.json` after the archive completes:
+Written to `openspec/changes/archive/<YYYY-MM-DD>-<name>/.orbit-runs/archive-<TS>.json` after the archive completes:
 
 ```json
 {
@@ -111,7 +111,7 @@ Written to `openspec/changes/archive/<name>/.orbit-runs/archive-<TS>.json` after
 
 Possible `user_decision` values: `proceeded_with_no_critical`, `proceeded_despite_critical`, `aborted`, `audit_skipped_via_flag`. Provides closure on the iteration history that `.orbit-runs/` tracks for each change.
 
-The `.orbit-runs/` directory **moves with the change** during archive (from `openspec/changes/<name>/.orbit-runs/` to `openspec/changes/archive/<name>/.orbit-runs/`). All prior internal-run and external-review summaries persist as archived history.
+The `.orbit-runs/` directory **moves with the change** during archive (from `openspec/changes/<name>/.orbit-runs/` to `openspec/changes/archive/<YYYY-MM-DD>-<name>/.orbit-runs/`). All prior internal-run and external-review summaries persist as archived history.
 
 ## Edge cases
 
@@ -119,7 +119,7 @@ The `.orbit-runs/` directory **moves with the change** during archive (from `ope
 |---|---|
 | `audit-drift` fails to run (parse error, internal exception) | Warn, but allow archive to continue. Log the failure in the archive run summary so traceability is preserved. |
 | `audit-drift` finds CRITICAL drift but `--skip-audit` is set | The flag wins — archive proceeds. Summary still records that the audit was skipped. |
-| Change already archived | Halt with clear error: "Change <name> is already at openspec/changes/archive/<name>/." |
+| Change already archived | Halt with clear error: "Change <name> is already at openspec/changes/archive/<YYYY-MM-DD>-<name>/." |
 | Change has incomplete tasks | Upstream handles (`verify-change`-style check). orbit doesn't change this. |
 | User aborts at the prompt | No archive happens; no summary written (nothing to summarize). Change remains in `openspec/changes/<name>/` ready for next attempt. |
 
@@ -169,10 +169,10 @@ code generated; tasks marked
         ├── runs sync-specs (merge deltas to baseline)
         │
         ├── moves openspec/changes/<name>/
-        │     → openspec/changes/archive/<name>/
+        │     → openspec/changes/archive/<YYYY-MM-DD>-<name>/
         │
         ├── writes archive run summary to
-        │   openspec/changes/archive/<name>/.orbit-runs/archive-<TS>.json
+        │   openspec/changes/archive/<YYYY-MM-DD>-<name>/.orbit-runs/archive-<TS>.json
         │
         ▼
    change is archived

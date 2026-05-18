@@ -42,7 +42,7 @@ Invokes the `openspec-review` skill, which:
 4. Checks `.orbit-runs/` for prior `review-<mode>-*.json` summaries — informs iteration tracking and stale-finding suppression
 5. Runs mode-specific passes:
    - **Proposal**: Passes 1–9 (Structure & Delta, Internal Coherence, Cross-Doc, Archive Consistency, Codegen Readiness, Gap Hunt, Drift Hunt, Inline Marker Residue, Pre-Handoff Sweep)
-   - **System**: Pass 0 (delegates to `/opsx:verify-change`) + Passes 1–6 (Baseline Compliance, Cohesion, Surface Walk, Perspective Reviews, Critical-Path Scan, Drift/Residue via `/opsx:audit-drift`)
+   - **System**: Pass 0 (delegates to `/opsx:verify` via the upstream `openspec-verify-change` skill) + Passes 1–6 (Baseline Compliance, Cohesion, Surface Walk, Perspective Reviews, Critical-Path Scan, Drift/Residue via `/opsx:audit-drift`)
 6. Rolls findings into the 3-dimension scorecard (Completeness / Correctness / Coherence)
 7. Emits the final-assessment line (mode-specific gate text: `/opsx:apply` vs `/opsx:archive`)
 8. Persists a run summary to `openspec/changes/<change-name>/.orbit-runs/review-<mode>-<TS>.json`

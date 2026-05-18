@@ -1,0 +1,116 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-18T18:38:52Z",
+  "source": "internal-review-summary",
+  "source_path": "openspec/changes/bootstrap-openspec-orbit/.orbit-runs/review-system-2026-05-18T18-29-46Z.json",
+  "source_note": "Bare invocation interpreted in context as 'walk iter-2 system-mode review findings'. The SKILL's --from-file only formally supports external-review markdown; ingesting internal-review JSON is a v1 gap (no parser for the JSON shape). Doing it inline as an agent-driven walk. Possible v2 issue to support --from-internal <run-summary.json>.",
+  "external_reviewer": null,
+  "input_findings_summary": {
+    "critical": 0,
+    "warning": 4,
+    "suggestion": 0
+  },
+  "pushback_verification": "All 4 iter-2 findings already pushback-verified during the review pass (grep-confirmed at cited line:col). Pre-fix comprehensive sweep surfaced 2 additional non-iter-2 normative locations + 8 historical locations the iter-2 review missed; addressed all under the new historical-fidelity-vs-operationalizable-reference principle (saved to memory).",
+  "resolution_summary": {
+    "resolved": 14,
+    "stale_suppressed": 0,
+    "deferred": 0,
+    "escalated": 0
+  },
+  "resolutions": [
+    {
+      "severity": "WARNING",
+      "title": "iter-2 finding: 'Already archived' section archive path",
+      "marker_source": "internal-review",
+      "file": ".claude/skills/openspec-archive-change/SKILL.md",
+      "line": 200,
+      "classification": "trivial_fix",
+      "action": "Updated both the existence-check path (line 200) and the error-message text (line 205) to use the dated form. Reframed the section opener to clarify the case (same-day re-archive of same change name).",
+      "files_updated": [".claude/skills/openspec-archive-change/SKILL.md"],
+      "ripple_flagged": [],
+      "outcome": "resolved"
+    },
+    {
+      "severity": "WARNING",
+      "title": "iter-2 finding: command body 'Already-archived halt' summary",
+      "marker_source": "internal-review",
+      "file": ".claude/commands/opsx/archive.md",
+      "line": 169,
+      "classification": "trivial_fix",
+      "action": "Dated form applied.",
+      "files_updated": [".claude/commands/opsx/archive.md"],
+      "ripple_flagged": [],
+      "outcome": "resolved"
+    },
+    {
+      "severity": "WARNING",
+      "title": "iter-2 finding: upstream-preservation requirement names non-dated target",
+      "marker_source": "internal-review",
+      "file": "openspec/changes/bootstrap-openspec-orbit/specs/orbit-archive-modifications/spec.md",
+      "line": 5,
+      "classification": "trivial_fix",
+      "action": "Dated form applied to the upstream-preservation requirement text (which describes what upstream actually does — should match upstream behavior accurately).",
+      "files_updated": ["openspec/changes/bootstrap-openspec-orbit/specs/orbit-archive-modifications/spec.md"],
+      "ripple_flagged": [],
+      "outcome": "resolved"
+    },
+    {
+      "severity": "WARNING",
+      "title": "NEW (sweep): audit-drift Cat 4 walk uses non-dated path",
+      "marker_source": "internal-sweep",
+      "file": ".claude/skills/openspec-audit-drift/SKILL.md",
+      "line": 120,
+      "classification": "trivial_fix",
+      "action": "Updated Cat 4 archive-coherence list step to reference the dated archive form (with parenthetical noting it's upstream's form).",
+      "files_updated": [".claude/skills/openspec-audit-drift/SKILL.md"],
+      "ripple_flagged": [],
+      "outcome": "resolved"
+    },
+    {
+      "severity": "WARNING",
+      "title": "NEW (sweep): orbit-conventions spec uses non-dated archive path",
+      "marker_source": "internal-sweep",
+      "file": "openspec/changes/bootstrap-openspec-orbit/specs/orbit-conventions/spec.md",
+      "line": 151,
+      "classification": "trivial_fix",
+      "action": "Dated form applied.",
+      "files_updated": ["openspec/changes/bootstrap-openspec-orbit/specs/orbit-conventions/spec.md"],
+      "ripple_flagged": [],
+      "outcome": "resolved"
+    },
+    {
+      "severity": "WARNING",
+      "title": "NEW (sweep): explore.md historical record names non-dated path",
+      "marker_source": "internal-sweep",
+      "file": "openspec/changes/bootstrap-openspec-orbit/explore.md",
+      "line": 152,
+      "classification": "trivial_fix",
+      "action": "Per user's historical-fidelity principle (now saved to memory): paths are operationalizable references that could cause incorrect code generation or tests; the principle's exception applies. Updated to dated form despite explore.md being a historical record. The 'why' (matching upstream behavior) is preserved; only the specific path is corrected.",
+      "files_updated": ["openspec/changes/bootstrap-openspec-orbit/explore.md"],
+      "ripple_flagged": [],
+      "outcome": "resolved"
+    },
+    {
+      "severity": "WARNING",
+      "title": "NEW (sweep): sketches/archive.md has 7 non-dated path references",
+      "marker_source": "internal-sweep",
+      "file": "openspec/changes/bootstrap-openspec-orbit/sketches/archive.md",
+      "line": 0,
+      "classification": "trivial_fix",
+      "action": "Same historical-fidelity-exception applies: paths are operationalizable. Updated 7 occurrences (lines 10, 66, 90, 114 x2, 122, 172, 175) to the dated form. Used replace_all for the recurring `archive/<name>/.orbit-runs/` pattern (5 instances) plus 3 standalone Edits for the other patterns.",
+      "files_updated": ["openspec/changes/bootstrap-openspec-orbit/sketches/archive.md"],
+      "ripple_flagged": [],
+      "outcome": "resolved"
+    }
+  ],
+  "principle_codified": {
+    "name": "Historical fidelity vs operationalizable references",
+    "rule": "Preserve historical artifacts (explore.md, sketches/, archived material) unless they contain references that could cause incorrect code generation or tests. Decision rationale and reasoning preserved; specific operationalizable references (paths, signatures, names, schemas) updated when wrong.",
+    "saved_to_memory": "/Users/sal/.claude/projects/-Users-sal-code-openspec-review/memory/feedback_historical_fidelity.md",
+    "future_codification_candidate": "Add as a 4th cross-cutting discipline in orbit-conventions alongside read-before-reference / change-completeness / pushback — in a future change, not this one."
+  },
+  "remaining_markers_in_scope": 0,
+  "persisted_escalations": [],
+  "v1_gap_noted": "address-reviews v1 --from-file only parses the external-review markdown format; internal-review JSON summaries cannot be ingested via --from-file. v2 candidate: support --from-internal <run-summary.json> or extend --from-file's parser to detect format.",
+  "next_recommended": "Commit + go to archive. The W2 cleanup has now spanned 3 iterations (codex iter-1 surfaced; my iter-1 fix partial; iter-2 review caught 4; this address-reviews comprehensive sweep caught 10 more for 14 total in scope). Each iteration converged tighter; the comprehensive sweep here was the truly thorough pass. /opsx:archive's pre-archive audit-drift will be the final gate."
+}

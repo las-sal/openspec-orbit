@@ -2,7 +2,7 @@
 
 ### Requirement: Upstream archive behavior preserved
 
-The system SHALL preserve upstream `/opsx:archive`'s core behavior: validate the change is ready, run `sync-specs` to merge deltas into baseline, and move the change directory to `openspec/changes/archive/<name>/`.
+The system SHALL preserve upstream `/opsx:archive`'s core behavior: validate the change is ready, run `sync-specs` to merge deltas into baseline, and move the change directory to `openspec/changes/archive/<YYYY-MM-DD>-<name>/`.
 
 #### Scenario: Standard archive flow
 
@@ -54,7 +54,7 @@ The system SHALL prompt the user (not block) when audit-drift reports critical f
 
 ### Requirement: Archive run summary written
 
-The system SHALL write a JSON summary to `openspec/changes/archive/<change-name>/.orbit-runs/archive-<TS>.json` after a successful archive.
+The system SHALL write a JSON summary to `openspec/changes/archive/<YYYY-MM-DD>-<change-name>/.orbit-runs/archive-<TS>.json` after a successful archive (the `<YYYY-MM-DD>-` prefix is added by upstream's archive move step).
 
 #### Scenario: Summary contents
 
@@ -67,8 +67,8 @@ The system SHALL move the change's `.orbit-runs/` directory along with the rest 
 
 #### Scenario: Move with the change
 
-- **WHEN** the archive moves `openspec/changes/<name>/` to `openspec/changes/archive/<name>/`
-- **THEN** the `.orbit-runs/` subdirectory is moved as part of the change content; all prior internal-run summaries and external-review findings persist in the archived location
+- **WHEN** the archive moves `openspec/changes/<name>/` to `openspec/changes/archive/<YYYY-MM-DD>-<name>/`
+- **THEN** the `.orbit-runs/` subdirectory is moved as part of the change content; all prior internal-run summaries and external-review findings persist in the archived location at `openspec/changes/archive/<YYYY-MM-DD>-<name>/.orbit-runs/`
 
 ### Requirement: Unresolved marker warning
 
@@ -90,8 +90,8 @@ The system SHALL handle archive edge cases predictably.
 
 #### Scenario: Already archived
 
-- **WHEN** the user invokes `/opsx:archive <change-name>` for a change already in `openspec/changes/archive/<change-name>/`
-- **THEN** the command halts with a clear error: "Change <name> is already at openspec/changes/archive/<name>/."
+- **WHEN** the user invokes `/opsx:archive <change-name>` for a change already in `openspec/changes/archive/<YYYY-MM-DD>-<change-name>/`
+- **THEN** the command halts with a clear error: "Change <name> is already at openspec/changes/archive/<YYYY-MM-DD>-<name>/."
 
 #### Scenario: audit-drift fails to run
 

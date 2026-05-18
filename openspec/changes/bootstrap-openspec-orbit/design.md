@@ -125,7 +125,7 @@ Pre-propose, exploration material lives at `openspec/explore/<name>/`. When `/op
 
 **Rationale:** Enables convergence tracking (iteration note in review reports), preserves cross-AI cycle history, supports team handoffs. Dot-prefix signals "orbit metadata, not part of canonical openspec change." Committed because the history is real evidence of the review cycle.
 
-The directory moves with the change into `openspec/changes/archive/<name>/.orbit-runs/` during archive.
+The directory moves with the change into `openspec/changes/archive/<YYYY-MM-DD>-<name>/.orbit-runs/` during archive (the `<YYYY-MM-DD>-` prefix is added by upstream's archive move step).
 
 ### D10. `--parallel` opt-in in v1; subagents for context partitioning, not just speed
 

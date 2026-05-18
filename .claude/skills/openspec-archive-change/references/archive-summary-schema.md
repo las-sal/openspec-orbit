@@ -1,6 +1,6 @@
 # Reference: archive run-summary schema
 
-The orbit additions to `/opsx:archive` write a JSON summary to `openspec/changes/archive/<change-name>/.orbit-runs/archive-<TS>.json` after a successful archive operation.
+The orbit additions to `/opsx:archive` write a JSON summary to `openspec/changes/archive/<YYYY-MM-DD>-<change-name>/.orbit-runs/archive-<TS>.json` after a successful archive operation (the `<YYYY-MM-DD>-` prefix is added by upstream's archive move step).
 
 ## Schema
 
