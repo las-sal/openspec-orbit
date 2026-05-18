@@ -22,6 +22,8 @@
 - [ ] 2.12 Implement `--parallel` subagent spawning — proposal mode parallelizes Passes 2, 4, 6; system mode parallelizes Passes 2, 3, 4, 5
 - [ ] 2.13 Test happy path against the orbit dev sandbox in proposal mode (change `bootstrap-openspec-orbit`) and system mode (a small applied change)
 
+> **Note**: Group 3 was intentionally merged into Group 2 when `/opsx:review-proposal` and `/opsx:review-system` were unified into the single `/opsx:review` command with `--as proposal|system` modes. The numbering gap (2 → 4) is preserved rather than renumbering downstream groups so that any external references to Group N (e.g., in commit messages, prior review findings) remain valid.
+
 ## 4. New skill: `/opsx:review-external`
 
 - [ ] 4.1 Author `.claude/skills/openspec-review-external/SKILL.md` describing handoff prompt generation

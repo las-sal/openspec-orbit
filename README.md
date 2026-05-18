@@ -43,7 +43,7 @@ An opinionated `.claude/` overlay for [@fission-ai/openspec](https://github.com/
 
 orbit is **not** a fork of the OpenSpec CLI. It's a downstream overlay that sits next to your project's existing `.claude/` directory after `openspec init` has run. It overrides/extends specific opsx skills and adds new ones — the CLI binary is unchanged.
 
-The overlay adds five new opsx commands and modifies three existing ones to bake in disciplines that have been working ad-hoc across real projects:
+The overlay adds four new opsx commands and modifies three existing ones to bake in disciplines that have been working ad-hoc across real projects:
 
 - **Editorial review passes** that complement upstream's structural `verify-change`
 - **A drift audit** that catches the gaps `sync-specs` doesn't (the lesson: delta-driven sync is necessary but not sufficient)
@@ -694,13 +694,12 @@ Unresolvable markers have three options (per-marker user choice):
 ├── commands/opsx/                ← slash command bodies (orbit ships overrides + new)
 │   ├── explore.md  propose.md  apply.md  archive.md  verify.md
 │   ├── new.md  continue.md  fast-forward.md  sync.md  onboard.md  bulk-archive.md
-│   └── [pending: proposal-mode review.md, system-mode review.md, audit-drift.md,
+│   └── [pending: review.md, audit-drift.md,
 │                 address-reviews.md, review-external.md]
 └── skills/                        ← skill definitions
     ├── openspec-*/SKILL.md       (12 upstream skills)
-    └── [pending: openspec-review/, openspec-review/,
-                  openspec-audit-drift/, openspec-address-reviews/,
-                  openspec-review-external/]
+    └── [pending: openspec-review/, openspec-audit-drift/,
+                  openspec-address-reviews/, openspec-review-external/]
 
 openspec/
 ├── changes/                       ← in-flight changes + archive (upstream)

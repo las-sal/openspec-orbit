@@ -117,10 +117,10 @@ The system SHALL emit a final-assessment line whose gate text depends on how aud
 - **WHEN** invoked as an archive pre-sweep with at least one CRITICAL finding
 - **THEN** the final assessment reads `X critical issue(s) found. Address before /opsx:archive?` (prompt, not gate)
 
-#### Scenario: Library call from system-mode review
+#### Scenario: Library call from `/opsx:review --as system`
 
-- **WHEN** invoked as a library function by system-mode review
-- **THEN** no standalone final-assessment line is emitted; findings are folded into system-mode review's report
+- **WHEN** invoked as a library function by `/opsx:review --as system` (Pass 6)
+- **THEN** no standalone final-assessment line is emitted; findings are folded into the review report's Coherence dimension
 
 ### Requirement: Flag family parity with review commands
 

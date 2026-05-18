@@ -245,8 +245,8 @@ Each of these has real value when the workflow demands it. Lean v1 ships the fou
                        resolution log
                               │
                               ▼
-                  (cycle: re-run proposal-mode review /
-                   system-mode review to confirm clean)
+                  (cycle: re-run /opsx:review --as proposal /
+                   /opsx:review --as system to confirm clean)
                               │
                               ▼
                        /opsx:apply or /opsx:archive
@@ -256,7 +256,7 @@ External review findings (codex, fresh-claude) in lean v1 are ingested directly 
 
 ## Parallels with review / audit commands
 
-| | proposal-mode review / system-mode review / audit-drift | address-reviews (lean v1) |
+| | `review --as proposal` / `review --as system` / `audit-drift` | address-reviews (lean v1) |
 |---|---|---|
 | Mode | scan + report | act + log |
 | Input | a scope (change name) | `@review:` markers in scope |

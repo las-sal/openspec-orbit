@@ -1,0 +1,74 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-18T13:55:10Z",
+  "change": "bootstrap-openspec-orbit",
+  "iteration": 5,
+  "source": "from-file",
+  "source_file": "openspec/changes/bootstrap-openspec-orbit/.orbit-runs/external-proposal-2026-05-18T13-46-41Z.md",
+  "external_reviewer": "GPT-5 Codex (iter 4 — post-rename pass)",
+  "input_findings_summary": {
+    "critical": 0,
+    "warning": 4,
+    "suggestion": 2
+  },
+  "executed_by": "manual dogfood (orbit not yet implemented)",
+  "pushback_verification": "all 6 findings verified against current state; 3 had stale form (my cleanup landed BEFORE codex's review propagated to the AI but AFTER codex completed its analysis — the underlying concerns were still valid even though the specific patterns had changed). All 6 were addressed substantively.",
+  "resolution_summary": {
+    "resolved": 6,
+    "stale_suppressed": 0,
+    "deferred": 0,
+    "escalated": 0
+  },
+  "resolutions": [
+    {
+      "severity": "WARNING",
+      "title": "Docs still count two review modes as two new commands (overall count says 5 but should be 4)",
+      "files_updated": [
+        "README.md ('What this is' intro)",
+        "openspec/changes/bootstrap-openspec-orbit/design.md (Goals)",
+        "openspec/changes/bootstrap-openspec-orbit/proposal.md (What Changes — collapsed two bullets into one)"
+      ],
+      "action": "Fixed count: 5 → 4 new commands; collapsed proposal.md's two separate '/opsx:review --as proposal' and '/opsx:review --as system' bullets into a single '/opsx:review <name> [--as proposal|system]' bullet describing both modes. Net-new finding from codex; my own cleanup missed this overall-count error.",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "WARNING",
+      "title": "README repo layout still points implementers at deleted review command files",
+      "files_updated": ["README.md (Repo layout block)"],
+      "action": "Fixed two corruptions in the pending-files list: 'proposal-mode review.md, system-mode review.md' (sed-corrupted) → 'review.md'; 'openspec-review/, openspec-review/' (duplicate from sed) → single 'openspec-review/'. Net-new finding from codex; my cleanup created this corruption.",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "WARNING",
+      "title": "orbit-conventions final-assessment contract names old review commands",
+      "files_updated": ["specs/orbit-conventions/spec.md:224"],
+      "action": "Stale form (cleanup had changed 'review-proposal'/'review-system' to 'proposal-mode review'/'system-mode review') but spirit of finding still valid — codex's preferred form ('/opsx:review --as proposal' / '/opsx:review --as system') is more specific for normative spec content. Applied codex's improvement.",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "WARNING",
+      "title": "audit-drift spec still treats review-system as caller/report owner",
+      "files_updated": ["specs/orbit-audit-drift/spec.md:120-123 (Library call scenario)"],
+      "action": "Stale form (cleanup had changed to 'system-mode review') but codex's improvement still valuable — used '/opsx:review --as system' for caller specificity. Also tightened 'review-system's report' phrasing to 'review report's Coherence dimension' (more precise about where audit-drift findings land).",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "address-reviews sketch closing diagram/table uses split review names",
+      "files_updated": ["sketches/address-reviews.md (composition diagram + parallels table)"],
+      "action": "Stale form (cleanup had partially updated to 'proposal-mode review' / 'system-mode review') but codex's preferred form ('review --as proposal' / 'review --as system') is more consistent with command-syntax style used in sibling sketches. Applied.",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "tasks.md numbering gap (Group 2 → Group 4)",
+      "files_updated": ["tasks.md (added explanatory note between Groups 2 and 4)"],
+      "action": "Chose the note approach (less invasive than renumbering Groups 4-12 → 3-11 and all sub-tasks). Note explains Group 3 was merged into Group 2 during the review-proposal/review-system unification, and preserves the gap so external references to Group N stay valid.",
+      "outcome": "resolved"
+    }
+  ],
+  "post_resolution_state": "0 unaddressed findings; openspec validate clean",
+  "final_assessment": "All 6 findings from codex iter 4 resolved (3 substantive net-new + 3 stale-form-but-spirit-valuable improvements). Change is ready for /opsx:apply.",
+  "lesson_captured": "User flagged (correctly) that I should not have left known residue for iter 4 to catch. The cleanup-before-review I did in response was the right move BUT it landed too late — codex had already started analysis against the pre-cleanup state. Result: codex's findings were a mix of 'real' and 'stale-form-of-real'. Lesson for next time: do the known-residue cleanup BEFORE pushing the prompt file that kicks off the review. Iter 4 still surfaced 2 fully net-new findings (the overall count error + the repo-layout corruption I introduced via sed), so the review still had value — but the friction of needing pushback on half the findings was avoidable.",
+  "next_recommended": "Move to /opsx:apply bootstrap-openspec-orbit. Five review iterations cumulative (1 internal + 4 external) with all findings resolved; no CRITICAL ever surfaced; finding count trajectory is clearly converging. Marginal value of another external pass is near zero."
+}

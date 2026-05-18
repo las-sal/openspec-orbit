@@ -221,7 +221,7 @@ The system SHALL use stock phrasings for the final-assessment line of review and
   - `X critical issue(s) found. Fix before <gate>.`
   - `No critical issues. Y warning(s) to consider. Ready <gate> (with noted improvements).`
   - `All checks passed. Ready <gate>.`
-  where `<gate>` is `/opsx:apply` for proposal-mode review, `/opsx:archive` for system-mode review, and varies per audit-drift invocation context
+  where `<gate>` is `/opsx:apply` for `/opsx:review --as proposal`, `/opsx:archive` for `/opsx:review --as system`, and varies per audit-drift invocation context
 
 ### Requirement: Pushback discipline
 

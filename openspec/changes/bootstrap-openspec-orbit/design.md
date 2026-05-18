@@ -14,7 +14,7 @@ The full exploration record that produced this change lives at `openspec/changes
 
 **Goals:**
 
-- Ship a `.claude/` overlay that adds five new opsx commands and modifies three existing ones, without forking the upstream CLI.
+- Ship a `.claude/` overlay that adds four new opsx commands and modifies three existing ones, without forking the upstream CLI.
 - Adopt upstream conventions wherever possible (vocabulary, file layout, reporting shape, CLI usage as source of truth). The acid test: a merge of orbit into upstream should read like a contributor's PR.
 - Make the review-and-capture workflow durable across AI sessions: marker convention (`@review:`), pushback discipline, marker-removal invariant, cross-AI handoff format, and exploration capture.
 - Compose with upstream `verify-change` (system-mode review wraps it as Pass 0) and `sync-specs` (audit-drift complements its delta-only coverage).
