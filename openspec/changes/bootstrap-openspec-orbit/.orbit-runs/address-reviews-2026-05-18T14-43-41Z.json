@@ -1,0 +1,92 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-18T14:43:41Z",
+  "change": "bootstrap-openspec-orbit",
+  "iteration": 6,
+  "source": "from-file",
+  "source_file": "openspec/changes/bootstrap-openspec-orbit/.orbit-runs/external-proposal-2026-05-18T14-35-23Z.md",
+  "external_reviewer": "Claude Opus 4.7 (fresh-context in-session subagent — iter 5, no anchoring)",
+  "input_findings_summary": {
+    "critical": 0,
+    "warning": 4,
+    "suggestion": 5
+  },
+  "executed_by": "manual dogfood (orbit not yet implemented)",
+  "pushback_verification": "all 9 findings verified against current state via grep / file inspection; all confirmed real; zero stale suppressions",
+  "resolution_summary": {
+    "resolved": 9,
+    "stale_suppressed": 0,
+    "deferred": 0,
+    "escalated": 0
+  },
+  "resolutions": [
+    {
+      "severity": "WARNING",
+      "title": "proposal.md:41 — 'five new SKILL.md + command body pairs' should be four",
+      "files_updated": ["proposal.md (Impact section)"],
+      "action": "Changed 'five' to 'four' and added the explicit list of the four new pairs (openspec-review, openspec-review-external, openspec-audit-drift, openspec-address-reviews). Iter-4 cleanup had fixed the count in the higher-traffic What Changes section + design.md + README, but missed this Impact-section restatement. Exactly the residue class the new change-completeness discipline scenario at orbit-conventions:374 calls out.",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "WARNING",
+      "title": "design.md:159 — '9 capability specs' should be 8 after merge",
+      "files_updated": ["design.md (Risks/Trade-offs)"],
+      "action": "Changed '9' to '8' and added the parenthetical '(down from 9 after the orbit-review-proposal + orbit-review-system merge in iter 4)'. Also handled the related SUGGESTION about dated wording in the same line.",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "WARNING",
+      "title": "sketches/review.md:3 — corrupted file names ('proposal-mode review.md' + 'system-mode review.md')",
+      "files_updated": ["sketches/review.md (status header)"],
+      "action": "Restored proper file names: 'sketches/review-proposal.md' + 'sketches/review-system.md'. This was sed-residue from the rename — exactly the file-name corruption pattern the new change-completeness scenario at orbit-conventions:372 uses as a canonical example. The very change codifying the discipline contained this corruption — a strong meta-validation that fresh-context review surfaces what continued-context review missed.",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "WARNING",
+      "title": "proposal.md:33 — orbit-conventions capability omits three disciplines + convention-file format",
+      "files_updated": ["proposal.md (Capabilities — orbit-conventions bullet)"],
+      "action": "Extended the orbit-conventions capability summary to mention both the convention-file format/consumers AND the three execution disciplines (pushback / change completeness / read-before-reference) that bracket the authoring lifecycle. A fresh reader of proposal.md will now learn that orbit-conventions contains the disciplines.",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "design.md Decisions list lacks an entry for the two new disciplines",
+      "files_updated": ["design.md (added D13)"],
+      "action": "Added D13 'Three cross-cutting execution disciplines bracket the authoring lifecycle' with rationale, implementer note (embed in each SKILL.md), adopter note (recommended CLAUDE.md snippet), and alternative-rejected (CLAUDE.md-only embedding). Implementers reading design.md will now see the three-discipline contract surfaced.",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "tasks.md doesn't seed all three disciplines into per-command SKILL.md authoring tasks",
+      "files_updated": ["tasks.md (tasks 1.3, 2.1, 5.1, 6.1)"],
+      "action": "Updated each SKILL.md authoring task with an explicit 'Embed all three execution disciplines' instruction tailored to that command's relevance (e.g., address-reviews emphasizes pushback as primary; audit-drift notes change-completeness is N/A for audit-only). Task 1.3 (CLAUDE.md snippet) now references all three disciplines explicitly.",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "explore.md scenario counts off-by-one (5 vs 6, 8 vs 9)",
+      "files_updated": ["explore.md (Decisions for both new disciplines)"],
+      "action": "Updated explore.md to '6 scenarios' for change-completeness and '9 scenarios' for read-before-reference. The +1 in each case is the lesson-origin scenario, which is descriptive history rather than normative behavior. Chose subagent's option (b): include the lesson-origin in the count + acknowledge it explicitly in the prose.",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "orbit-review-external: 'Mode-specific sections' + 'Reference prompt template' + related scenarios filed under wrong parent requirement",
+      "files_updated": ["specs/orbit-review-external/spec.md (block reorder)"],
+      "action": "Moved the 'Recommended-session note in chat output' requirement DOWN past the prompt-content scenarios (Mode-specific sections, Reference prompt template, Output-format block verbatim, Commit/push instructions, Commit message format, Full findings output to chat). Now the prompt-content scenarios are correctly attached to 'Prompt written to versioned file with chat invocation snippet' requirement; 'Recommended-session note' is its own self-contained requirement after the content block, before 'Output format specification in prompt'.",
+      "outcome": "resolved"
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "design.md:159 risk wording is dated ('9 capability specs' framing)",
+      "files_updated": ["design.md (same line as W2)"],
+      "action": "Resolved as part of W2 — rewrote the risk to reflect the merge: '8 capability specs is more files than the typical change (down from 9 after the orbit-review-proposal + orbit-review-system merge in iter 4)'. Mitigation text unchanged.",
+      "outcome": "resolved"
+    }
+  ],
+  "post_resolution_state": "0 unaddressed findings; openspec validate clean",
+  "final_assessment": "All 9 findings from the fresh-context iter-5 subagent resolved. Three of the four WARNINGs (W1, W2, W3) were exactly the residue class the change-completeness discipline I just codified is designed to prevent — strong meta-validation that fresh-context review caught what continued-context iter 4 missed. The dogfood worked as designed: the discipline's value was demonstrated by the discipline's own violation in the change codifying it. Change is now genuinely ready for /opsx:apply.",
+  "convergence_observation": "Trajectory across 5 review iterations now shows convergence with a clear post-rename bump:\n  - Internal:                12 findings\n  - Codex iter 1 (fresh):     7 findings\n  - Claude subagent iter 2:  12 findings\n  - Codex iter 3 (continuity): 4 findings\n  - Codex iter 4 (post-rename): 6 findings\n  - Claude subagent iter 5 (fresh, post-discipline-add): 9 findings\nThe iter-5 bump confirms the user's instinct: after substantive changes (rename + two new disciplines), one more pass was needed. Fresh-context for that pass was the right call — codex with continuity might have been anchored on prior-resolved findings and missed the residue from my own cleanup work.",
+  "meta_lesson": "The iter-5 reviewer (clean-context Claude subagent) caught the residue from my iter-4 cleanup — which itself was prompted by the user's correct push-back about my known-residue habit. The recursion was instructive: the discipline I codified to prevent leaving known residue was itself violated by my codification, and a fresh reviewer caught it. Validates: (a) the discipline is correct, (b) fresh-context reviews catch what continued-context reviews miss, (c) one more pass after substantive change is genuinely worth the cost.",
+  "next_recommended": "Move to /opsx:apply bootstrap-openspec-orbit. Six review iterations cumulative; fresh-context iter 5 surfaced and resolved the last of the rename + discipline-add residue; zero CRITICAL across all six iterations. The change has been thoroughly stress-tested."
+}

@@ -30,7 +30,7 @@ openspec-orbit makes the pattern durable: a `.claude/` overlay shipped as a stan
 - `orbit-explore-modifications`: The modifications to `/opsx:explore` — 5 capture types with trigger patterns, 3 invocation modes including the crystallization heuristic, `explore.md` five-section convention.
 - `orbit-propose-modifications`: The modifications to `/opsx:propose` — consume mode (read `explore.md`, handle Open questions, move staging dir to change dir), standalone mode preserved.
 - `orbit-archive-modifications`: The modifications to `/opsx:archive` — pre-archive `audit-drift` hook, critical-drift prompt (not gate), archive run summary, `.orbit-runs/` move with the change.
-- `orbit-conventions`: Cross-cutting conventions consumed by multiple commands — `@review:` marker syntax, `openspec/lenses/` directory structure and content shape, `.orbit-runs/` persistence layout, internal-run JSON summary format, external-review markdown findings format.
+- `orbit-conventions`: Cross-cutting conventions consumed by multiple commands — `@review:` marker syntax, `openspec/lenses/` directory structure and content shape, `<topic>_convention.md` file format and consumers, `.orbit-runs/` persistence layout, internal-run JSON summary format, external-review markdown findings format; **plus the three execution disciplines** (pushback / change completeness / read-before-reference) that bracket the authoring lifecycle (review-time / modification-time / authoring-time) and are required of every orbit command.
 
 ### Modified Capabilities
 
@@ -38,7 +38,7 @@ None. orbit ships as a downstream overlay; upstream OpenSpec capabilities are no
 
 ## Impact
 
-- **`.claude/` overlay**: ships modifications to `openspec-explore`, `openspec-propose`, and `openspec-archive-change` SKILL.md files (plus corresponding `.claude/commands/opsx/*.md` slash command bodies); adds five new SKILL.md + command body pairs.
+- **`.claude/` overlay**: ships modifications to `openspec-explore`, `openspec-propose`, and `openspec-archive-change` SKILL.md files (plus corresponding `.claude/commands/opsx/*.md` slash command bodies); adds four new SKILL.md + command body pairs (`openspec-review`, `openspec-review-external`, `openspec-audit-drift`, `openspec-address-reviews`).
 - **New directories at runtime**: `openspec/explore/<name>/` (staging for in-progress explorations), `openspec/lenses/` (project judgment layer), `openspec/changes/<name>/.orbit-runs/` (per-change iteration history).
 - **No upstream CLI changes**: the `openspec` binary itself is unchanged. orbit's behavior lives in markdown prompts read by the AI.
 - **No breaking changes**: standalone mode of `/opsx:propose` preserves upstream behavior. `--skip-audit` opts out of the new archive hook. Empty `openspec/lenses/` gracefully degrades. Adopters can install orbit incrementally; partial adoption works.

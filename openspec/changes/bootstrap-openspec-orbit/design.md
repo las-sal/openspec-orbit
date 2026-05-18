@@ -149,6 +149,22 @@ External review packaging is its own command (`/opsx:review-external <change> [-
 
 **`--as` mode inference:** if not specified, infer from `tasks.md` state — unchecked → `proposal`, all checked + code → `system`. User can override with explicit flag.
 
+### D13. Three cross-cutting execution disciplines bracket the authoring lifecycle
+
+orbit codifies three execution disciplines as cross-cutting requirements in `orbit-conventions`, one per phase of authoring work:
+
+- **Read-before-reference (authoring-time)**: read the actual definition of any specific named construct (function signature, type/interface, object shape, file path, spec requirement name) before generating code/tests/specs that reference it. Inference from training-data patterns is NOT a substitute for reading.
+- **Change completeness (modification-time)**: substantive modifications to a change-in-flight must be applied fully across all affected artifacts before declared done. Residue cleanup is not optional and is not deferred to review.
+- **Pushback (review-time)**: verify findings against current state before fixing; stale findings get suppressed with evidence; don't re-edit already-fixed state.
+
+**Rationale:** each prevents a specific AI failure mode the spec-driven workflow alone doesn't catch (assumption-based authoring; sed-residue creep; stale-finding churn). Together they bracket the authoring lifecycle and compose with the per-command behavior the SKILL.md files implement.
+
+**Implementer note:** all three disciplines MUST be embedded in each command's SKILL.md content. The `orbit-conventions` requirements are the normative contract; the SKILL.md content is the implementation. Intentional text duplication across SKILL.md files is acceptable for self-contained reliability (same trade-off as the original pushback-discipline decision).
+
+**Adopter note:** orbit's README ships a recommended `CLAUDE.md` snippet bundling all three disciplines for project-level reinforcement. Behavior of orbit's commands does not depend on adopters using the snippet (the disciplines are self-contained in each SKILL.md), but project-level reinforcement helps non-orbit-command AI work in the project too.
+
+**Alternative rejected:** Embed disciplines only in `CLAUDE.md` template, not in each SKILL.md. Rejected because CLAUDE.md isn't always loaded into context, and the disciplines must be reliable when commands run. Intentional duplication is the price; reliability is the payoff.
+
 ## Risks / Trade-offs
 
 - **Text duplication across SKILL.md files for pushback discipline** → mitigation: documented as an intentional choice (per guiding principle 2 and explicit decision); CLAUDE.md snippet optional but not required for behavior.
@@ -156,7 +172,7 @@ External review packaging is its own command (`/opsx:review-external <change> [-
 - **Lenses content can go stale relative to actual code** → mitigation: `/opsx:audit-drift` Category 2 (Lens Staleness) detects this; system-mode Pass 6 invokes audit-drift; pre-archive auto-invocation catches it before each archive.
 - **External AI must understand the prompt and write the file** → mitigation: prompt is self-contained; format is rigid; if external AI has no file-write capability, prompt instructs it to output markdown for user to save manually.
 - **`.orbit-runs/` clutter as iterations accumulate** → mitigation: each file is small (JSON summaries or short markdown); no automatic cleanup in v1; users can manually prune if needed. Files persist with the archive for full traceability.
-- **9 capability specs is more files than the typical change** → mitigation: each spec is small and focused, enabling clean per-command deltas in future changes. Larger up-front cost; smaller per-delta cost over orbit's lifecycle.
+- **8 capability specs is more files than the typical change** (down from 9 after the `orbit-review-proposal` + `orbit-review-system` merge in iter 4) → mitigation: each spec is small and focused, enabling clean per-command deltas in future changes. Larger up-front cost; smaller per-delta cost over orbit's lifecycle.
 - **Adopters who don't run `openspec init` first see broken state** → mitigation: README explicitly documents the prerequisite; install instructions assume upstream is set up.
 - **`/opsx:review-external --as` inference can mismatch** → mitigation: inferred mode is always shown in output; user can override with explicit flag.
 - **Pre-archive audit prompt friction** → mitigation: `--skip-audit` flag available; prompt only fires on CRITICAL findings, not on every archive.

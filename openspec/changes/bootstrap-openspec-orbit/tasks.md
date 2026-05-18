@@ -4,11 +4,11 @@
 
 - [ ] 1.1 Confirm `LICENSE` (MIT), `README.md` (full workflow + command reference), `.gitignore` (excludes personal-transcript files and `settings.local.json`) are in place
 - [ ] 1.2 Verify `openspec/config.yaml` reflects orbit-coherent settings (schema, optional project context, any orbit-specific rules)
-- [ ] 1.3 Add a top-level `CLAUDE.md` snippet (or document in README) that adopters can copy as project-level context, including the pushback-discipline reminder
+- [ ] 1.3 Add a top-level `CLAUDE.md` snippet (or document in README) that adopters can copy as project-level context, including all three execution-discipline reminders: read-before-reference (authoring-time), change completeness (modification-time), pushback (review-time) — per the snippet shipped in the README's "Cross-cutting disciplines" section
 
 ## 2. New skill: `/opsx:review` (unified, mode-aware)
 
-- [ ] 2.1 Author `.claude/skills/openspec-review/SKILL.md` describing both modes (proposal: 9 passes; system: verify-change Pass 0 + 6 system-wide passes), `--as` flag with mode inference, shared scorecard rollup, flag family, pushback discipline, graceful degradation per `specs/orbit-review/spec.md`
+- [ ] 2.1 Author `.claude/skills/openspec-review/SKILL.md` describing both modes (proposal: 9 passes; system: verify-change Pass 0 + 6 system-wide passes), `--as` flag with mode inference, shared scorecard rollup, flag family, graceful degradation per `specs/orbit-review/spec.md`. **Embed all three execution disciplines** as self-contained reminder sections in the prompt: read-before-reference (when authoring findings that reference specific code/specs), change completeness (if `--mark` modifies artifacts), pushback (verify each finding against current state before reporting).
 - [ ] 2.2 Author `.claude/commands/opsx/review.md` slash command body that surfaces both modes with concise arg/flag descriptions
 - [ ] 2.3 Implement `--as proposal|system` flag with state-based mode inference from `tasks.md` (unchecked → proposal; all checked + code → system; ambiguous → `AskUserQuestion`)
 - [ ] 2.4 Implement proposal-mode passes 1–9 (Structure & Delta, Internal Coherence, Cross-Doc, Archive Consistency, Codegen Readiness, Gap Hunt, Drift Hunt, Inline Review Marker Residue, Pre-Handoff Sweep)
@@ -38,7 +38,7 @@
 
 ## 5. New skill: `/opsx:audit-drift`
 
-- [ ] 5.1 Author `.claude/skills/openspec-audit-drift/SKILL.md` describing the 4 scan categories, scorecard rollup, flag family, three invocation paths (standalone, library, pre-archive)
+- [ ] 5.1 Author `.claude/skills/openspec-audit-drift/SKILL.md` describing the 4 scan categories, scorecard rollup, flag family, three invocation paths (standalone, library, pre-archive). **Embed all three execution disciplines** as self-contained reminder sections in the prompt: read-before-reference (when citing specific paths or symbols in findings), change completeness (not applicable for audit-only, but document for consistency), pushback (verify each potential finding against current state before reporting).
 - [ ] 5.2 Author `.claude/commands/opsx/audit-drift.md` slash command body
 - [ ] 5.3 Implement Category 1 (Vocabulary residue) — extract residue patterns from archived deltas; grep target docs
 - [ ] 5.4 Implement Category 2 (Lens staleness) — resolve perspective surface refs against `openspec/specs/`; check critical-path touchpoints
@@ -51,7 +51,7 @@
 
 ## 6. New skill: `/opsx:address-reviews` (lean v1)
 
-- [ ] 6.1 Author `.claude/skills/openspec-address-reviews/SKILL.md` describing the lean v1 lifecycle (discover → triage → walk → ripple flag → report)
+- [ ] 6.1 Author `.claude/skills/openspec-address-reviews/SKILL.md` describing the lean v1 lifecycle (discover → triage → walk → ripple flag → report). **Embed all three execution disciplines** as self-contained reminder sections in the prompt: read-before-reference (when applying fixes that reference existing code/specs), change completeness (when a marker's resolution touches related artifacts), pushback (verify each marker against current state before fixing — the primary discipline for this command).
 - [ ] 6.2 Author `.claude/commands/opsx/address-reviews.md` slash command body
 - [ ] 6.3 Implement default whole-repo `@review:` marker discovery with safe exclusions
 - [ ] 6.4 Implement `--only <pattern>` scoping

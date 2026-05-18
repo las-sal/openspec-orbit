@@ -60,29 +60,6 @@ The system SHALL write the full handoff prompt to a versioned, committed file in
 
   No other items are emitted; required items are always present in the specified order.
 
-### Requirement: Recommended-session note in chat output
-
-The system SHALL emit a recommendation about which external-AI session the user should paste the invocation into, based on iteration number and prior reviewer history.
-
-#### Scenario: Recommendation appears in chat
-
-- **WHEN** the chat invocation snippet is emitted
-- **THEN** it includes a single short line labeled `Recommended session:` (or equivalent) before the prompt file path, summarizing whether to use a fresh session, continue a same-AI prior-iteration session, or pick a previously-unused AI
-
-#### Scenario: Recommendation logic by iteration
-
-- **WHEN** the command computes the recommendation
-- **THEN** it uses this logic:
-  - **Iteration 1**: `Fresh session recommended — first external pass; sets independent baseline. Pick any AI (codex / fresh Claude / GPT / etc.).`
-  - **Iteration 2**: `Fresh session in a DIFFERENT AI than iter 1's reviewer recommended (model diversity catches different blind spots). If iter 1 was <prior reviewer>, try <suggest different model>.`
-  - **Iteration 3+**: `Either (a) carry context from a same-AI prior session — lets that reviewer verify its earlier findings were actually addressed (ideal when concerns from that reviewer dominated prior iterations); or (b) fresh session in a previously-unused AI — maximum independence (ideal when looking for net-new issues). For this iter, consider <specific suggestion based on prior-reviewer pattern>.`
-  - Prior-reviewer identity is read from the `**Reviewer**:` field of existing `external-<as>-*.md` files in `.orbit-runs/`
-
-#### Scenario: No prior data → iter 1 recommendation
-
-- **WHEN** `.orbit-runs/` contains no prior `external-<as>-*.md` files for the current mode
-- **THEN** the iter 1 recommendation is emitted regardless of how many runs exist for other modes
-
 #### Scenario: Mode-specific sections
 
 - **WHEN** the prompt file is written in `--as proposal` mode
@@ -211,6 +188,29 @@ If you don't have git access, just output the findings markdown in this chat
 
 - **WHEN** the prompt is generated
 - **THEN** the "After completing the review" section instructs the external AI to output the FULL findings markdown in chat (every finding's severity section + `### Title` + `**File**:` + `**Description**:`, identical content to the findings file — no abbreviation, no summarization) in addition to writing the findings file; the chat output is the immediately-visible read for the user, the file is the canonical record for parsing by `--from-file`
+
+### Requirement: Recommended-session note in chat output
+
+The system SHALL emit a recommendation about which external-AI session the user should paste the invocation into, based on iteration number and prior reviewer history.
+
+#### Scenario: Recommendation appears in chat
+
+- **WHEN** the chat invocation snippet is emitted
+- **THEN** it includes a single short line labeled `Recommended session:` (or equivalent) before the prompt file path, summarizing whether to use a fresh session, continue a same-AI prior-iteration session, or pick a previously-unused AI
+
+#### Scenario: Recommendation logic by iteration
+
+- **WHEN** the command computes the recommendation
+- **THEN** it uses this logic:
+  - **Iteration 1**: `Fresh session recommended — first external pass; sets independent baseline. Pick any AI (codex / fresh Claude / GPT / etc.).`
+  - **Iteration 2**: `Fresh session in a DIFFERENT AI than iter 1's reviewer recommended (model diversity catches different blind spots). If iter 1 was <prior reviewer>, try <suggest different model>.`
+  - **Iteration 3+**: `Either (a) carry context from a same-AI prior session — lets that reviewer verify its earlier findings were actually addressed (ideal when concerns from that reviewer dominated prior iterations); or (b) fresh session in a previously-unused AI — maximum independence (ideal when looking for net-new issues). For this iter, consider <specific suggestion based on prior-reviewer pattern>.`
+  - Prior-reviewer identity is read from the `**Reviewer**:` field of existing `external-<as>-*.md` files in `.orbit-runs/`
+
+#### Scenario: No prior data → iter 1 recommendation
+
+- **WHEN** `.orbit-runs/` contains no prior `external-<as>-*.md` files for the current mode
+- **THEN** the iter 1 recommendation is emitted regardless of how many runs exist for other modes
 
 ### Requirement: Output format specification in prompt
 
