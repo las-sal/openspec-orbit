@@ -1,0 +1,44 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-21T02:35:33Z",
+  "change": "emit-run-summary-jsons-from-workflow-commands",
+  "kind": "editorial",
+  "iteration": 3,
+  "source": "from_file",
+  "source_file": "openspec/changes/emit-run-summary-jsons-from-workflow-commands/.orbit-runs/review-proposal-2026-05-21T02-20-51Z-as-findings.md",
+  "source_note": "Internal fresh-context review iter-2 findings (Claude Opus 4.7 subagent via --fresh flag; same model as authoring/internal iter-1, clean conversation). 5 findings: 0 CRITICAL, 2 WARNING, 3 SUGGESTION. Notable: F1 and F2 are net-new cross-doc coherence issues that neither in-context iter-1 internal NOR cross-AI iter-1 external surfaced — empirical evidence that --fresh is a distinct anchor-break discipline.",
+  "executed_by": "in_context",
+  "input_findings_summary": {
+    "count": 5,
+    "by_severity": { "critical": 0, "warning": 2, "suggestion": 3 }
+  },
+  "pushback_verification": "All 5 findings verified against current artifact state at walk-time. Notable spot-verifications: F1 (verified existing archive JSONs at openspec-orbit + orbit-status both lack final_assessment / next_recommended / kind); F2 (verified baseline orbit-conventions persistence requirement says only openspec/changes/<name>/.orbit-runs/ is valid); F3 (verified openspec-continue-change SKILL.md:38,44 uses isComplete + openspec status --json returns it). Zero stale findings.",
+  "resolutions": [
+    { "id": "F1", "classification": "trivial_fix", "action": "Expanded task 1.4 with per-skill scoping for the universal-spine alignment work. review/address-reviews: kind only (de facto have other 2). archive: ALL 3 fields (kind: lifecycle, final_assessment narrative, next_recommended with concrete example). Inline audit-drift: inherits archive's compliance. Added new task 1.5 as a verify-time gate: post-change archive emit MUST be spot-checked to confirm all 3 spine fields are present. This closes F1's load-bearing concern (next archive run breaks spine if task 1.4 incomplete).", "anchoring_root_cause": "S1's task addition was scoped only to kind; never checked the existing archive emit shape to see what other spine fields were also missing." },
+    { "id": "F2", "classification": "trivial_fix", "action": "Added a second MODIFIED requirement to the orbit-conventions delta: `.orbit-runs/ per-change persistence`. Broadened to enumerate all 3 valid persistence locations (openspec/changes/<name>/.orbit-runs/, openspec/explore/<name>/.orbit-runs/, openspec/.orbit-runs/) with explicit scoping rules. Added 4 new scenarios covering each path + the staging-to-changes/ migration during /opsx:propose. Preserved 3 existing scenarios with broadened wording. Travels-with-archive scenario now explicitly notes project-wide openspec/.orbit-runs/ does NOT move (project-scope persists across changes). Delta count: orbit-conventions now has 2 MODIFIED requirements; change total 15 deltas.", "anchoring_root_cause": "C1's orbit-conventions MODIFIED delta only touched the SHAPE requirement (Internal-run JSON summary format); the LOCATION requirement (per-change persistence) was never examined for whether it needed broadening too. Real cross-requirement gap." },
+    { "id": "F3", "classification": "trivial_fix", "action": "Rewrote Propose-shaped recommendation logic requirement to defer /opsx:continue's completeness check to upstream `openspec status --change <name> --json`'s `isComplete` field (verified via openspec-continue-change SKILL.md:38,44 + actual upstream JSON output). Updated 2 existing scenarios to reference upstream output; added 1 new scenario demonstrating schema-agnostic behavior for hypothetical alternate schemas where completeness criteria differ.", "anchoring_root_cause": "D12's spec-driven assumption baked into the requirement; never verified against upstream's actual completeness gate." },
+    { "id": "F4", "classification": "trivial_fix", "action": "Extended the Apply per-chunk-end emission requirement with: (a) explicit format constraint that `(groups X[-Y])` supports only single group or contiguous range, NOT non-contiguous group sets like `(groups 6,8,9)`; (b) malformed-preamble handling rule using 'tolerant on read, strict on write' pattern — log warning to stderr + fall back to no-chunking-apply rules. Recommendation includes the exact warning text to make the emit-layer behavior unambiguous for implementers.", "anchoring_root_cause": "S2's preamble format spec covered the happy path; never asked 'what happens when the preamble is malformed or uses an unsupported group set'." },
+    { "id": "F5", "classification": "trivial_fix", "action": "Added transition note to orbit-conventions lifecycle per-kind extension list explaining sync_specs persists from pre-#6 architecture and will be removed/repurposed in a follow-up after openspec-orbit#6 lands. Documenting the lineage maintains historical fidelity (sync_specs is in actual archive emits today) while flagging the obsolescence path so future readers understand the field's transitional status.", "anchoring_root_cause": "Listed lifecycle fields from existing archive-summary-schema.md without considering which of those fields are about to be deprecated by adjacent open issues. D8's no-forward-look discipline applies in reverse too — avoid baking in fields whose semantics are being removed." }
+  ],
+  "resolution_summary": {
+    "resolved": 5,
+    "stale": 0,
+    "deferred": 0,
+    "escalated": 0,
+    "by_classification": {
+      "trivial_fix": 5
+    }
+  },
+  "ripple_flagged_files_aggregate": [
+    "(All ripples applied inline during walk: tasks.md, design.md unchanged, specs/orbit-run-summary-emit/spec.md, specs/orbit-conventions/spec.md. No external ripples remain.)"
+  ],
+  "post_resolution_state": {
+    "openspec_validate": "passes (--strict)",
+    "deltas_total": 15,
+    "deltas_by_capability": { "orbit-run-summary-emit": 13, "orbit-conventions": 2 },
+    "scope_note": "Delta count went from 14 to 15: added a second MODIFIED requirement to orbit-conventions (the persistence-locations broadening per F2). All other F-tier resolutions were spec text refinements + scenario additions + 1 new task in tasks.md group 1.",
+    "anchoring_audit": "4 of 5 fresh-context findings traced to incompleteness in prior in-context work (F1: S1's task scoping; F2: C1's MODIFIED delta scoping; F3: D12's spec-driven assumption; F5: lifecycle extension listing). 1 of 5 (F4) was a genuine gap (malformed-preamble handling never considered, not anchored to anything specific). This matches the pattern from external iter-1 (8 of 9 anchoring artifacts): same-model fresh-context catches what same-model in-context anchored away from, just via a different mechanism than cross-AI."
+  },
+  "final_assessment": "All 5 fresh-context internal review findings resolved. Combined with iter-1 internal (19 resolved) and iter-1 external (9 resolved), total proposal-mode findings addressed: 33 across 3 review modes (in-context, external/cross-AI, fresh-context same-model). Validates --strict. The cross-AI loop + the fresh-context loop have both demonstrated empirical value distinct from in-context review.",
+  "next_recommended": "/opsx:apply emit-run-summary-jsons-from-workflow-commands — proposal-mode review cycle is now thoroughly exercised across all three anchor-break disciplines (in-context, external cross-AI, fresh-context same-model). Diminishing-returns territory for additional review iterations. Ready for implementation."
+}

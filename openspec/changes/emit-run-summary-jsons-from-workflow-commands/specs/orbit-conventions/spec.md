@@ -19,7 +19,7 @@ Per-kind extensions:
 
 - **`kind: "workflow"`** — emitted by `explore`, `propose`, `new`, `continue`, `ff`, `apply`, `verify`. Per-command extensions are defined in the `orbit-run-summary-emit` capability (e.g., `apply.chunk_complete`, `verify.verdict`, `explore.decisions_captured`).
 - **`kind: "editorial"`** — emitted by `review`, `address-reviews`, `audit-drift`, `review-external`. Per-command extensions include: `iteration` (when applicable to the command — e.g., review iter-N, address-reviews iter-N), `findings_summary` (counts by severity; included when findings are present — i.e., review/address-reviews/audit-drift completion emits; review-external at T0 emits before external findings return and SHALL omit this field), `finding_titles` (array of brief titles; included with `findings_summary`, omitted in the same cases), plus command-specific fields defined in per-skill schema references at `.claude/skills/openspec-<skill>/references/run-summary-schema.md`.
-- **`kind: "lifecycle"`** — emitted by `archive` only. Per-command extensions include: `archive_path`, `audit`, `sync_specs`, `unresolved_markers`, `user_decision`, plus other fields defined in the archive skill.
+- **`kind: "lifecycle"`** — emitted by `archive` only. Per-command extensions include: `archive_path`, `audit`, `sync_specs` (transitional — persists from pre-#6 architecture when `/opsx:sync-specs` was a separate command; openspec-orbit#6 will deprecate/remove `/opsx:sync-specs` entirely, at which point this field will be removed or repurposed in a follow-up change), `unresolved_markers`, `user_decision`, plus other fields defined in the archive skill.
 
 #### Scenario: Universal spine present on every emit
 
@@ -55,3 +55,53 @@ Per-kind extensions:
 
 - **WHEN** a downstream consumer (dashboard, CI bot, IDE plugin) reads `.orbit-runs/*.json` files
 - **THEN** the consumer MAY route by reading the `kind` field directly rather than pattern-matching filename prefixes (e.g., `review-*`, `address-reviews-*`); filename prefix routing remains valid as a fallback
+
+### Requirement: `.orbit-runs/` per-change persistence
+
+The system SHALL use one of the following `.orbit-runs/` persistence locations, scoped by the type of work being persisted:
+
+- **`openspec/changes/<change-name>/.orbit-runs/`** — per-change iteration history for active changes. Used by editorial commands (review, address-reviews, audit-drift inline), workflow commands operating on a named change (propose, new, continue, ff, apply, verify), lifecycle commands (archive), and review-external T0. The primary persistence location.
+- **`openspec/explore/<name>/.orbit-runs/`** — per-exploration iteration history for named-mode `/opsx:explore` sessions BEFORE the exploration is promoted to a formal change via `/opsx:propose`. Moves into `openspec/changes/<name>/.orbit-runs/` when `/opsx:propose <name>` consumes the staging directory (per the orbit-propose consume-mode convention).
+- **`openspec/.orbit-runs/`** — project-scope iteration history for commands that have no change scope (currently: `/opsx:audit-drift` invoked with no `<change-name>` argument, i.e., project-wide standalone). Created if it doesn't exist.
+
+In all three locations, files are committed (the directory SHOULD NOT be in `.gitignore`) and follow the same naming pattern (`<command>-<ISO-timestamp>.json` for internal-run JSONs; `external-<as>-<ISO-timestamp>.md` for external-review files).
+
+#### Scenario: Active-change emit goes to changes/<name>/.orbit-runs/
+
+- **WHEN** orbit writes a run summary for a named, active change (e.g., `/opsx:review foo`, `/opsx:apply foo`, `/opsx:archive foo`)
+- **THEN** the file lands at `openspec/changes/foo/.orbit-runs/<command>-<TS>.json`
+
+#### Scenario: Named-mode exploration emit goes to explore/<name>/.orbit-runs/
+
+- **WHEN** `/opsx:explore foo` (named mode) writes its run-summary JSON at a conversation boundary
+- **THEN** the file lands at `openspec/explore/foo/.orbit-runs/explore-<TS>.json` (NOT `openspec/changes/foo/.orbit-runs/`, since `foo` is still in the staging area pre-`/opsx:propose`)
+
+#### Scenario: Project-wide standalone emit goes to openspec/.orbit-runs/
+
+- **WHEN** `/opsx:audit-drift` runs with no change argument and writes its run-summary JSON
+- **THEN** the file lands at `openspec/.orbit-runs/audit-drift-<TS>.json` (create the directory if it doesn't exist); the JSON's `change` field is `null`
+
+#### Scenario: Exploration .orbit-runs/ travels with promotion to changes/
+
+- **WHEN** `/opsx:propose foo` (consume mode) moves the staging directory `openspec/explore/foo/` into `openspec/changes/foo/`
+- **THEN** the contents of `openspec/explore/foo/.orbit-runs/` (including any prior `explore-<TS>.json` emits) are preserved and now live at `openspec/changes/foo/.orbit-runs/`; subsequent emits go to the new location
+
+#### Scenario: Committed, not gitignored (all three locations)
+
+- **WHEN** orbit writes a run summary or external-review file to any of the three `.orbit-runs/` locations
+- **THEN** the file is intended to be committed (none of the three directories should be in `.gitignore`); each represents real iteration history
+
+#### Scenario: Internal run summary file name pattern
+
+- **WHEN** a review, audit, address-reviews, archive, or workflow command writes a summary
+- **THEN** the file is named `<command>-<ISO-timestamp>.json` (e.g., `review-proposal-2026-05-21T00-18-14Z.json`, `apply-2026-05-21T13-34-12Z.json`)
+
+#### Scenario: External review file name pattern
+
+- **WHEN** `/opsx:review-external` produces a prompt file (or external AI produces a findings file following the prompt)
+- **THEN** the file is named `external-prompt-<as>-<ISO-timestamp>.md` for prompts and `external-<as>-<ISO-timestamp>.md` for findings (e.g., `external-prompt-proposal-2026-05-21T01-32-52Z.md`, `external-proposal-2026-05-21T01-39-56Z.md`)
+
+#### Scenario: Travels with archive
+
+- **WHEN** the change is archived via `/opsx:archive`
+- **THEN** the `.orbit-runs/` directory at `openspec/changes/<name>/.orbit-runs/` moves to `openspec/changes/archive/<YYYY-MM-DD>-<name>/.orbit-runs/` as part of the change content (the project-wide `openspec/.orbit-runs/` location is NOT moved — it's project-scope and persists across changes)

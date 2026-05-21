@@ -193,22 +193,26 @@ In each case the leading `/opsx:<verb> <name>` token is the canonical recommenda
 
 The propose-shaped commands `/opsx:propose`, `/opsx:new`, `/opsx:ff` SHALL emit `next_recommended: "/opsx:review <name> — proposal artifacts ready; review before apply"` (or equivalent prose containing the same leading `/opsx:review` command).
 
-`/opsx:continue` SHALL emit a recommendation that depends on artifact completeness:
+`/opsx:continue` SHALL emit a recommendation that depends on artifact completeness as reported by upstream `openspec status --change <name> --json`'s `isComplete` field (the same field upstream `openspec-continue-change` uses to gate completion). This keeps the emit-layer schema-agnostic — whatever upstream's authoritative completeness definition is, the emit recommendation follows it:
 
-- **Artifacts complete** (proposal.md + design.md + tasks.md + at least one specs/<capability>/spec.md all present): `next_recommended: "/opsx:review <name> — all proposal artifacts now present"`
-- **Artifacts incomplete**: `next_recommended: "/opsx:continue <name> — <next missing artifact> still pending"`
+- **`isComplete: true`**: `next_recommended: "/opsx:review <name> — all proposal artifacts now present"`
+- **`isComplete: false`**: `next_recommended: "/opsx:continue <name> — <next missing artifact> still pending"` (where `<next missing artifact>` is the first artifact in upstream's `applyRequires` array whose `status` is not `done`)
 
 #### Scenario: /opsx:propose recommends /opsx:review
 - **WHEN** `/opsx:propose foo` completes after generating proposal/design/tasks/specs
 - **THEN** the `propose-<TS>.json`'s `next_recommended` begins with `"/opsx:review foo"`
 
 #### Scenario: /opsx:continue with missing tasks.md recommends /opsx:continue
-- **WHEN** `/opsx:continue foo` completes after generating design.md but tasks.md is still missing
+- **WHEN** `/opsx:continue foo` completes after generating design.md but tasks.md is still missing; `openspec status --change foo --json` reports `isComplete: false` with `tasks` next in `applyRequires`
 - **THEN** the `continue-<TS>.json`'s `next_recommended` begins with `"/opsx:continue foo"` and identifies `tasks.md` as the next missing artifact
 
 #### Scenario: /opsx:continue with all artifacts present recommends /opsx:review
-- **WHEN** `/opsx:continue foo` completes after the final missing artifact is generated
+- **WHEN** `/opsx:continue foo` completes after the final missing artifact is generated; `openspec status --change foo --json` reports `isComplete: true`
 - **THEN** the `continue-<TS>.json`'s `next_recommended` begins with `"/opsx:review foo"`
+
+#### Scenario: Schema-agnostic — alternative schemas with different completeness criteria work via isComplete
+- **WHEN** a hypothetical future change uses a non-spec-driven schema where completeness requires only proposal.md + tasks.md (no design.md, no specs/); upstream reports `isComplete: true` after both are generated
+- **THEN** the emit-layer recommends `/opsx:review foo` based on `isComplete: true` alone, regardless of whether design.md or specs/ are present — the emit-layer does NOT hand-roll the completeness check
 
 ### Requirement: Apply per-chunk-end emission
 
@@ -222,6 +226,10 @@ Implementation chunks:
   Chunk 3 (groups 4):    Apply behavior
 -->
 ```
+
+**Format constraints**:
+- The `(groups X[-Y])` portion supports a single group (`X`) or a contiguous range (`X-Y`). Non-contiguous group sets (e.g., `(groups 6,8,9)`) are NOT supported in v1 — restructure tasks.md groups to be contiguous, or split into multiple chunks.
+- **Malformed preamble handling** (graceful degradation): if the preamble comment block exists but cannot be parsed (missing parens, typo in `Chunk N`, malformed group range, etc.), the emit-layer SHALL log a single warning to stderr (`"warning: tasks.md preamble at <path> could not be parsed as chunk declarations; falling back to no-chunking mode"`) and proceed under no-chunking-apply rules (single emit at session end with `chunk: null`). The implementation is "tolerant on read, strict on write" — don't block the user's work; surface the parse issue so they can fix the preamble.
 
 The emit follows these rules:
 
