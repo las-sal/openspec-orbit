@@ -1,0 +1,42 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-21T02:52:37Z",
+  "change": "emit-run-summary-jsons-from-workflow-commands",
+  "kind": "editorial",
+  "iteration": 4,
+  "source": "from_file",
+  "source_file": "openspec/changes/emit-run-summary-jsons-from-workflow-commands/.orbit-runs/review-proposal-2026-05-21T02-43-15Z-as-findings.md",
+  "source_note": "Iter-3 proposal-mode review (--thorough, in-context) findings. 3 findings: 0 CRITICAL, 2 WARNING, 1 SUGGESTION. Notable: --thorough's adversarial framing produced 2 net-new findings (T1, T2) that all 3 prior modes missed.",
+  "executed_by": "in_context",
+  "input_findings_summary": {
+    "count": 3,
+    "by_severity": { "critical": 0, "warning": 2, "suggestion": 1 }
+  },
+  "pushback_verification": "All 3 findings verified against current artifact state at walk-time. T1 verified via task body inspection (9.5 vs 1.4/1.5). T2 verified via maturity-rule logic test (4+ AND >1 case falls through). T3 verified via grep (3 'emit JSON' matches in explore.md). Zero stale findings.",
+  "resolutions": [
+    { "id": "T1", "classification": "trivial_fix", "action": "Rewrote task 9.5 to verify the INTENDED changes from task 1.4 are in place (kind for review/address-reviews; kind + final_assessment + next_recommended for archive). Separately preserved the no-unintended-regression guard as a second phrasing. Contradiction with task 1.4/1.5 resolved.", "anchoring_root_cause": "When F1 expanded task 1.4 to add the archive spine fields, never traced downstream to task 9.5 to update its 'verify shapes unchanged' framing." },
+    { "id": "T2", "classification": "decision_required", "action": "User chose option 3 (strictest — add 4th rule 'Stalled'). Maturity rules now have 4 mutually-exclusive states covering the full decisions × open-questions grid: Early (0-1) / Mid (2-3) / Mature (4+ AND ≤1 open Q) / Stalled (4+ AND >1 open Q). Stalled explicitly does NOT surface /opsx:propose as alternative — high open-question count blocks propose recommendation regardless of decision count. Added scenario for the canonical case (5 decisions + 3 open Q).", "anchoring_root_cause": "D11's rule definitions covered the diagonal happy path but never enumerated the full grid; the 4+/>1 corner case was structurally invisible until --thorough's constraint-probe asked 'what if decisions and open-questions both high?'" },
+    { "id": "T3", "classification": "trivial_fix", "action": "Swept 'emit JSON' → 'run-summary JSON' across explore.md (3 instances replaced via replace_all). Verified zero residue post-sweep + validation passes.", "anchoring_root_cause": "W7's sweep scoped explore.md as historical record and explicitly excluded it; in retrospect that scoping was wrong because the affected decisions (D9/D10/D14) are still canonical, not deprecated." }
+  ],
+  "resolution_summary": {
+    "resolved": 3,
+    "stale": 0,
+    "deferred": 0,
+    "escalated": 0,
+    "by_classification": {
+      "decision_required": 1,
+      "trivial_fix": 2
+    }
+  },
+  "ripple_flagged_files_aggregate": [
+    "(All ripples applied inline during walk: tasks.md, specs/orbit-run-summary-emit/spec.md, explore.md. No external ripples remain.)"
+  ],
+  "post_resolution_state": {
+    "openspec_validate": "passes (--strict)",
+    "deltas_total": 15,
+    "deltas_by_capability": { "orbit-run-summary-emit": 13, "orbit-conventions": 2 },
+    "anchoring_audit": "2 of 3 fresh-thorough findings (T1, T3) traced to incompleteness in prior in-context work (F1's task expansion didn't sweep 9.5; W7's sweep didn't cover explore.md). 1 of 3 (T2) was a genuine codegen-readiness gap exposed by --thorough's adversarial constraint-probe — not anchored to anything specific. Total findings across 4 modes: 19 (in-context iter-1) + 9 (external Codex iter-1) + 5 (fresh-context Claude iter-2) + 3 (in-context --thorough iter-3) = 36 resolved."
+  },
+  "final_assessment": "All 3 iter-3 --thorough findings resolved. The 4-mode proposal-mode review cycle (in-context full, external Codex full, fresh-context Claude full, in-context --thorough) is now complete with 36 total findings resolved. Each mode demonstrably catches distinct things; the --thorough lever on in-context iter-3 still produced net-new value (T1, T2) despite heavy anchoring concerns. Validates --strict.",
+  "next_recommended": "/opsx:apply emit-run-summary-jsons-from-workflow-commands — 4-mode proposal review cycle is exhausted. T2's resolution (4th maturity rule) is the only structural change since iter-2; T1 and T3 were cleanup. Ready for implementation."
+}

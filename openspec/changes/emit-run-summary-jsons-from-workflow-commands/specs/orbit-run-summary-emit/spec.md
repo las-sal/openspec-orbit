@@ -169,13 +169,14 @@ The AI MUST wait for explicit user confirmation before proceeding.
 
 ### Requirement: Named-mode explore recommendation by maturity
 
-Named-mode `/opsx:explore` emits SHALL include `next_recommended` text that adapts to the count of decisions captured and the count of open questions remaining:
+Named-mode `/opsx:explore` emits SHALL include `next_recommended` text that adapts to the count of decisions captured and the count of open questions remaining. Four mutually-exclusive maturity states cover the full grid:
 
 - **Early (0–1 decisions captured)**: `"/opsx:explore <name> — continue capturing thinking"`
 - **Mid (2–3 decisions captured)**: `"/opsx:explore <name> — continue thinking, or /opsx:propose <name> if ready to formalize"`
 - **Mature (4+ decisions captured AND ≤1 open question)**: `"/opsx:propose <name> — substantial thinking captured; ready to formalize the design (or /opsx:explore <name> to keep refining)"`
+- **Stalled (4+ decisions captured AND >1 open question)**: `"/opsx:explore <name> — N decisions captured but M open questions remain; resolve open questions before formalizing"` (N = `decisions_captured`, M = `open_questions_count`). NOTE: this state does NOT surface `/opsx:propose` as an alternative because high open-question count signals NOT-ready regardless of decision count; the user is directed back to exploration to close out the open questions first.
 
-In each case the leading `/opsx:<verb> <name>` token is the canonical recommendation that orbit-status parses into `command`/`args`; the alternative path (when present) lives in the reason text.
+In each case the leading `/opsx:<verb> <name>` token is the canonical recommendation that orbit-status parses into `command`/`args`; the alternative path (when present, Mid and Mature only) lives in the reason text.
 
 #### Scenario: 1-decision explore recommends continued exploration
 - **WHEN** named-mode explore emits with `decisions_captured: 1` and `open_questions_count: 3`
@@ -188,6 +189,10 @@ In each case the leading `/opsx:<verb> <name>` token is the canonical recommenda
 #### Scenario: 0-decision explore recommends continued exploration
 - **WHEN** named-mode explore emits with `decisions_captured: 0`
 - **THEN** `next_recommended` begins with `"/opsx:explore <name>"` and contains language acknowledging that thinking is just beginning (e.g., "continue capturing thinking — no decisions captured yet")
+
+#### Scenario: Stalled — 5 decisions captured but 3 open questions remain (Mature criteria for decisions met but open-question check fails)
+- **WHEN** named-mode explore emits with `decisions_captured: 5` and `open_questions_count: 3`
+- **THEN** `next_recommended` begins with `"/opsx:explore <name>"` (NOT `/opsx:propose`); the text references both counts (e.g., "5 decisions captured but 3 open questions remain; resolve open questions before formalizing"); `/opsx:propose` is NOT surfaced as an alternative
 
 ### Requirement: Propose-shaped recommendation logic
 

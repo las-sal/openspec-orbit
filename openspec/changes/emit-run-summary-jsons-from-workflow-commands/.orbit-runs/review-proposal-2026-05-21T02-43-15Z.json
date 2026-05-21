@@ -1,0 +1,74 @@
+{
+  "command": "review",
+  "timestamp": "2026-05-21T02:43:15Z",
+  "change": "emit-run-summary-jsons-from-workflow-commands",
+  "mode": "proposal",
+  "iteration": 3,
+  "depth": "thorough",
+  "flags": {
+    "parallel": false,
+    "focus": null,
+    "strict": false,
+    "fresh": false,
+    "mark": false,
+    "skip_verify": false
+  },
+  "passes_run": ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
+  "passes_skipped": [],
+  "passes_skipped_reasons": {},
+  "iteration_note": "Iter-3 proposal-mode review with --thorough depth. In-context (no --fresh). Heavy anchoring expected; pushback discipline working overtime. Prior cycles: iter-1 in-context (19 resolved), iter-1 external/Codex (9 resolved), iter-2 fresh-context (5 resolved) = 33 prior findings resolved. --thorough adversarial framing applied per pass to push past anchoring; stale-suppression count high.",
+  "stale_suppressed": [
+    {
+      "pass": "all",
+      "title": "33 prior findings verified resolved",
+      "evidence": "Spot-checked candidate findings against current artifact state via grep + read. Confirmed C1-C5 / W1-W7 / S1-S7 from iter-1 + EC1/EC2 / EW1-EW5 / ES1/ES2 from external + F1-F5 from iter-2 fresh-context all still resolved per their address-reviews resolutions. No prior-cycle findings re-surfaced."
+    }
+  ],
+  "findings_summary": {
+    "critical": 0,
+    "warning": 2,
+    "suggestion": 1,
+    "by_pass": {
+      "1": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "2": { "critical": 0, "warning": 1, "suggestion": 0 },
+      "3": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "4": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "5": { "critical": 0, "warning": 1, "suggestion": 0 },
+      "6": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "7": { "critical": 0, "warning": 0, "suggestion": 1 },
+      "8": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "9": { "critical": 0, "warning": 0, "suggestion": 0 }
+    }
+  },
+  "findings": [
+    {
+      "pass": "2",
+      "severity": "WARNING",
+      "id": "T1",
+      "file": "tasks.md",
+      "line": 88,
+      "title": "Task 9.5 'backward-compatibility check' directly contradicts task 1.4 + 1.5 (which intentionally MODIFY the existing emitters' shapes)",
+      "description": "Task 9.5 reads: 'Backward-compatibility check: run /opsx:review, /opsx:address-reviews, /opsx:archive (existing emitters); verify their existing JSON shapes are unchanged (no regressions from this change).' But task 1.4 (after F1's expansion) intentionally modifies those exact emitters' SKILL.md instructions: review and address-reviews gain `kind`; archive gains `kind` + `final_assessment` + `next_recommended`. Task 1.5 then verifies archive emits include all 3 new fields. So task 9.5's 'verify shapes are unchanged' check would falsely FAIL after task 1.4 runs — because the shapes ARE intentionally changed. Recommendation: rewrite task 9.5 to verify the intended changes are in place (e.g., 'verify /opsx:review and /opsx:address-reviews emits now include kind: \"editorial\"; archive emits now include kind: \"lifecycle\" + final_assessment + next_recommended per task 1.4'). The original intent of 9.5 — guard against unintended regressions in OTHER fields — should be preserved as a separate phrasing: 'no fields beyond the spine-additions in task 1.4 should be removed or repurposed'."
+    },
+    {
+      "pass": "5",
+      "severity": "WARNING",
+      "id": "T2",
+      "file": "specs/orbit-run-summary-emit/spec.md",
+      "line": 138,
+      "title": "Named-mode explore maturity rules have an unhandled state: 4+ decisions captured AND >1 open question falls through all 3 rules",
+      "description": "The `Named-mode explore recommendation by maturity` requirement defines three rules: Early (0-1 decisions), Mid (2-3 decisions), Mature (4+ decisions AND ≤1 open question). The case of `decisions_captured >= 4 AND open_questions_count > 1` matches NONE of these: not Early (decision count too high), not Mid (decision count too high), not Mature (open-question count too high). An implementer faced with this state would have no rule to apply. Recommendation: either (a) broaden Mid to cover this case ('2-3 decisions OR 4+ decisions with >1 open question'), (b) broaden Mature to just '4+ decisions' (dropping the open-Q condition; let open questions live in design.md or be addressed before propose), or (c) add a 4th rule explicitly for high-decisions-high-questions case. Lean: (a) — the maturity ladder is meant to push toward propose only when ready; high open questions means NOT ready regardless of decision count, so Mid behavior (continue or propose if ready) is the right semantics. Add a scenario for this case once decided."
+    },
+    {
+      "pass": "7",
+      "severity": "SUGGESTION",
+      "id": "T3",
+      "file": "explore.md",
+      "line": 145,
+      "title": "explore.md retains 3 'emit JSON' instances that should have been swept during W7's terminology standardization",
+      "description": "W7's fix swept `emit JSON` → `run-summary JSON` across proposal/design/spec.md. But explore.md was treated as historical record and not swept. 3 instances remain at lines 145 (D9 description), 226 (D14 description), 244 (D10 description). The historical-fidelity argument for preserving terminology is weak here because D9/D10/D14 are STILL the canonical decisions (not deprecated) — the terminology drift now propagates from explore.md into anyone re-reading the explore for context. Recommendation: sweep the 3 instances in explore.md too. Trivial (3-line edit). Marginal because explore.md is historical-context-only; readers should know the canonical terminology lives in the specs."
+    }
+  ],
+  "final_assessment": "3 findings: 0 CRITICAL, 2 WARNING, 1 SUGGESTION. Iter-3 in-context with --thorough adversarial framing found 2 modest WARNINGs that prior 3 modes missed: T1 (task contradiction within tasks.md itself, my own oversight when expanding 1.4 — never checked downstream task references) and T2 (genuine codegen-readiness gap in the maturity-rules edge case). T3 is polish. The --thorough depth produced findings the --full depth iter-2 fresh-context missed; specifically the adversarial constraint-probe framing on Pass 5 surfaced the maturity-rule fall-through (T2), and the Pass 9 second-pass reset surfaced the within-tasks.md contradiction (T1). Iter-3 in-context delivered net-new value despite anchoring concerns — the --thorough lever was effective.",
+  "next_recommended": "/opsx:address-reviews emit-run-summary-jsons-from-workflow-commands --from-file <bridge-markdown> — 2 WARNINGs (T1, T2) are worth addressing before /opsx:apply; T3 is polish that can defer. Same JSON→markdown bridge required as prior internal reviews (per openspec-orbit#4). After address-reviews, proceed to /opsx:apply."
+}

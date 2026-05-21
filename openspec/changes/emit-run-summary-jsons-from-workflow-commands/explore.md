@@ -142,7 +142,7 @@ When a recommendation points at a command whose default behavior is expected to 
 
 ### D9: Verify-pass recommends `/opsx:review --as system` as canonical, with `/opsx:archive` surfaced in reason
 
-When standalone `/opsx:verify` passes, the emit JSON's `next_recommended` reads:
+When standalone `/opsx:verify` passes, the run-summary JSON's `next_recommended` reads:
 
 ```
 "/opsx:review --as system <name> — verification clean; formal pre-archive
@@ -223,7 +223,7 @@ verify-<TS>.json (refines D9 which covers the pass case)
 
 ### D14: `/opsx:review-external` T0 recommendation is multi-step prose
 
-At T0 (prompt packaged, findings not yet returned), the emit JSON's `next_recommended` is multi-step prose describing the user action plus the follow-up command:
+At T0 (prompt packaged, findings not yet returned), the run-summary JSON's `next_recommended` is multi-step prose describing the user action plus the follow-up command:
 
 ```
 review-external-<TS>.json (T0)
@@ -241,7 +241,7 @@ T1 (findings returned, address-reviews invoked) is the existing `/opsx:address-r
 
 ### D10: audit-drift standalone on clean findings defers to prior workflow recommendation
 
-When standalone `/opsx:audit-drift` runs mid-flow and produces zero findings, the emit JSON's `next_recommended` is **copied from the most recent prior `.orbit-runs/*.json` for the same change** (excluding the just-written audit-drift JSON itself). The `final_assessment` notes "drift check clean; deferring to prior workflow state."
+When standalone `/opsx:audit-drift` runs mid-flow and produces zero findings, the run-summary JSON's `next_recommended` is **copied from the most recent prior `.orbit-runs/*.json` for the same change** (excluding the just-written audit-drift JSON itself). The `final_assessment` notes "drift check clean; deferring to prior workflow state."
 
 When standalone audit-drift produces findings:
 ```
