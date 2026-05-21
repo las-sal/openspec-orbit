@@ -1,0 +1,48 @@
+{
+  "command": "archive",
+  "timestamp": "2026-05-21T17:20:24Z",
+  "change": "emit-run-summary-jsons-from-workflow-commands",
+  "kind": "lifecycle",
+  "archive_path": "openspec/changes/archive/2026-05-21-emit-run-summary-jsons-from-workflow-commands/",
+  "schema": "spec-driven",
+  "pre_archive_checks": {
+    "artifacts_complete": "4/4 done (proposal, design, specs, tasks)",
+    "tasks_complete": "44/44 done",
+    "review_markers": 0,
+    "openspec_validate": "passes (--strict)"
+  },
+  "audit_drift": {
+    "ran": true,
+    "skip_flag_set": false,
+    "decision_note": "Auto-invoked per orbit-prescribed pre-archive sweep. User chose 'run now' over '--skip-audit (justified by fresh-context system review minutes ago)' to capture a dedicated pre-archive audit record.",
+    "result_file": ".orbit-runs/audit-drift-2026-05-21T16-27-07Z.json",
+    "findings_summary": { "critical": 0, "warning": 0, "suggestion": 0 },
+    "outcome": "clean"
+  },
+  "sync_specs": {
+    "ran": true,
+    "user_choice": "sync_now",
+    "capabilities_synced": [
+      { "name": "orbit-conventions", "action": "modified", "requirements_modified": 2, "scenarios_total": 15 },
+      { "name": "orbit-run-summary-emit", "action": "created", "requirements_added": 13, "scenarios_total": 50 }
+    ],
+    "post_sync_validate": "passes"
+  },
+  "review_history": {
+    "cycles_total": 7,
+    "findings_resolved_total": 52,
+    "by_mode": {
+      "proposal_in_context_iter1": { "findings": 19, "type": "broad-spectrum architecture + completeness" },
+      "proposal_external_codex_iter1": { "findings": 9, "type": "contract anchoring (8 of 9)" },
+      "proposal_fresh_context_iter2": { "findings": 5, "type": "ripple-flag anchoring (4 of 5)" },
+      "proposal_in_context_thorough_iter3": { "findings": 3, "type": "constraint-probe anchoring (2 of 3)" },
+      "verify": { "findings": 2, "type": "1 user-validation warning + 1 minor stale-text SUGGESTION" },
+      "system_external_codex_iter1": { "findings": 7, "type": "system-mode contract/architecture" },
+      "system_fresh_context_iter1": { "findings": 7, "type": "ripple-flag completeness (all 7 were prior-cycle propagation residue)" }
+    },
+    "empirical_anchor_break_pattern": "External Codex catches architecture/contract surfaces; fresh-context Claude catches ripple-flag completeness surfaces; --thorough catches constraint-probe surfaces. Each mode catches a distinct surface; ROI flattens as cycles progress but each pass is empirically non-redundant."
+  },
+  "warnings": [],
+  "final_assessment": "Archive complete. First-ever lifecycle-kind emit (per task 1.4 of this change). Two delta specs synced to baseline (orbit-conventions modified + orbit-run-summary-emit added as new capability). 7 review/verify cycles produced 52 resolved findings; zero residue at archive. The change implements the JSON emit convention that was applied during its own apply/verify/review walks — convention dogfooded by the change that defined it.",
+  "next_recommended": "Pick the next v0.1.0 cluster to address (cluster 1 of 7 complete; clusters 2-7 remain open on las-sal/openspec-orbit). Alternatively address policy issue #25 (task-gate pushback in /opsx:archive) since it surfaced during this change's archive flow."
+}
