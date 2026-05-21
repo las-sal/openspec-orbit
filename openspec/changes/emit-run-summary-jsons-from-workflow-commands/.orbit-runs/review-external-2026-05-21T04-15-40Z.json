@@ -1,0 +1,12 @@
+{
+  "command": "review-external",
+  "timestamp": "2026-05-21T04:15:40Z",
+  "change": "emit-run-summary-jsons-from-workflow-commands",
+  "final_assessment": "External review prompt packaged for emit-run-summary-jsons-from-workflow-commands (iter 1, mode system). Awaiting findings from cross-AI reviewer (recommended: GPT-5 Codex per #20 evidence — caught 3/3 system-mode bugs on prior orbit-status dogfood that in-context review missed). This T0 emit is the first-ever in-the-wild test of the review-external orbit additions added during this very change's apply chunk 5 — meta-dogfood confirmed: convention applied to itself.",
+  "next_recommended": "Paste openspec/changes/emit-run-summary-jsons-from-workflow-commands/.orbit-runs/external-prompt-system-2026-05-21T04-15-39Z.md into the target AI, save the response as openspec/changes/emit-run-summary-jsons-from-workflow-commands/.orbit-runs/external-system-<TS>.md, then /opsx:address-reviews emit-run-summary-jsons-from-workflow-commands --from-file <path>",
+  "kind": "editorial",
+  "mode": "system",
+  "prompt_path": "openspec/changes/emit-run-summary-jsons-from-workflow-commands/.orbit-runs/external-prompt-system-2026-05-21T04-15-39Z.md",
+  "target": null,
+  "awaiting_findings": true
+}
