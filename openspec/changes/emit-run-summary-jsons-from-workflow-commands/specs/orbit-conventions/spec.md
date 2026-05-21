@@ -21,6 +21,69 @@ Per-kind extensions:
 - **`kind: "editorial"`** — emitted by `review`, `address-reviews`, `audit-drift`, `review-external`. Per-command extensions include: `iteration` (when applicable to the command — e.g., review iter-N, address-reviews iter-N), `findings_summary` (counts by severity; included when findings are present — i.e., review/address-reviews/audit-drift completion emits; review-external at T0 emits before external findings return and SHALL omit this field), `finding_titles` (array of brief titles; included with `findings_summary`, omitted in the same cases), plus command-specific fields defined in per-skill schema references at `.claude/skills/openspec-<skill>/references/run-summary-schema.md`.
 - **`kind: "lifecycle"`** — emitted by `archive` only. Per-command extensions include: `archive_path`, `audit`, `sync_specs` (transitional — persists from pre-#6 architecture when `/opsx:sync-specs` was a separate command; openspec-orbit#6 will deprecate/remove `/opsx:sync-specs` entirely, at which point this field will be removed or repurposed in a follow-up change), `unresolved_markers`, `user_decision`, plus other fields defined in the archive skill.
 
+**Canonical examples** (one per kind, illustrating spine + per-kind extensions):
+
+Workflow-kind example — `apply-2026-05-21T13-34-12Z.json` written at chunk 2 completion of a chunked apply:
+
+```json
+{
+  "command": "apply",
+  "timestamp": "2026-05-21T13:34:12Z",
+  "change": "add-detail-flag",
+  "final_assessment": "Completed chunk 2 of 5 (inventory+parsing); 28 of 76 tasks done.",
+  "next_recommended": "/opsx:apply add-detail-flag — next chunk: phase+attention+recommendation engine",
+  "kind": "workflow",
+  "tasks_completed": 28,
+  "tasks_remaining": 48,
+  "chunk": "2 of 5",
+  "chunk_name": "inventory+parsing",
+  "chunk_complete": true,
+  "tasks_completed_this_session": 16
+}
+```
+
+Editorial-kind example — `review-proposal-2026-05-21T00-18-14Z.json` written by `/opsx:review --as proposal` iter-1:
+
+```json
+{
+  "command": "review",
+  "timestamp": "2026-05-21T00:18:14Z",
+  "change": "emit-run-summary-jsons-from-workflow-commands",
+  "final_assessment": "5 CRITICAL findings + 7 WARNING + 7 SUGGESTION. Ready for /opsx:address-reviews.",
+  "next_recommended": "/opsx:address-reviews emit-run-summary-jsons-from-workflow-commands --from-file <findings-bridge>",
+  "kind": "editorial",
+  "mode": "proposal",
+  "iteration": 1,
+  "depth": "full",
+  "passes_run": ["1","2","3","4","5","6","7","8","9"],
+  "findings_summary": {
+    "critical": 5,
+    "warning": 7,
+    "suggestion": 7
+  }
+}
+```
+
+Lifecycle-kind example — `archive-2026-05-20T16-31-59Z.json` written after `/opsx:archive bootstrap-orbit-status-cli`:
+
+```json
+{
+  "command": "archive",
+  "timestamp": "2026-05-20T16:31:59Z",
+  "change": "bootstrap-orbit-status-cli",
+  "final_assessment": "Archived bootstrap-orbit-status-cli to openspec/changes/archive/2026-05-20-bootstrap-orbit-status-cli/.",
+  "next_recommended": "Change archived. Run /opsx:new or /opsx:explore to start the next change, or /opsx:audit-drift for a project-wide drift check.",
+  "kind": "lifecycle",
+  "archive_path": "openspec/changes/archive/2026-05-20-bootstrap-orbit-status-cli/",
+  "audit": {
+    "ran": true,
+    "findings_summary": { "critical": 0, "warning": 0, "suggestion": 0 }
+  },
+  "user_decision": "proceeded_with_no_critical",
+  "warnings": []
+}
+```
+
 #### Scenario: Universal spine present on every emit
 
 - **WHEN** any orbit command (workflow, editorial, or lifecycle) writes a run-summary JSON

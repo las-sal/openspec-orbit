@@ -4,6 +4,19 @@ Each `/opsx:review` invocation persists a JSON summary to `openspec/changes/<cha
 
 Create `.orbit-runs/` if it doesn't exist. The file is **committed** (not gitignored) so iteration history travels with the change into archive.
 
+## Universal spine inheritance
+
+This schema inherits the 6-field **universal spine** from `orbit-conventions`'s `Internal-run JSON summary format` requirement (see `openspec/specs/orbit-conventions/spec.md`):
+
+- `command` (matches filename prefix; here: `"review"`)
+- `timestamp` (ISO-8601 UTC, `YYYY-MM-DDTHH-MM-SSZ`)
+- `change` (change name string)
+- `final_assessment` (narrative; the stock final-assessment line)
+- `next_recommended` (verbatim recommendation, e.g., `"/opsx:address-reviews <name> --from-file <path>"`)
+- `kind: "editorial"` (review is an editorial command per the kind taxonomy)
+
+The schema below documents per-command extensions ADDED to that spine (`mode`, `iteration`, `depth`, `flags`, `passes_run`, `passes_skipped`, `findings_summary`, `findings`, `stale_suppressed`, `iteration_note`). Per-command extensions are review-specific state; they supplement, not replace, the spine.
+
 ## Schema
 
 ```json
@@ -11,6 +24,9 @@ Create `.orbit-runs/` if it doesn't exist. The file is **committed** (not gitign
   "command": "review",
   "timestamp": "<ISO-8601>",
   "change": "<change-name>",
+  "final_assessment": "<stock phrasing from final-assessment table>",
+  "next_recommended": "<e.g., '/opsx:address-reviews <name> --from-file <path>' or 'proceed to /opsx:apply <name>'>",
+  "kind": "editorial",
   "mode": "proposal" | "system",
   "iteration": <integer, per-mode>,
   "depth": "fast" | "full" | "thorough",
@@ -50,7 +66,6 @@ Create `.orbit-runs/` if it doesn't exist. The file is **committed** (not gitign
       "evidence": "<grep output or commit hash showing why it's stale>"
     }
   ],
-  "final_assessment": "<stock phrasing from final-assessment table>",
   "iteration_note": "<one-sentence note or null>"
 }
 ```

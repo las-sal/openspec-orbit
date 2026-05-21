@@ -5,12 +5,29 @@ Each `/opsx:address-reviews` invocation persists a JSON summary. Path varies:
 - **Change-scoped** (when scope is a single change directory or `--from-file` points into a change's `.orbit-runs/`): `openspec/changes/<change-name>/.orbit-runs/address-reviews-<TS>.json`
 - **Whole-repo / cross-change**: `openspec/.orbit-runs/address-reviews-<TS>.json`
 
+## Universal spine inheritance
+
+This schema inherits the 6-field **universal spine** from `orbit-conventions`'s `Internal-run JSON summary format` requirement (see `openspec/specs/orbit-conventions/spec.md`):
+
+- `command` (here: `"address-reviews"`)
+- `timestamp` (ISO-8601 UTC, `YYYY-MM-DDTHH-MM-SSZ`)
+- `change` (change name string for change-scoped; `null` for whole-repo / cross-change scope)
+- `final_assessment` (narrative)
+- `next_recommended` (verbatim recommendation, e.g., `"re-run /opsx:review --as proposal to confirm convergence"`)
+- `kind: "editorial"` (address-reviews is an editorial command per the kind taxonomy)
+
+The schema below documents per-command extensions ADDED to that spine (`source`, `source_path`, `external_reviewer`, `input_findings_summary`, `pushback_verification`, `resolution_summary`, `resolutions`, `remaining_markers_in_scope`, `persisted_escalations`). Per-command extensions are address-reviews-specific state.
+
 ## Schema
 
 ```json
 {
   "command": "address-reviews",
   "timestamp": "<ISO-8601>",
+  "change": "<change-name string for change-scoped; null for whole-repo / cross-change>",
+  "final_assessment": "<short narrative of the resolution outcome>",
+  "next_recommended": "<suggested next command, e.g., 're-run /opsx:review --as proposal to confirm convergence'>",
+  "kind": "editorial",
   "source": "whole-repo" | "scope" | "from-file",
   "source_path": "<scope path or --from-file path or null>",
   "external_reviewer": "<from --from-file's Reviewer field, if applicable, else null>",
@@ -43,8 +60,7 @@ Each `/opsx:address-reviews` invocation persists a JSON summary. Path varies:
   "remaining_markers_in_scope": 0,
   "persisted_escalations": [
     { "file": "...", "line": 0, "title": "...", "reason": "..." }
-  ],
-  "next_recommended": "<suggested next command, e.g., 're-run /opsx:review --as proposal to confirm convergence'>"
+  ]
 }
 ```
 

@@ -1,0 +1,15 @@
+{
+  "command": "apply",
+  "timestamp": "2026-05-21T03:40:36Z",
+  "change": "emit-run-summary-jsons-from-workflow-commands",
+  "final_assessment": "Completed chunk 1 of 7 (Schema codification + shared spine reference). 5 of 44 tasks done. Schema reference files for review/audit-drift/address-reviews/archive all updated with universal-spine inheritance section + 6 spine fields added to each JSON example. orbit-conventions MODIFIED spec gained 3 canonical example JSONs (one per kind).",
+  "next_recommended": "/opsx:apply emit-run-summary-jsons-from-workflow-commands — next chunk (2 of 7): Workflow command emits — explore + propose-shaped (extend existing additions); 7 tasks in groups 2-3",
+  "kind": "workflow",
+  "tasks_completed": 5,
+  "tasks_remaining": 39,
+  "chunk": "1 of 7",
+  "chunk_name": "Schema codification + shared spine reference",
+  "chunk_complete": true,
+  "tasks_completed_this_session": 5,
+  "note": "Manual emit per D7 chunk-end convention. The emit-layer being SPEC'd by this change doesn't exist yet (this apply session is the first time the chunk-end emit pattern is being exercised). Subsequent apply sessions of OTHER changes won't need manual emits — the emit-layer will be in place by then."
+}

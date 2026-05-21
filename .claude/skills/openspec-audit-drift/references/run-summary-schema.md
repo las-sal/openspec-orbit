@@ -5,12 +5,29 @@ Each `/opsx:audit-drift` invocation persists a JSON summary. Path varies by cont
 - **Change-scoped** (library or pre-archive): `openspec/changes/<change-name>/.orbit-runs/audit-drift-<TS>.json`
 - **Standalone** (no change context): `openspec/.orbit-runs/audit-drift-<TS>.json` (create `openspec/.orbit-runs/` if needed)
 
+## Universal spine inheritance
+
+This schema inherits the 6-field **universal spine** from `orbit-conventions`'s `Internal-run JSON summary format` requirement (see `openspec/specs/orbit-conventions/spec.md`):
+
+- `command` (here: `"audit-drift"`)
+- `timestamp` (ISO-8601 UTC, `YYYY-MM-DDTHH-MM-SSZ`)
+- `change` (change name string for change-scoped / library / pre-archive contexts; `null` for project-wide standalone)
+- `final_assessment` (narrative)
+- `next_recommended` (verbatim recommendation; varies by findings-vs-clean per `orbit-run-summary-emit`'s `Audit-drift standalone recommendations` requirement)
+- `kind: "editorial"` (audit-drift is an editorial command per the kind taxonomy)
+
+The schema below documents per-command extensions ADDED to that spine (`context`, `caller`, `depth`, `flags`, `categories_run`, `categories_skipped`, `findings_summary`, `findings`, `stale_suppressed`). Per-command extensions are audit-drift-specific state.
+
 ## Schema
 
 ```json
 {
   "command": "audit-drift",
   "timestamp": "<ISO-8601>",
+  "change": "<change-name string for change-scoped/library/pre-archive; null for project-wide standalone>",
+  "final_assessment": "<stock phrasing or null for library context>",
+  "next_recommended": "<e.g., '/opsx:address-reviews <name> --from-file <this-json>' on findings; verbatim copy from prior latest JSON on clean (per orbit-run-summary-emit's Audit-drift standalone recommendations); null for library/pre-archive>",
+  "kind": "editorial",
   "context": "standalone" | "library" | "pre-archive",
   "caller": "<calling command if library/pre-archive, else null>",
   "depth": "fast" | "full" | "thorough",
@@ -45,8 +62,7 @@ Each `/opsx:audit-drift` invocation persists a JSON summary. Path varies by cont
   ],
   "stale_suppressed": [
     { "category": "<category id>", "title": "...", "evidence": "..." }
-  ],
-  "final_assessment": "<stock phrasing or null for library context>"
+  ]
 }
 ```
 

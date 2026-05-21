@@ -2,6 +2,21 @@
 
 The orbit additions to `/opsx:archive` write a JSON summary to `openspec/changes/archive/<YYYY-MM-DD>-<change-name>/.orbit-runs/archive-<TS>.json` after a successful archive operation (the `<YYYY-MM-DD>-` prefix is added by upstream's archive move step).
 
+## Universal spine inheritance
+
+This schema inherits the 6-field **universal spine** from `orbit-conventions`'s `Internal-run JSON summary format` requirement (see `openspec/specs/orbit-conventions/spec.md`):
+
+- `command` (here: `"archive"`)
+- `timestamp` (ISO-8601 UTC, `YYYY-MM-DDTHH-MM-SSZ`)
+- `change` (change name string)
+- `final_assessment` (narrative of what was archived, e.g., `"Archived <change-name> to <archive_path>."`)
+- `next_recommended` (verbatim recommendation, e.g., `"Change archived to <archive_path>. Run /opsx:new or /opsx:explore to start the next change, or /opsx:audit-drift for a project-wide drift check."`)
+- `kind: "lifecycle"` (archive is THE lifecycle command per the kind taxonomy — transitions a change out of the active set)
+
+The schema below documents per-command extensions ADDED to that spine (`archive_path`, `audit`, `unresolved_markers`, `user_decision`, `sync_specs`, `warnings`). Per-command extensions are archive-specific state.
+
+**Note on `sync_specs`** (transitional): this field persists from pre-#6 architecture. `openspec-orbit#6` will deprecate `/opsx:sync-specs` entirely; at that point `sync_specs` may be removed or repurposed in a follow-up change.
+
 ## Schema
 
 ```json
@@ -9,6 +24,9 @@ The orbit additions to `/opsx:archive` write a JSON summary to `openspec/changes
   "command": "archive",
   "timestamp": "<ISO-8601>",
   "change": "<change-name>",
+  "final_assessment": "<narrative of what was archived, e.g., 'Archived <change-name> to <archive_path>.'>",
+  "next_recommended": "Change archived to <archive_path>. Run /opsx:new or /opsx:explore to start the next change, or /opsx:audit-drift for a project-wide drift check.",
+  "kind": "lifecycle",
   "archive_path": "openspec/changes/archive/<YYYY-MM-DD>-<change-name>/",
   "audit": {
     "ran": true | false,
