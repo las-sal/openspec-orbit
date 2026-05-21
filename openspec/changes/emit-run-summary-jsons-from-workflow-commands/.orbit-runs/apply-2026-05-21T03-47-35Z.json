@@ -1,0 +1,15 @@
+{
+  "command": "apply",
+  "timestamp": "2026-05-21T03:47:35Z",
+  "change": "emit-run-summary-jsons-from-workflow-commands",
+  "final_assessment": "Completed chunk 2 of 7 (Workflow command emits — explore + propose-shaped). 12 of 44 tasks done. openspec-explore + openspec-propose extended with run-summary emit sections; openspec-new-change + openspec-continue-change + openspec-ff-change each gained their first `# Orbit additions` section with command-specific emit instructions. Per-variant filenames (new-<TS>.json, continue-<TS>.json, ff-<TS>.json) explicitly documented in each. /opsx:continue defers to upstream isComplete per F3 fix.",
+  "next_recommended": "/opsx:apply emit-run-summary-jsons-from-workflow-commands — next chunk (3 of 7): Apply with chunk-end behavior; 6 tasks in group 4",
+  "kind": "workflow",
+  "tasks_completed": 12,
+  "tasks_remaining": 32,
+  "chunk": "2 of 7",
+  "chunk_name": "Workflow command emits — explore + propose-shaped",
+  "chunk_complete": true,
+  "tasks_completed_this_session": 7,
+  "note": "Manual emit per D7 chunk-end convention. SKILL.md additions in this chunk DOCUMENT how future emits should work, but actual emits still happen manually (this apply session itself) until all chunks are done."
+}

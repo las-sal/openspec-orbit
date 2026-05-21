@@ -205,3 +205,44 @@ When no `openspec/explore/<name>/` exists, fall through to upstream Step 1: prom
 - **`explore.md` has no Decisions** → the generated artifacts proceed but flag that they're being generated from Premise + Open questions alone, which usually means the exploration wasn't ready for promotion. Suggest user run more `/opsx:explore` work before applying.
 - **`openspec/changes/<name>/` already exists in conflict** → three-way prompt (regenerate / continue / abort) is mandatory; do not silently overwrite.
 - **No staging directory but user explicitly invoked propose** → standalone mode, no message.
+
+## Run-summary emit (one-shot at command completion)
+
+(Per `orbit-run-summary-emit` capability — openspec-orbit#8)
+
+`/opsx:propose` is a one-shot command per `orbit-run-summary-emit`'s `Emit timing semantics` requirement (emit ONCE on natural command completion). After all artifacts are generated and any staging-directory move has completed, write:
+
+```
+openspec/changes/<name>/.orbit-runs/propose-<TS>.json
+```
+
+Where `<TS>` is ISO-8601 UTC with hyphens (e.g., `propose-2026-05-21T13-34-12Z.json`). Create `.orbit-runs/` if it doesn't exist.
+
+### JSON shape
+
+Per the universal spine in `orbit-conventions`'s `Internal-run JSON summary format` + per-command extensions:
+
+```json
+{
+  "command": "propose",
+  "timestamp": "<ISO-8601 UTC>",
+  "change": "<name>",
+  "final_assessment": "<narrative, e.g., 'Generated proposal/design/tasks/specs for <name>; consumed prior explore.md (X decisions seeded).'>",
+  "next_recommended": "/opsx:review <name> — proposal artifacts ready; review before apply",
+  "kind": "workflow",
+  "artifacts_created": ["proposal", "design", "tasks", "specs/<capability>"],
+  "delta_count": <int — sum of ADDED/MODIFIED/REMOVED/RENAMED requirements across all spec deltas>,
+  "from": "explore" | "scratch"
+}
+```
+
+Field notes:
+- `artifacts_created` lists artifact IDs actually written (proposal, design, tasks, specs/`<capability>`). Use the capability-specific paths under `specs/`.
+- `delta_count` totals normative requirements across spec delta files; helps downstream tools answer "is this change small or large?"
+- `from`: `"explore"` for consume-mode (explore.md existed and was promoted), `"scratch"` for standalone-mode (no prior explore).
+
+### `next_recommended` — always recommend review next
+
+Per `orbit-run-summary-emit`'s `Propose-shaped recommendation logic` requirement and `openspec-orbit#9`, propose ALWAYS recommends `/opsx:review` next, never `/opsx:apply` directly. Even if the user is confident the artifacts are ready, the canonical orbit flow is propose → review → apply, with review acting as the pre-apply checkpoint.
+
+orbit-status's tier-1 reader parses the leading `/opsx:review <name>` token into `command`/`args`.

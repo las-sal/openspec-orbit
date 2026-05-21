@@ -98,3 +98,47 @@ After completing all artifacts, summarize:
 - If context is critically unclear, ask the user - but prefer making reasonable decisions to keep momentum
 - If a change with that name already exists, suggest continuing that change instead
 - Verify each artifact file exists after writing before proceeding to next
+
+---
+
+# Orbit additions
+
+## Three execution disciplines (apply throughout this command)
+
+The three execution disciplines from `orbit-conventions` apply: read-before-reference, change completeness, pushback. See `openspec/specs/orbit-conventions/spec.md`.
+
+## Run-summary emit (one-shot at command completion)
+
+(Per `orbit-run-summary-emit` capability — openspec-orbit#8)
+
+`/opsx:ff` is a one-shot command per `orbit-run-summary-emit`'s `Emit timing semantics` requirement (emit ONCE on natural command completion). After all artifacts (proposal/design/tasks/specs) are generated, write:
+
+```
+openspec/changes/<name>/.orbit-runs/ff-<TS>.json
+```
+
+Where `<TS>` is ISO-8601 UTC with hyphens. Create `.orbit-runs/` if it doesn't exist. The filename prefix is `ff-` (NOT `propose-`) to preserve entry-point provenance per the per-variant filename rule.
+
+### JSON shape
+
+Per the universal spine in `orbit-conventions`'s `Internal-run JSON summary format` + per-command extensions:
+
+```json
+{
+  "command": "ff",
+  "timestamp": "<ISO-8601 UTC>",
+  "change": "<name>",
+  "final_assessment": "<narrative, e.g., 'Fast-forwarded <name>: generated all artifacts (proposal/design/tasks/specs) in one pass.'>",
+  "next_recommended": "/opsx:review <name> — all proposal artifacts ready; review before apply",
+  "kind": "workflow",
+  "artifacts_created": ["proposal", "design", "tasks", "specs/<capability>"],
+  "delta_count": <int — sum of normative requirements across spec deltas>,
+  "from": "scratch"
+}
+```
+
+### `next_recommended` — always recommend review next
+
+Per `orbit-run-summary-emit`'s `Propose-shaped recommendation logic` requirement and `openspec-orbit#9`, `/opsx:ff` ALWAYS recommends `/opsx:review` next, never `/opsx:apply` directly. Same rule as `/opsx:propose` and `/opsx:new` — canonical orbit flow is propose-shaped → review → apply.
+
+orbit-status's tier-1 reader parses the leading `/opsx:review <name>` token into `command`/`args`.

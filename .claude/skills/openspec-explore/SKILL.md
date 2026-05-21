@@ -443,3 +443,60 @@ These sibling files persist alongside `explore.md` and move into `openspec/chang
 When the user runs `/opsx:propose <name>` and `openspec/explore/<name>/explore.md` exists, propose switches to **consume mode**: reads `explore.md` as authoritative, prompts for Open question handling, generates `proposal.md` / `design.md` / `specs/` / `tasks.md`, and **moves** the staging directory to `openspec/changes/<name>/`. The exploration record persists as historical context alongside the generated artifacts.
 
 This means: durable capture in explore → seamless promotion to formal change. The user doesn't re-type what was already discussed; the AI doesn't paraphrase what was already decided.
+
+## Run-summary emit (named-mode only)
+
+(Per `orbit-run-summary-emit` capability — openspec-orbit#8)
+
+When named-mode `/opsx:explore <name>` reaches a conversation boundary, write a run-summary JSON to:
+
+```
+openspec/explore/<name>/.orbit-runs/explore-<TS>.json
+```
+
+Where `<TS>` is ISO-8601 UTC with hyphens (e.g., `explore-2026-05-21T13-34-12Z.json`). Create `.orbit-runs/` if it doesn't exist.
+
+**Bare-mode `/opsx:explore` does NOT emit** — see "Crystallization to named change" below for the bare-mode-to-named transition.
+
+### Conversation boundary detection
+
+Per `orbit-run-summary-emit`'s `Emit timing semantics` requirement, a conversation boundary for multi-turn conversational commands like `/opsx:explore` is EITHER:
+
+1. **User explicitly signals stop or pause** — "stop", "pause", "that's it for now", "we'll come back to this later", or equivalent intent
+2. **AI-initiated wrap** — AI says something like "I've captured everything; type `/opsx:propose <name>` when ready" or equivalent intent (an explicit suggestion of the next workflow step)
+
+**Canonical orbit UX convention**: when handing control back to the user after substantive explore work, include an explicit wrap phrase suggesting the next step. This turns the handoff into a rule-2 signal and triggers the emit naturally without needing to predict future user behavior.
+
+**NOT a boundary** (no emit): AI returning control mid-thought to ask a clarifying question; user tangent and return; AI tool-use sequences within a single turn.
+
+### JSON shape
+
+Per the universal spine in `orbit-conventions`'s `Internal-run JSON summary format` + per-command extensions:
+
+```json
+{
+  "command": "explore",
+  "timestamp": "<ISO-8601 UTC>",
+  "change": "<name>",
+  "final_assessment": "<narrative of what was captured this session>",
+  "next_recommended": "<per maturity rules below>",
+  "kind": "workflow",
+  "mode": "named",
+  "decisions_captured": <int — count of Decisions in explore.md after this session>,
+  "open_questions_count": <int — count of Open questions in explore.md after this session>,
+  "crystallized_to_name": null
+}
+```
+
+(`crystallized_to_name` is `null` for named-mode emits since the name already exists; the field is meaningful for the bare-mode crystallization case below.)
+
+### `next_recommended` per maturity (4 mutually-exclusive states)
+
+Per `orbit-run-summary-emit`'s `Named-mode explore recommendation by maturity` requirement, four maturity states cover the full decisions × open-questions grid:
+
+- **Early (0–1 decisions captured)**: `"/opsx:explore <name> — continue capturing thinking"`
+- **Mid (2–3 decisions captured)**: `"/opsx:explore <name> — continue thinking, or /opsx:propose <name> if ready to formalize"`
+- **Mature (4+ decisions captured AND ≤1 open question)**: `"/opsx:propose <name> — substantial thinking captured; ready to formalize the design (or /opsx:explore <name> to keep refining)"`
+- **Stalled (4+ decisions captured AND >1 open question)**: `"/opsx:explore <name> — N decisions captured but M open questions remain; resolve open questions before formalizing"` (N = `decisions_captured`, M = `open_questions_count`). Does NOT surface `/opsx:propose` as alternative — high open-question count signals NOT-ready regardless of decision count.
+
+orbit-status's tier-1 reader parses the leading `/opsx:<verb> <name>` token into `command`/`args`; the alternative path (Mid and Mature only) lives in the reason text.
