@@ -153,3 +153,84 @@ This skill supports the "actions on a change" model:
 
 - **Can be invoked anytime**: Before all artifacts are done (if tasks exist), after partial implementation, interleaved with other actions
 - **Allows artifact updates**: If implementation reveals design issues, suggest updating artifacts - not phase-locked, work fluidly
+
+---
+
+# Orbit additions
+
+## Three execution disciplines (apply throughout this command)
+
+The three execution disciplines from `orbit-conventions` apply: read-before-reference, change completeness, pushback. See `openspec/specs/orbit-conventions/spec.md`.
+
+## Run-summary emit (chunk-aware)
+
+(Per `orbit-run-summary-emit` capability — openspec-orbit#8)
+
+`/opsx:apply` is a chunked multi-turn command. Emit timing differs from one-shot commands per `orbit-run-summary-emit`'s `Apply per-chunk-end emission` requirement:
+
+```
+openspec/changes/<name>/.orbit-runs/apply-<TS>.json
+```
+
+Where `<TS>` is ISO-8601 UTC with hyphens. Create `.orbit-runs/` if it doesn't exist.
+
+### Chunk detection (parse tasks.md preamble)
+
+If the change's `tasks.md` opens with an HTML comment block declaring chunks, the apply emit fires at chunk boundaries. The preamble format (per the spec):
+
+```
+<!--
+Implementation chunks:
+  Chunk 1 (groups 1):    Foundation
+  Chunk 2 (groups 2-3):  Workflow emits
+  Chunk 3 (groups 4):    Apply behavior
+-->
+```
+
+**Format constraints**:
+- `(groups X[-Y])` supports a single group (`X`) or a contiguous range (`X-Y`). Non-contiguous group sets (`groups 6,8,9`) are NOT supported in v1.
+- Chunks MAY span multiple groups. The emit fires when the LAST group in the chunk completes its tasks, not on every group boundary.
+- **Malformed preamble handling** (graceful degradation): if the preamble comment block exists but cannot be parsed, log a warning to stderr (`"warning: tasks.md preamble at <path> could not be parsed as chunk declarations; falling back to no-chunking mode"`) and proceed under no-chunking-apply rules (single emit at session end with `chunk: null`).
+
+### Emit rules
+
+Three cases:
+
+1. **Chunk completion** (rule 1): when the last task in chunk N is checked, write `apply-<TS>.json` with `chunk: "N of M"`, `chunk_complete: true`, `chunk_name: <name>`. `next_recommended` advances to next chunk (`/opsx:apply <name>`) or to `/opsx:verify <name>` on apply-complete (chunk N == M).
+
+2. **Mid-chunk session pause** (rule 2): when the user pauses or hands off mid-chunk-N (per the conversation-boundary signals in `Emit timing semantics` — explicit "stop"/"pause" OR AI-initiated wrap), emit with `chunk: "N of M"`, `chunk_complete: false`, and `next_recommended: "/opsx:apply <name>"` to resume.
+
+3. **No-chunking apply** (rule 3): when tasks.md has no chunk preamble, emit once at session end with `chunk: null`, `chunk_complete: true`, and `next_recommended` advancing to `/opsx:verify <name>` on apply-complete or `/opsx:apply <name>` if tasks remain.
+
+### JSON shape
+
+Per the universal spine in `orbit-conventions`'s `Internal-run JSON summary format` + per-command extensions:
+
+```json
+{
+  "command": "apply",
+  "timestamp": "<ISO-8601 UTC>",
+  "change": "<name>",
+  "final_assessment": "<narrative, e.g., 'Completed chunk 2 of 5 (inventory+parsing); 28 of 76 tasks done.'>",
+  "next_recommended": "<per advancement rules below>",
+  "kind": "workflow",
+  "tasks_completed": <int — running total across all chunks>,
+  "tasks_remaining": <int>,
+  "chunk": "<N of M>" | null,
+  "chunk_name": "<from preamble>" | null,
+  "chunk_complete": true | false,
+  "tasks_completed_this_session": <int — delta since prior apply JSON, for forensic timeline>
+}
+```
+
+### `next_recommended` advancement rules
+
+- **Chunk N done, more chunks** (N < M): `/opsx:apply <name> — next chunk: <chunk N+1 name from preamble>`
+- **Apply complete** (all chunks done OR no-chunking apply with all tasks done): `/opsx:verify <name>`
+- **Mid-chunk pause**: `/opsx:apply <name>` (resume current chunk)
+
+orbit-status's tier-1 reader parses the leading `/opsx:<verb> <name>` token into `command`/`args`.
+
+### Why chunk-aware (forensic + resumability)
+
+Per the design rationale (openspec-orbit#22 + orbit-status retrospective): per-chunk emit enables forensic timeline reconstruction ("which chunk introduced this regression?") and provides clean resume boundaries between sessions. Without chunk-aware emit, post-apply regression bisection has to span the full task universe; with chunk-aware emit, blast radius is bounded to a single chunk's task set (typically 10-20× reduction).

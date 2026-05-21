@@ -43,12 +43,12 @@ Without this expansion, archive emits will violate the new universal spine on th
 
 ## 4. Apply with chunk-end behavior
 
-- [ ] 4.1 Add `## Orbit additions` to `openspec-apply-change/SKILL.md` with the chunk-detection rule (parse the tasks.md preamble comment block for `Chunk N (groups X[-Y]): <name>` lines per the format specified in `Requirement: Apply per-chunk-end emission`). Note: chunks MAY span multiple groups (e.g., `Chunk 2 (groups 2-3)`); the emit fires when the LAST group in the chunk completes its tasks, not on every group boundary (per **S6**).
-- [ ] 4.2 Document chunk-end emit logic (D7 rule 1: emit when last task in chunk N is checked, with `chunk: "N of M"`, `chunk_complete: true`, `chunk_name: <name>`)
-- [ ] 4.3 Document mid-chunk session-pause emit logic (D7 rule 2: emit on explicit pause signals with `chunk_complete: false` for resumability)
-- [ ] 4.4 Document no-chunking apply emit logic (D7 rule 3: emit once at session end with `chunk: null`)
-- [ ] 4.5 Document per-command extensions (`tasks_completed`, `tasks_remaining`, `chunk`, `chunk_name`, `chunk_complete`, `tasks_completed_this_session`)
-- [ ] 4.6 Document the `next_recommended` advancement rules (next chunk on N<M, `/opsx:verify <name>` on N==M, resume current chunk on mid-chunk pause)
+- [x] 4.1 Add `## Orbit additions` to `openspec-apply-change/SKILL.md` with the chunk-detection rule (parse the tasks.md preamble comment block for `Chunk N (groups X[-Y]): <name>` lines per the format specified in `Requirement: Apply per-chunk-end emission`). Note: chunks MAY span multiple groups (e.g., `Chunk 2 (groups 2-3)`); the emit fires when the LAST group in the chunk completes its tasks, not on every group boundary (per **S6**).
+- [x] 4.2 Document chunk-end emit logic (D7 rule 1: emit when last task in chunk N is checked, with `chunk: "N of M"`, `chunk_complete: true`, `chunk_name: <name>`)
+- [x] 4.3 Document mid-chunk session-pause emit logic (D7 rule 2: emit on explicit pause signals with `chunk_complete: false` for resumability)
+- [x] 4.4 Document no-chunking apply emit logic (D7 rule 3: emit once at session end with `chunk: null`)
+- [x] 4.5 Document per-command extensions (`tasks_completed`, `tasks_remaining`, `chunk`, `chunk_name`, `chunk_complete`, `tasks_completed_this_session`)
+- [x] 4.6 Document the `next_recommended` advancement rules (next chunk on N<M, `/opsx:verify <name>` on N==M, resume current chunk on mid-chunk pause)
 
 ## 5. Verify with mode classification
 

@@ -1,0 +1,15 @@
+{
+  "command": "apply",
+  "timestamp": "2026-05-21T03:50:02Z",
+  "change": "emit-run-summary-jsons-from-workflow-commands",
+  "final_assessment": "Completed chunk 3 of 7 (Apply with chunk-end behavior). 18 of 44 tasks done. openspec-apply-change/SKILL.md gained its first `# Orbit additions` section documenting the very rules I'm following manually right now — chunk detection from tasks.md preamble (with format constraints + malformed-preamble graceful degradation), 3 emit cases (chunk completion / mid-chunk pause / no-chunking), JSON shape with all 6 spine + per-command extension fields, next_recommended advancement rules. Maximum dogfood loop reached: documenting how apply emits while emitting per the documented rules.",
+  "next_recommended": "/opsx:apply emit-run-summary-jsons-from-workflow-commands — next chunk (4 of 7): Verify with mode classification; 6 tasks in group 5",
+  "kind": "workflow",
+  "tasks_completed": 18,
+  "tasks_remaining": 26,
+  "chunk": "3 of 7",
+  "chunk_name": "Apply with chunk-end behavior",
+  "chunk_complete": true,
+  "tasks_completed_this_session": 6,
+  "note": "Manual emit per D7. This is the chunk that documents D7 itself — the rules being followed manually are now codified in openspec-apply-change/SKILL.md."
+}
