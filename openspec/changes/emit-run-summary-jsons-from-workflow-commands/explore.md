@@ -209,17 +209,18 @@ verify-<TS>.json (refines D9 which covers the pass case)
     # command/args stay null; this is a non-orbit-command action
 
   ELIF verdict == "fail":                                          # mode ② impl-vs-spec gap
-    next_recommended: "/opsx:review --as system <name> --mark —
+    next_recommended: "/opsx:review --as system <name> —
                        N spec scenarios fail against implementation;
-                       system review will surface findings as markers
-                       for per-finding triage"
+                       system review will surface findings in its
+                       scorecard for you to walk each as code fix
+                       or spec revision"
 
   ELIF verdict == "warn":                                          # passes with warnings
     next_recommended: "/opsx:review --as system <name> — verification
                        passed with N warnings; system review recommended"
 ```
 
-**Rationale**: matches D6's principle (verify stays upstream; emit-layer classifies the output). Mode ② routes the code-vs-spec triage through the per-finding walk machine (`/opsx:review --as system --mark` → `/opsx:address-reviews`), where each finding gets its own code-or-spec decision per [#11](https://github.com/las-sal/openspec-orbit/issues/11). Mode ③ surfaces the validator's own message verbatim because the fix path is a direct artifact edit, not an orbit command.
+**Rationale**: matches D6's principle (verify stays upstream; emit-layer classifies the output). Mode ② recommends bare `/opsx:review --as system <name>` (the original D13 sketch had `--mark` to drop markers for `/opsx:address-reviews`, but EW3 during the external system review caught that `--mark` is proposal-mode only and silently ignored in system mode per `orbit-review/spec.md`'s `Requirement: --mark flag is proposal-mode only`; system-mode marker writing is v2 work tracked at the relevant follow-up). User walks each system-review finding manually to decide code-vs-spec. Mode ③ surfaces the validator's own message verbatim because the fix path is a direct artifact edit, not an orbit command.
 
 ### D14: `/opsx:review-external` T0 recommendation is multi-step prose
 

@@ -8,7 +8,10 @@ The universal spine (6 required fields):
 
 ```
 command          string       identifies which command emitted (matches filename prefix)
-timestamp        string       ISO-8601 UTC, format YYYY-MM-DDTHH-MM-SSZ, also embedded in filename
+timestamp        string       ISO-8601 UTC; JSON field uses standard colon format `YYYY-MM-DDTHH:MM:SSZ`
+                              (e.g., `"2026-05-21T13:34:12Z"`). Filename embeds a colon-replaced `<TS>` token
+                              `YYYY-MM-DDTHH-MM-SSZ` (e.g., `propose-2026-05-21T13-34-12Z.json`) because
+                              colons aren't filesystem-safe across all platforms.
 change           string|null  the change name (or null for project-scope commands)
 final_assessment string       narrative of what just happened (human-readable)
 next_recommended string       verbatim recommendation, suitable for orbit-status best-effort parse

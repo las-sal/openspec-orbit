@@ -12,7 +12,11 @@ Scan the project for drift between captured knowledge (specs, lenses, governing 
 
 Findings roll into the standard 3-dimension scorecard. The final-assessment phrasing varies by invocation context.
 
-**Input**: Optional flags (no positional argument). Detects invocation context via caller signal (set by `/opsx:review` and `/opsx:archive` when invoking as library; absent when standalone).
+**Input**: Optional `<change-name>` positional + optional flags. Three invocation modes (detected via positional + caller signal):
+
+- **Change-scoped standalone** — `/opsx:audit-drift <change-name>`: user invokes with a change name; no caller signal. Operates on the named change; emits to `openspec/changes/<change-name>/.orbit-runs/audit-drift-<TS>.json`.
+- **Project-wide standalone** — `/opsx:audit-drift` (no positional): user invokes with no args; no caller signal. Operates project-wide; emits to `openspec/.orbit-runs/audit-drift-<TS>.json`.
+- **Library / pre-archive** — caller signal present (set by `/opsx:review --as system` Pass 6 or `/opsx:archive` pre-archive sweep): invocation context comes from the caller; positional args ignored.
 
 ## Three execution disciplines (apply throughout this command)
 

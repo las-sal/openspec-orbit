@@ -29,19 +29,19 @@ The orbit-status dogfood (bootstrap-orbit-status-cli, archived 2026-05-20) confi
 
 ## Decisions
 
-### D-arch-1: Emit-layer wraps upstream skills without modifying them
+### D-arch-1: Emit-layer lives in `## Orbit additions` sections; upstream body unchanged
 
-The new emit behavior is a **wrapper layer**, not a modification of upstream commands. Each wrapped command's behavior stays exactly as upstream defines it; the emit-layer runs after the command completes, inspects the command's output (artifact state, return codes, tasks state), and writes `.orbit-runs/<command>-<TS>.json`.
+The new emit behavior is implemented as additions inside `# Orbit additions` sections within each command's SKILL.md. The upstream-authored body of each SKILL.md (everything above the `# Orbit additions` marker) remains unchanged; the wrapper boundary IS the marker itself. For upstream-derived skills without an existing additions section (`openspec-new-change`, `openspec-continue-change`, `openspec-ff-change`, `openspec-apply-change`, `openspec-verify-change`), this change introduces the first additions section — additive, not modifying the upstream body above it.
 
-Concretely: `/opsx:verify` keeps its upstream job — run `verify-change`, report pass/fail with findings. The recommendation logic that classifies verify's output (`/opsx:apply` on tasks-incomplete, `/opsx:review --as system --mark` on impl-vs-spec gap, verbatim validator message on openspec-validate failure) lives in the emit-layer, NOT in verify itself.
+Concretely: `/opsx:verify` keeps its upstream job — run `verify-change`, report pass/fail with findings. The recommendation logic that classifies verify's output (`/opsx:apply` on tasks-incomplete, `/opsx:review --as system` on impl-vs-spec gap [without `--mark` — that flag is proposal-mode only], verbatim validator message on openspec-validate failure) lives in `openspec-verify-change/SKILL.md`'s `# Orbit additions` section, NOT in the upstream body.
 
-**Why this architecture (and not skill-level modification):**
-- Upstream skill bodies receive `openspec update`-driven improvements; orbit's emit work doesn't block that channel
-- The emit-layer can evolve independently of upstream skill logic
-- The orbit/upstream boundary stays clean — easy to audit which files are upstream vs orbit-authored
-- Aligns with the delta-only-overlay principle established in the [#6](https://github.com/las-sal/openspec-orbit/issues/6) feedback
+**Why this architecture works:**
+- Upstream skill bodies receive `openspec update`-driven improvements unchanged; orbit's emit work lives below the marker and doesn't conflict
+- Emit-layer can evolve independently of upstream skill logic
+- The orbit/upstream boundary stays clean — easy to audit (everything above `# Orbit additions` is upstream-or-untouched; everything below is orbit's)
+- Aligns with the delta-only-overlay principle established in the [openspec-orbit#6](https://github.com/las-sal/openspec-orbit/issues/6) feedback
 
-**Alternative considered (rejected):** Modify each upstream skill's `## Orbit additions` section to embed emit logic. Rejected because: (1) some commands like `/opsx:apply` and `/opsx:verify` have no `## Orbit additions` today and we'd be establishing modification-by-emit as a precedent; (2) emit is observability, conceptually orthogonal to the skill's primary job — putting them in different artifacts respects that separation.
+**Alternative considered (rejected):** A SEPARATE wrapper artifact (e.g., a sibling `openspec-verify-change-emit.md` skill that's invoked after verify completes). Rejected because: (1) two artifacts per command doubles maintenance surface; (2) emit logic is tightly coupled to the command's output shape, so co-locating in the same SKILL.md keeps related concerns together; (3) AI invocation patterns work cleanly with single-skill emits because the AI completing the command's primary work naturally proceeds to the orbit-additions emit instructions in the same file.
 
 ### D-spine-1: 6-field shared spine + per-command extensions
 
@@ -103,21 +103,22 @@ Each command's `next_recommended` follows documented rules. Codified in the spec
 | `explore` (named) | 0–1 decisions | `/opsx:explore <name>` — continue thinking |
 | `explore` (named) | 2–3 decisions | `/opsx:explore <name>` — continue, or `/opsx:propose <name>` if ready |
 | `explore` (named) | 4+ decisions, ≤1 open Q | `/opsx:propose <name>` — substantial thinking captured |
-| `propose`/`new`/`ff` | always | `/opsx:review <name>` (per [#9](https://github.com/las-sal/openspec-orbit/issues/9)) |
-| `continue` | artifacts incomplete | `/opsx:continue <name>` — next missing artifact |
-| `continue` | artifacts complete | `/opsx:review <name>` |
+| `propose`/`ff` | always | `/opsx:review <name>` (per [#9](https://github.com/las-sal/openspec-orbit/issues/9)) |
+| `new` (scaffold-only) | always after fresh scaffold | `/opsx:continue <name>` (artifact-completion-aware; isComplete=false) |
+| `continue` | artifacts incomplete (isComplete=false) | `/opsx:continue <name>` — next missing artifact |
+| `continue` / `new` | artifacts complete (isComplete=true) | `/opsx:review <name>` |
 | `apply` | chunk N done, more chunks | `/opsx:apply <name>` — next chunk |
 | `apply` | all chunks done | `/opsx:verify <name>` |
 | `verify` | pass | `/opsx:review --as system <name>` (with `/opsx:archive` in reason) |
 | `verify` | fail mode ① tasks incomplete | `/opsx:apply <name>` |
-| `verify` | fail mode ② impl-vs-spec gap | `/opsx:review --as system <name> --mark` |
+| `verify` | fail mode ② impl-vs-spec gap | `/opsx:review --as system <name>` (without `--mark` — that flag is proposal-mode only; user walks system review findings manually) |
 | `verify` | fail mode ③ openspec-validate fail | verbatim validator message |
 | `verify` | warn | `/opsx:review --as system <name>` |
 | `review-external` | T0 (prompt packaged) | multi-step prose: paste, save, `/opsx:address-reviews --from-file` |
 | `audit-drift` (standalone) | findings | `/opsx:address-reviews <name> --from-file <this>` |
 | `audit-drift` (standalone) | clean | copy `next_recommended` from prior latest JSON (preserve workflow narrative) |
 
-Verify's fail-mode ② routes the code-vs-spec triage through `/opsx:review --as system --mark` → `/opsx:address-reviews` rather than verify itself dropping markers — preserves D-arch-1 (verify stays upstream).
+Verify's fail-mode ② recommends `/opsx:review --as system <name>` (without `--mark` — that flag is proposal-mode only per `orbit-review/spec.md`'s `Requirement: --mark flag is proposal-mode only`). The user walks the system review's findings manually to triage each as code-vs-spec. (Earlier draft recommended `--as system --mark` to drop markers for address-reviews; corrected during external review iter-1 EW3 fix once it was verified that `--mark` is silently ignored in system mode — system-mode marker writing is v2 work tracked at the relevant follow-up.) Verify itself stays upstream-unchanged per D-arch-1 in both cases.
 
 ### D-rec-2: Recommendations don't forward-look at other issues' future behavior changes
 

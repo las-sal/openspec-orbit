@@ -55,7 +55,7 @@ Without this expansion, archive emits will violate the new universal spine on th
 - [x] 5.1 Add `## Orbit additions` to `openspec-verify-change/SKILL.md` with emit instructions (write `verify-<TS>.json` with spine + extensions `verdict`, `findings_count`, `findings_summary`)
 - [x] 5.2 Document the verify-pass recommendation (D9: leading `/opsx:review --as system <name>` with `/opsx:archive <name>` surfaced in reason text)
 - [x] 5.3 Document the verify fail-mode classification logic that lives in the emit-layer (NOT in verify itself): tasks-incomplete → mode ①, impl-vs-spec gap → mode ②, openspec-validate failure → mode ③
-- [x] 5.4 Document the per-mode recommendations (D13: mode ① → `/opsx:apply`, mode ② → `/opsx:review --as system --mark`, mode ③ → verbatim validator message); precedence ③ > ① > ② > warn per ES2
+- [x] 5.4 Document the per-mode recommendations (D13: mode ① → `/opsx:apply`, mode ② → `/opsx:review --as system <name>` [without `--mark` — corrected during EW3; that flag is proposal-mode only], mode ③ → verbatim validator message); precedence ③ > ① > ② > warn per ES2
 - [x] 5.5 Document the warn-state recommendation (`/opsx:review --as system` with warning count in reason)
 - [x] 5.6 Explicitly note in the SKILL.md additions that verify's upstream behavior is unchanged — emit-layer is observability-only (cross-reference `Requirement: Emit-layer wraps upstream skills without modifying them`)
 

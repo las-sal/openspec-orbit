@@ -10,7 +10,7 @@ Each `/opsx:address-reviews` invocation persists a JSON summary. Path varies:
 This schema inherits the 6-field **universal spine** from `orbit-conventions`'s `Internal-run JSON summary format` requirement (see `openspec/specs/orbit-conventions/spec.md`):
 
 - `command` (here: `"address-reviews"`)
-- `timestamp` (ISO-8601 UTC, `YYYY-MM-DDTHH-MM-SSZ`)
+- `timestamp` (ISO-8601 UTC; JSON field `YYYY-MM-DDTHH:MM:SSZ`; filename `<TS>` token `YYYY-MM-DDTHH-MM-SSZ` with colons replaced by hyphens for filesystem safety)
 - `change` (change name string for change-scoped; `null` for whole-repo / cross-change scope)
 - `final_assessment` (narrative)
 - `next_recommended` (verbatim recommendation, e.g., `"re-run /opsx:review --as proposal to confirm convergence"`)

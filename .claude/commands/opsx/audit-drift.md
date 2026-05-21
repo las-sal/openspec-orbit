@@ -13,9 +13,9 @@ Scan the project for drift between captured knowledge (specs, lenses, governing 
 
 ## Input
 
-`/opsx:audit-drift [flags]`
+`/opsx:audit-drift [<change-name>] [flags]`
 
-No positional arguments. Invocation context is detected automatically.
+- `<change-name>` — optional. If provided, runs in change-scoped standalone mode and emits to `openspec/changes/<change-name>/.orbit-runs/audit-drift-<TS>.json`. If omitted (and no caller signal from `/opsx:review`/`/opsx:archive`), runs in project-wide standalone mode and emits to `openspec/.orbit-runs/audit-drift-<TS>.json`. Caller-signaled invocations (library/pre-archive contexts) ignore positional args; the caller controls the context.
 
 ## Flags
 

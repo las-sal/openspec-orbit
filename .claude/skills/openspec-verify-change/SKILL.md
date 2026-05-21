@@ -229,10 +229,10 @@ next_recommended: "/opsx:apply <name> — N tasks remain unchecked; complete imp
 **Verdict: fail — Mode ② (impl-vs-spec gap)** — tasks all checked but spec scenarios fail against the implementation.
 
 ```
-next_recommended: "/opsx:review --as system <name> --mark — N spec scenarios fail against implementation; system review will surface findings as markers for per-finding triage"
+next_recommended: "/opsx:review --as system <name> — N spec scenarios fail against implementation; system review will surface findings in its scorecard for you to walk each as code fix or spec revision"
 ```
 
-The classification routes the code-vs-spec triage through `/opsx:review --as system --mark` → `/opsx:address-reviews` rather than verify itself dropping markers — verify stays upstream-unchanged per the architecture principle above.
+The recommendation does NOT use `/opsx:review --as system --mark` because `--mark` is proposal-mode only and silently ignored in system mode (per `orbit-review/spec.md`'s `Requirement: --mark flag is proposal-mode only`). System-mode marker writing is v2 work tracked elsewhere; until then, the user manually walks each system-review finding to decide whether it's a code bug (fix via `/opsx:apply` or direct edit) or a spec revision (edit specs directly).
 
 **Verdict: fail — Mode ③ (openspec-validate failure)** — `openspec validate` itself errors (e.g., malformed spec frontmatter).
 

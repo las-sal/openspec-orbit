@@ -40,7 +40,7 @@ Every workflow-command run-summary JSON (per `Requirement: Emit scope`) SHALL in
 
 ```
 command          string       identifies which command emitted (matches filename prefix)
-timestamp        string       ISO-8601 UTC, format YYYY-MM-DDTHH-MM-SSZ, also embedded in filename
+timestamp        string       ISO-8601 UTC; JSON field uses standard colon format `YYYY-MM-DDTHH:MM:SSZ`. Filename embeds a colon-replaced `<TS>` token `YYYY-MM-DDTHH-MM-SSZ` (colons aren't filesystem-safe across all platforms).
 change           string|null  the change name (or null for project-scope commands)
 final_assessment string       narrative of what just happened (human-readable)
 next_recommended string       verbatim recommendation, suitable for orbit-status best-effort parse
@@ -194,18 +194,32 @@ In each case the leading `/opsx:<verb> <name>` token is the canonical recommenda
 - **WHEN** named-mode explore emits with `decisions_captured: 5` and `open_questions_count: 3`
 - **THEN** `next_recommended` begins with `"/opsx:explore <name>"` (NOT `/opsx:propose`); the text references both counts (e.g., "5 decisions captured but 3 open questions remain; resolve open questions before formalizing"); `/opsx:propose` is NOT surfaced as an alternative
 
-### Requirement: Propose-shaped recommendation logic
+### Requirement: Propose-shaped and artifact-completion-aware recommendation logic
 
-The propose-shaped commands `/opsx:propose`, `/opsx:new`, `/opsx:ff` SHALL emit `next_recommended: "/opsx:review <name> — proposal artifacts ready; review before apply"` (or equivalent prose containing the same leading `/opsx:review` command).
+The four propose-family commands SHALL emit their `next_recommended` per one of two recommendation classes based on what they actually produce:
 
-`/opsx:continue` SHALL emit a recommendation that depends on artifact completeness as reported by upstream `openspec status --change <name> --json`'s `isComplete` field (the same field upstream `openspec-continue-change` uses to gate completion). This keeps the emit-layer schema-agnostic — whatever upstream's authoritative completeness definition is, the emit recommendation follows it:
+**Propose-shaped** commands (`/opsx:propose`, `/opsx:ff`) produce the canonical artifact set (proposal.md + design.md + tasks.md + at least one specs/<capability>/spec.md) in a single invocation. They SHALL emit:
 
-- **`isComplete: true`**: `next_recommended: "/opsx:review <name> — all proposal artifacts now present"`
-- **`isComplete: false`**: `next_recommended: "/opsx:continue <name> — <next missing artifact> still pending"` (where `<next missing artifact>` is the first artifact in upstream's `applyRequires` array whose `status` is not `done`)
+```
+next_recommended: "/opsx:review <name> — proposal artifacts ready; review before apply"
+```
 
-#### Scenario: /opsx:propose recommends /opsx:review
+(Per `openspec-orbit#9` — propose should recommend review, not apply.)
+
+**Artifact-completion-aware** commands (`/opsx:new`, `/opsx:continue`) produce partial artifact state — `/opsx:new` scaffolds the change directory without generating artifacts; `/opsx:continue` generates the next missing artifact. Both SHALL emit a recommendation that depends on upstream `openspec status --change <name> --json`'s `isComplete` field (the same field upstream `openspec-continue-change` uses to gate completion). This keeps the emit-layer schema-agnostic — whatever upstream's authoritative completeness definition is, the emit recommendation follows it:
+
+- **`isComplete: true`** (all required artifacts present): `next_recommended: "/opsx:review <name> — all proposal artifacts now present"`
+- **`isComplete: false`** (more artifacts pending): `next_recommended: "/opsx:continue <name> — <next missing artifact> still pending"` (where `<next missing artifact>` is the first artifact in upstream's `applyRequires` array whose `status` is not `done`)
+
+For `/opsx:new` specifically, `isComplete: false` is the typical case immediately after scaffolding (upstream `/opsx:new` doesn't auto-generate artifacts; the user is expected to run `/opsx:continue` next). For `/opsx:continue`, `isComplete: true` is the typical terminal state.
+
+#### Scenario: /opsx:propose recommends /opsx:review (propose-shaped)
 - **WHEN** `/opsx:propose foo` completes after generating proposal/design/tasks/specs
 - **THEN** the `propose-<TS>.json`'s `next_recommended` begins with `"/opsx:review foo"`
+
+#### Scenario: /opsx:new (scaffold-only) recommends /opsx:continue
+- **WHEN** `/opsx:new foo` completes after upstream scaffolds the change directory (no artifacts generated); `openspec status --change foo --json` reports `isComplete: false`
+- **THEN** the `new-<TS>.json`'s `next_recommended` begins with `"/opsx:continue foo"` (artifact-completion-aware class, NOT propose-shaped — even though `/opsx:new` is in the propose family, it doesn't produce the canonical artifact set in one go)
 
 #### Scenario: /opsx:continue with missing tasks.md recommends /opsx:continue
 - **WHEN** `/opsx:continue foo` completes after generating design.md but tasks.md is still missing; `openspec status --change foo --json` reports `isComplete: false` with `tasks` next in `applyRequires`
@@ -245,13 +259,22 @@ The emit follows these rules:
 The apply emit per-command extensions SHALL include the following fields beyond the spine:
 
 ```
-tasks_completed              int   running total across all chunks
-tasks_remaining              int
+tasks_completed              int   running total of checked tasks across all chunks
+tasks_remaining              int   running total of unchecked tasks (includes user-validation tasks if present)
+user_validation_remaining    int   subset of tasks_remaining that are acknowledged user-validation tasks
+                                   (acknowledged-convention work intentionally left unchecked at apply-time for runtime
+                                   testing or user confirmation; surfaces as warnings at archive time, not blockers).
+                                   Default: 0. Set to a positive count when the AI recognizes specific unchecked tasks
+                                   as user-validation per their text (e.g., "Live-test ...", "(User-validation handoff)").
 chunk                        string | null   e.g., "3 of 5" or null
 chunk_name                   string | null   e.g., "phase+attention engine"
-chunk_complete               bool
-tasks_completed_this_session int   delta since prior apply JSON
+chunk_complete               bool             true when AI-doable work in this chunk is done (i.e.,
+                                              tasks_remaining - user_validation_remaining == 0 for this chunk's tasks);
+                                              user_validation_remaining > 0 does NOT block chunk_complete: true
+tasks_completed_this_session int             delta since prior apply JSON
 ```
+
+**Semantic rule**: `chunk_complete: true` means "AI-doable work in this chunk is done." `tasks_remaining > 0` AND `user_validation_remaining == tasks_remaining` is the expected state at the final chunk's emit when user-validation tasks exist — the AI is done; the remaining work is user-driven runtime testing. `tasks_remaining > 0` AND `user_validation_remaining < tasks_remaining` with `chunk_complete: true` is a contradiction the emit-layer MUST NOT produce.
 
 #### Scenario: Chunk-1-of-5 completion emits with chunk_complete=true
 - **WHEN** `/opsx:apply foo` completes the last task in chunk 1 of a 5-chunk apply
@@ -268,6 +291,10 @@ tasks_completed_this_session int   delta since prior apply JSON
 #### Scenario: No-chunking apply emits once at session end
 - **WHEN** `/opsx:apply foo` runs on a change with no explicit chunk preamble in tasks.md
 - **THEN** exactly one `apply-<TS>.json` is written at session end with `chunk: null` and `chunk_complete: true`
+
+#### Scenario: Final chunk completes with user-validation tasks remaining
+- **WHEN** `/opsx:apply foo` completes the last AI-doable task in the final chunk, but 6 user-validation tasks (e.g., "9.1 Live-test ...", "9.9 (User-validation handoff)") remain explicitly unchecked per the user-validation convention
+- **THEN** `apply-<TS>.json` is written with `chunk_complete: true`, `tasks_remaining: 6`, `user_validation_remaining: 6` (matching `tasks_remaining`), and `next_recommended` begins with `"/opsx:verify foo"` — the AI is done; user-validation happens at verify time
 
 ### Requirement: Verify pass recommendation
 
@@ -294,12 +321,12 @@ The leading `/opsx:review --as system <name>` token is the canonical recommendat
 When standalone `/opsx:verify <name>` fails, the emit-layer SHALL classify the failure mode based on verify-change's output and write `next_recommended` accordingly:
 
 - **Mode ① (tasks-incomplete)**: tasks.md has unchecked items → `"/opsx:apply <name> — N tasks remain unchecked; complete implementation before re-verifying"`
-- **Mode ② (impl-vs-spec gap)**: tasks all checked but spec scenarios fail → `"/opsx:review --as system <name> --mark — N spec scenarios fail against implementation; system review will surface findings as markers for per-finding triage"`
+- **Mode ② (impl-vs-spec gap)**: tasks all checked but spec scenarios fail → `"/opsx:review --as system <name> — N spec scenarios fail against implementation; system review will surface findings in its scorecard for you to walk each as code fix or spec revision"`
 - **Mode ③ (openspec-validate failure)**: `openspec validate` itself fails → `"Fix artifact validation errors: <validator message verbatim>"` (no leading orbit command; reason field carries the validator output)
 
 When verify completes with warnings (passes but with non-blocking findings), the emit-layer SHALL write `next_recommended: "/opsx:review --as system <name> — verification passed with N warnings; system review recommended"`.
 
-The classification SHALL happen in the emit-layer; verify itself does not gain marker-dropping or other behaviors (see `Requirement: Emit-layer wraps upstream skills without modifying them`).
+The classification SHALL happen in the emit-layer; verify itself does not gain marker-dropping or other behaviors (see `Requirement: Emit-layer wraps upstream skills without modifying them`). The mode-② recommendation does NOT use `/opsx:review --as system --mark` because that flag is proposal-mode only and silently ignored in system mode (per `orbit-review/spec.md`'s `Requirement: --mark flag is proposal-mode only`). The user manually walks each system-review finding to decide code-vs-spec.
 
 **Precedence when multiple fail signals fire simultaneously** (highest precedence first):
 
@@ -316,9 +343,9 @@ This precedence directs the user to the root cause first: fix the spec (mode ③
 - **WHEN** `/opsx:verify foo` fails because tasks.md has unchecked items
 - **THEN** `verify-<TS>.json`'s `next_recommended` begins with `"/opsx:apply foo"` and mentions the count of remaining tasks
 
-#### Scenario: Mode-② fail recommends /opsx:review --as system --mark
+#### Scenario: Mode-② fail recommends /opsx:review --as system (without --mark)
 - **WHEN** `/opsx:verify foo` fails because spec scenarios don't pass against the implementation
-- **THEN** `verify-<TS>.json`'s `next_recommended` begins with `"/opsx:review --as system foo --mark"` and explains the per-finding triage routing
+- **THEN** `verify-<TS>.json`'s `next_recommended` begins with `"/opsx:review --as system foo"` (without `--mark` — that flag is proposal-mode only); reason text explains the user must walk each system-review finding as either a code fix or spec revision
 
 #### Scenario: Mode-③ fail preserves verbatim validator message
 - **WHEN** `/opsx:verify foo` fails because `openspec validate` itself errors (e.g., malformed spec frontmatter)

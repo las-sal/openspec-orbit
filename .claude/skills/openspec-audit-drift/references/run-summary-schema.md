@@ -10,7 +10,7 @@ Each `/opsx:audit-drift` invocation persists a JSON summary. Path varies by cont
 This schema inherits the 6-field **universal spine** from `orbit-conventions`'s `Internal-run JSON summary format` requirement (see `openspec/specs/orbit-conventions/spec.md`):
 
 - `command` (here: `"audit-drift"`)
-- `timestamp` (ISO-8601 UTC, `YYYY-MM-DDTHH-MM-SSZ`)
+- `timestamp` (ISO-8601 UTC; JSON field `YYYY-MM-DDTHH:MM:SSZ`; filename `<TS>` token `YYYY-MM-DDTHH-MM-SSZ` with colons replaced by hyphens for filesystem safety)
 - `change` (change name string for change-scoped / library / pre-archive contexts; `null` for project-wide standalone)
 - `final_assessment` (narrative)
 - `next_recommended` (verbatim recommendation; varies by findings-vs-clean per `orbit-run-summary-emit`'s `Audit-drift standalone recommendations` requirement)

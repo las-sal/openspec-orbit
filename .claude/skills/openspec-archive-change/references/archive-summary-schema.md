@@ -7,7 +7,7 @@ The orbit additions to `/opsx:archive` write a JSON summary to `openspec/changes
 This schema inherits the 6-field **universal spine** from `orbit-conventions`'s `Internal-run JSON summary format` requirement (see `openspec/specs/orbit-conventions/spec.md`):
 
 - `command` (here: `"archive"`)
-- `timestamp` (ISO-8601 UTC, `YYYY-MM-DDTHH-MM-SSZ`)
+- `timestamp` (ISO-8601 UTC; JSON field `YYYY-MM-DDTHH:MM:SSZ`; filename `<TS>` token `YYYY-MM-DDTHH-MM-SSZ` with colons replaced by hyphens for filesystem safety)
 - `change` (change name string)
 - `final_assessment` (narrative of what was archived, e.g., `"Archived <change-name> to <archive_path>."`)
 - `next_recommended` (verbatim recommendation, e.g., `"Change archived to <archive_path>. Run /opsx:new or /opsx:explore to start the next change, or /opsx:audit-drift for a project-wide drift check."`)

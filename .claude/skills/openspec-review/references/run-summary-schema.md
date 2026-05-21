@@ -9,7 +9,7 @@ Create `.orbit-runs/` if it doesn't exist. The file is **committed** (not gitign
 This schema inherits the 6-field **universal spine** from `orbit-conventions`'s `Internal-run JSON summary format` requirement (see `openspec/specs/orbit-conventions/spec.md`):
 
 - `command` (matches filename prefix; here: `"review"`)
-- `timestamp` (ISO-8601 UTC, `YYYY-MM-DDTHH-MM-SSZ`)
+- `timestamp` (ISO-8601 UTC; JSON field `YYYY-MM-DDTHH:MM:SSZ`; filename `<TS>` token `YYYY-MM-DDTHH-MM-SSZ` with colons replaced by hyphens for filesystem safety)
 - `change` (change name string)
 - `final_assessment` (narrative; the stock final-assessment line)
 - `next_recommended` (verbatim recommendation, e.g., `"/opsx:address-reviews <name> --from-file <path>"`)
