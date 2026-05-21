@@ -1,9 +1,10 @@
 # Reference: audit-drift run-summary schema
 
-Each `/opsx:audit-drift` invocation persists a JSON summary. Path varies by context:
+Each `/opsx:audit-drift` invocation persists a JSON summary. Path varies by invocation mode (three modes, per `orbit-run-summary-emit`'s `Audit-drift standalone recommendations` requirement):
 
-- **Change-scoped** (library or pre-archive): `openspec/changes/<change-name>/.orbit-runs/audit-drift-<TS>.json`
-- **Standalone** (no change context): `openspec/.orbit-runs/audit-drift-<TS>.json` (create `openspec/.orbit-runs/` if needed)
+- **Change-scoped standalone** (`/opsx:audit-drift <name>` — user invokes with a change name; no caller signal): `openspec/changes/<change-name>/.orbit-runs/audit-drift-<TS>.json`
+- **Project-wide standalone** (`/opsx:audit-drift` — no positional; no caller signal): `openspec/.orbit-runs/audit-drift-<TS>.json` (create `openspec/.orbit-runs/` if needed)
+- **Library / pre-archive** (caller signal present — invoked by `/opsx:review --as system` Pass 6 or `/opsx:archive` pre-archive sweep): `openspec/changes/<change-name>/.orbit-runs/audit-drift-<TS>.json` if change context is provided by caller; otherwise inline findings fold into the caller's archive emit per the existing convention.
 
 ## Universal spine inheritance
 
@@ -68,7 +69,7 @@ The schema below documents per-command extensions ADDED to that spine (`context`
 
 ## Field notes
 
-- **`context`** drives `final_assessment` phrasing (standalone / pre-archive / library) and whether the run is change-scoped or project-level.
+- **`context`** drives `final_assessment` phrasing — one of `standalone | library | pre-archive`. Note: `context` alone does NOT distinguish project-wide from change-scoped standalone — that distinction is inferred from the `change` field (`null` = project-wide standalone; `<name>` = change-scoped standalone, library, or pre-archive). The four cells are: standalone-project-wide (`context: "standalone"`, `change: null`), standalone-change-scoped (`context: "standalone"`, `change: <name>`), library (`context: "library"`, `change: <name>`), pre-archive (`context: "pre-archive"`, `change: <name>`).
 - **`caller`** only populated for library + pre-archive contexts.
 - **`categories_run` / `categories_skipped`** are strings (category IDs); skip reasons in the report body, not the array.
 - **`findings_summary.by_category`** keys are category IDs `"1"` through `"4"`.

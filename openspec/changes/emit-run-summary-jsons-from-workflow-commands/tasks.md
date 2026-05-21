@@ -34,7 +34,7 @@ Without this expansion, archive emits will violate the new universal spine on th
 - [x] 2.2 In the same SKILL.md, document the maturity-based `next_recommended` rule (D11: early/mid/mature recommendations based on `decisions_captured` count and open-question count; T2 added Stalled as 4th state)
 - [x] 2.3 Extend `openspec-propose/SKILL.md`'s `## Orbit additions` with emit instructions (write `propose-<TS>.json` at session end with spine + extensions `artifacts_created`, `delta_count`, `from`) and the D12 recommendation rule (next: `/opsx:review <name>`)
 
-## 3. Workflow command emits — propose-shaped variants (add new orbit-additions)
+## 3. Workflow command emits — propose-family variants (add new orbit-additions)
 
 - [x] 3.1 Add a new `## Orbit additions` section to `openspec-new-change/SKILL.md` with emit instructions (write `new-<TS>.json`) and D12 recommendation
 - [x] 3.2 Add `## Orbit additions` to `openspec-continue-change/SKILL.md` with emit instructions (write `continue-<TS>.json`) and the artifact-completion-aware D12 recommendation (artifacts complete → review; incomplete → continue with next missing artifact identified)

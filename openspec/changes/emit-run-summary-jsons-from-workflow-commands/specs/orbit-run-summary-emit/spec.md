@@ -49,7 +49,7 @@ kind             enum         "workflow" | "editorial" | "lifecycle"  (always "w
 
 For workflow-kind emits specifically, `kind` SHALL equal `"workflow"`. Per-command extensions (defined in subsequent requirements in this capability) add command-specific state beyond the spine.
 
-Filenames SHALL use the per-command prefix (preserving entry-point provenance): `<command>-<TS>.json`. Propose-shaped variants (`new`, `continue`, `ff`) each use their own command-name prefix, NOT `propose-<TS>.json`.
+Filenames SHALL use the per-command prefix (preserving entry-point provenance): `<command>-<TS>.json`. Propose-family variants (`new`, `continue`, `ff`) each use their own command-name prefix, NOT `propose-<TS>.json`. ("Propose-family" here is the entry-point grouping for the per-variant-filename rule; "propose-shaped" is the recommendation-class term defined in `Requirement: Propose-shaped and artifact-completion-aware recommendation logic` and applies only to `/opsx:propose` + `/opsx:ff`.)
 
 #### Scenario: explore emit includes all 6 spine fields
 - **WHEN** the emit-layer writes `explore-<TS>.json` for a named-mode explore

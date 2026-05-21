@@ -191,7 +191,7 @@ continue-<TS>.json
     next_recommended: "/opsx:continue <name> — <next missing artifact> still pending"
 ```
 
-**Rationale**: per [#9](https://github.com/las-sal/openspec-orbit/issues/9), the canonical post-propose step is review (not apply). The propose-shaped variants are entry-point differences, not workflow-state differences — same recommendation. `/opsx:continue` is the exception because partial-artifact state is its job; recommending review on incomplete artifacts would skip the artifacts the user still needs.
+**Rationale**: per [#9](https://github.com/las-sal/openspec-orbit/issues/9), the canonical post-propose step is review (not apply). The propose-family variants (`/opsx:new`, `/opsx:continue`, `/opsx:ff`) are entry-point differences. (Originally framed as "same recommendation" for all; refined during external system review EW1 — `/opsx:new` and `/opsx:continue` are artifact-completion-aware rather than propose-shaped because they don't produce the canonical artifact set in one invocation. Only `/opsx:propose` and `/opsx:ff` are propose-shaped. `/opsx:continue` defers to upstream `isComplete`; `/opsx:new` typically recommends `/opsx:continue` after scaffold-only invocation.)
 
 ### D13: `/opsx:verify` fail-mode recommendations (formalization of earlier conversation)
 

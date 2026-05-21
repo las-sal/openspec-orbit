@@ -1,0 +1,47 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-21T14:46:23Z",
+  "change": "emit-run-summary-jsons-from-workflow-commands",
+  "kind": "editorial",
+  "iteration": 6,
+  "source": "from_file",
+  "source_file": "openspec/changes/emit-run-summary-jsons-from-workflow-commands/.orbit-runs/review-system-2026-05-21T14-28-44Z-as-findings.md",
+  "source_note": "Fresh-context internal system-mode review iter-1 findings (Claude Opus 4.7 subagent via --fresh). 7 findings: 0 CRITICAL, 3 WARNING, 4 SUGGESTION. All findings predominantly downstream-propagation residue from already-resolved EW1 (propose-family reclassification) and EW2 (audit-drift mode split) that ripple-flag missed during those resolutions. Batched per user authorization (no decisions required — all mechanical text fixes).",
+  "executed_by": "in_context",
+  "input_findings_summary": {
+    "count": 7,
+    "by_severity": { "critical": 0, "warning": 3, "suggestion": 4 }
+  },
+  "pushback_verification": "All 7 findings verified against current artifact state at walk-time. The subagent's pushback found 6 prior-cycle clusters stale-suppressed (45+ findings verified resolved). Zero stale findings in the 7 new findings.",
+  "resolutions": [
+    { "id": "FS1", "classification": "trivial_fix", "action": "Rewrote design.md D-emit-1 first sentence to drop the 'propose-shaped' label (no longer accurate for new/continue per EW1). Now: 'propose-family variants (different entry points to the same canonical artifact set the propose-family produces over one or more invocations).' Added clarifying parenthetical explaining the recommendation-class split (propose-shaped vs artifact-completion-aware) per D-rec-1.", "anchoring_root_cause": "EW1 ripple — design.md D-emit-1 prose written before the propose-family reclassification; not updated when EW1 resolved." },
+    { "id": "FS2", "classification": "trivial_fix", "action": "Updated requirement name in 3 SKILL.md files: openspec-propose/SKILL.md (replace_all), openspec-continue-change/SKILL.md (replace_all), openspec-ff-change/SKILL.md (targeted edit). All now reference 'Propose-shaped and artifact-completion-aware recommendation logic'. Additionally rewrote ff-change/SKILL.md:142 'Same rule as /opsx:propose and /opsx:new' to remove /opsx:new (now artifact-completion-aware, not propose-shaped); now explicitly notes /opsx:new and /opsx:continue follow the artifact-completion-aware rule.", "anchoring_root_cause": "EW1 ripple — renamed the spec requirement but didn't sweep SKILL.md references to the old name. Read-before-reference discipline applies; ripple-flag should have caught these." },
+    { "id": "FS3", "classification": "trivial_fix", "action": "Renamed tasks.md group 3 heading from 'Workflow command emits — propose-shaped variants (add new orbit-additions)' to 'Workflow command emits — propose-family variants (add new orbit-additions)'. Other instances (lines 5, 31, chunk preamble) covered explore + propose which IS propose-shaped — left as-is.", "anchoring_root_cause": "EW1 ripple, low-severity (tasks.md is implementation-tracking, not normative). Group 3 covers new/continue/ff so the heading was misleading post-EW1." },
+    { "id": "FS4", "classification": "trivial_fix", "action": "Rewrote openspec-audit-drift/references/run-summary-schema.md lines 3-6 to enumerate ALL THREE invocation modes per EC2/EW2: change-scoped standalone (openspec/changes/<name>/.orbit-runs/), project-wide standalone (openspec/.orbit-runs/), library/pre-archive (caller-controlled, may fold into archive emit). Replaces the prior binary change-scoped/standalone framing.", "anchoring_root_cause": "EW2 ripple — when EC2/EW2 added the 3-mode taxonomy to the spec, I didn't update the schema reference's leading explanatory section. The schema body (context field enumeration) was correct; only the lead-in was stale." },
+    { "id": "FS5", "classification": "trivial_fix", "action": "Updated design.md D-rec-1 recommendation table: added explore Stalled row (4+ decisions, >1 open Q → /opsx:explore <name>); split audit-drift standalone into change-scoped + project-wide (4 rows total instead of 2 conflated rows). Table now matches the spec's normative content per the 'summarized here' framing.", "anchoring_root_cause": "Two missed ripples: (a) iter-3 T2 added the explore Stalled state to spec but didn't update design.md table; (b) EW2 split audit-drift modes but the table still conflated them. Cumulative drift caught by fresh-context pass." },
+    { "id": "FS6", "classification": "trivial_fix", "action": "Rewrote spec.md:52 filename-prefix rule to use 'Propose-family variants' instead of 'Propose-shaped variants' (avoiding collision with the recommendation-class term defined elsewhere in the same spec). Added parenthetical disambiguating 'propose-family' (filename-rule grouping, all 4 commands) from 'propose-shaped' (recommendation-class term, only propose+ff).", "anchoring_root_cause": "EW1 ripple — spec-internal: the same spec used 'propose-shaped' in two contradictory senses (filename rule vs recommendation class). EW1's resolution updated the recommendation class but not the filename-rule usage." },
+    { "id": "FS7", "classification": "trivial_fix", "action": "Rewrote audit-drift schema reference's `context` field-note to acknowledge the orthogonal axes: context is one of standalone/library/pre-archive; scope is inferred from change=null (project-wide) vs change=<name> (change-scoped, library, or pre-archive). Listed all 4 cells explicitly. Bundled with FS4 — both addressed the same EW2 ripple in different sections of the same schema ref.", "anchoring_root_cause": "EW2 ripple, same root cause as FS4. The schema's field-note section conflated two orthogonal axes (context + scope) that became distinct after EW2's mode split." }
+  ],
+  "resolution_summary": {
+    "resolved": 7,
+    "stale": 0,
+    "deferred": 0,
+    "escalated": 0,
+    "by_classification": {
+      "trivial_fix": 7
+    }
+  },
+  "ripple_flagged_files_aggregate": [
+    "explore.md:21 (D2 title 'Per-variant filenames for propose-shaped commands') — historical decision title, intentionally left as-is for forensic value.",
+    "explore.md:194 (D12 rationale prose) — addressed in this walk (added EW1-refinement note to clarify the reclassification context).",
+    "Historical .orbit-runs/ JSONs containing 'Propose-shaped recommendation logic' string — left as-is (forensic record of the prior requirement name)."
+  ],
+  "post_resolution_state": {
+    "openspec_validate": "passes (--strict)",
+    "deltas_total": 15,
+    "deltas_by_capability": { "orbit-run-summary-emit": 13, "orbit-conventions": 2 },
+    "anchoring_audit": "All 7 fresh-context findings are downstream-propagation residue from previously-resolved structural fixes (EW1 propose-family reclassification + EW2 audit-drift mode split). 0 of 7 are net-new architecture gaps — different surface than external review which catches contract/architecture issues. Empirical pattern: fresh-context same-model after extensive prior review catches ripple-flag completeness gaps. This is the meta-thorough-territory observation: the SOURCE of new findings shifts from architecture (early cycles) to terminology consistency (mid cycles) to ripple-flag-completeness (late cycles). The ROI curve flattens — but each mode catches a distinct surface and each pass is empirically distinct."
+  },
+  "final_assessment": "All 7 fresh-context internal system-mode findings resolved. Total findings across THIS change: 19 (proposal in-context iter-1) + 9 (proposal external Codex iter-1) + 5 (proposal fresh-context Claude iter-2) + 3 (proposal in-context --thorough iter-3) + 2 (verify) + 7 (system external Codex iter-1) + 7 (system fresh-context Claude iter-1) = 52 findings resolved across 7 review/verify cycles. Validates --strict.",
+  "next_recommended": "/opsx:archive emit-run-summary-jsons-from-workflow-commands — all proposal + system review modes exercised (in-context + external + fresh-context at both modes; --thorough in proposal). 7 review/verify cycles complete. Diminishing-returns territory clearly reached at iter-1 system fresh-context (all 7 findings were ripple residue, no architecture gaps). Ready for archive."
+}

@@ -243,6 +243,6 @@ Field notes:
 
 ### `next_recommended` — always recommend review next
 
-Per `orbit-run-summary-emit`'s `Propose-shaped recommendation logic` requirement and `openspec-orbit#9`, propose ALWAYS recommends `/opsx:review` next, never `/opsx:apply` directly. Even if the user is confident the artifacts are ready, the canonical orbit flow is propose → review → apply, with review acting as the pre-apply checkpoint.
+Per `orbit-run-summary-emit`'s `Propose-shaped and artifact-completion-aware recommendation logic` requirement and `openspec-orbit#9`, propose ALWAYS recommends `/opsx:review` next, never `/opsx:apply` directly. Even if the user is confident the artifacts are ready, the canonical orbit flow is propose → review → apply, with review acting as the pre-apply checkpoint.
 
 orbit-status's tier-1 reader parses the leading `/opsx:review <name>` token into `command`/`args`.

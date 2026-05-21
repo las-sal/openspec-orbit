@@ -156,7 +156,7 @@ Per the universal spine in `orbit-conventions`'s `Internal-run JSON summary form
 
 ### `next_recommended` — artifact-completeness-aware
 
-Per `orbit-run-summary-emit`'s `Propose-shaped recommendation logic` requirement, defer to upstream `openspec status --change <name> --json`'s `isComplete` field (the same field upstream `openspec-continue-change` uses to gate completion). This keeps the recommendation schema-agnostic:
+Per `orbit-run-summary-emit`'s `Propose-shaped and artifact-completion-aware recommendation logic` requirement, defer to upstream `openspec status --change <name> --json`'s `isComplete` field (the same field upstream `openspec-continue-change` uses to gate completion). This keeps the recommendation schema-agnostic:
 
 - **`isComplete: true`** (all required artifacts present): `next_recommended: "/opsx:review <name> — all proposal artifacts now present"`
 - **`isComplete: false`** (more artifacts pending): `next_recommended: "/opsx:continue <name> — <next missing artifact> still pending"` (where `<next missing artifact>` is the first artifact in upstream's `applyRequires` array whose `status` is not `done`)

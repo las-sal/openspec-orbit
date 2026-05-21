@@ -72,7 +72,7 @@ Maps to issue [#8](https://github.com/las-sal/openspec-orbit/issues/8)'s own "wo
 
 ### D-emit-1: Per-variant filenames preserve entry-point provenance
 
-`/opsx:new`, `/opsx:continue`, `/opsx:ff` are propose-shaped (produce the canonical artifact set), but each emits with its own command-name prefix: `new-<TS>.json`, `continue-<TS>.json`, `ff-<TS>.json`. Same shape, distinct origins.
+`/opsx:new`, `/opsx:continue`, `/opsx:ff` are propose-family variants (different entry points to the same canonical artifact set the propose-family produces over one or more invocations). Each emits with its own command-name prefix: `new-<TS>.json`, `continue-<TS>.json`, `ff-<TS>.json`. Same JSON spine, distinct entry-point provenance. (Note: per the recommendation-class split documented in D-rec-1 + the spec's `Propose-shaped and artifact-completion-aware recommendation logic` requirement, only `/opsx:propose` + `/opsx:ff` are "propose-shaped" in the recommendation sense — they produce the canonical set in one invocation; `/opsx:new` + `/opsx:continue` are "artifact-completion-aware" — they produce partial state. The per-variant-filename rule applies to all four regardless of recommendation class.)
 
 **Why this matters:** orbit-status sorts and groups `.orbit-runs/` entries by filename prefix; per-variant filenames preserve provenance for free without inspecting JSON bodies.
 
@@ -103,6 +103,7 @@ Each command's `next_recommended` follows documented rules. Codified in the spec
 | `explore` (named) | 0–1 decisions | `/opsx:explore <name>` — continue thinking |
 | `explore` (named) | 2–3 decisions | `/opsx:explore <name>` — continue, or `/opsx:propose <name>` if ready |
 | `explore` (named) | 4+ decisions, ≤1 open Q | `/opsx:propose <name>` — substantial thinking captured |
+| `explore` (named) | 4+ decisions, >1 open Q (Stalled) | `/opsx:explore <name>` — resolve open questions before propose |
 | `propose`/`ff` | always | `/opsx:review <name>` (per [#9](https://github.com/las-sal/openspec-orbit/issues/9)) |
 | `new` (scaffold-only) | always after fresh scaffold | `/opsx:continue <name>` (artifact-completion-aware; isComplete=false) |
 | `continue` | artifacts incomplete (isComplete=false) | `/opsx:continue <name>` — next missing artifact |
@@ -115,8 +116,10 @@ Each command's `next_recommended` follows documented rules. Codified in the spec
 | `verify` | fail mode ③ openspec-validate fail | verbatim validator message |
 | `verify` | warn | `/opsx:review --as system <name>` |
 | `review-external` | T0 (prompt packaged) | multi-step prose: paste, save, `/opsx:address-reviews --from-file` |
-| `audit-drift` (standalone) | findings | `/opsx:address-reviews <name> --from-file <this>` |
-| `audit-drift` (standalone) | clean | copy `next_recommended` from prior latest JSON (preserve workflow narrative) |
+| `audit-drift` (change-scoped standalone) | findings | `/opsx:address-reviews <name> --from-file <this>` |
+| `audit-drift` (change-scoped standalone) | clean | copy `next_recommended` from prior latest JSON for the change (preserve workflow narrative) |
+| `audit-drift` (project-wide standalone) | findings | `/opsx:address-reviews --from-file <this>` (no `<name>` arg) |
+| `audit-drift` (project-wide standalone) | clean | `"No project-wide drifts detected. Run /opsx:audit-drift periodically to catch new drift."` (no prior per-change workflow to defer to) |
 
 Verify's fail-mode ② recommends `/opsx:review --as system <name>` (without `--mark` — that flag is proposal-mode only per `orbit-review/spec.md`'s `Requirement: --mark flag is proposal-mode only`). The user walks the system review's findings manually to triage each as code-vs-spec. (Earlier draft recommended `--as system --mark` to drop markers for address-reviews; corrected during external review iter-1 EW3 fix once it was verified that `--mark` is silently ignored in system mode — system-mode marker writing is v2 work tracked at the relevant follow-up.) Verify itself stays upstream-unchanged per D-arch-1 in both cases.
 

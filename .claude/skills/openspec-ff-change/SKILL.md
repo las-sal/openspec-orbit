@@ -139,6 +139,6 @@ Per the universal spine in `orbit-conventions`'s `Internal-run JSON summary form
 
 ### `next_recommended` — always recommend review next
 
-Per `orbit-run-summary-emit`'s `Propose-shaped recommendation logic` requirement and `openspec-orbit#9`, `/opsx:ff` ALWAYS recommends `/opsx:review` next, never `/opsx:apply` directly. Same rule as `/opsx:propose` and `/opsx:new` — canonical orbit flow is propose-shaped → review → apply.
+Per `orbit-run-summary-emit`'s `Propose-shaped and artifact-completion-aware recommendation logic` requirement and `openspec-orbit#9`, `/opsx:ff` ALWAYS recommends `/opsx:review` next, never `/opsx:apply` directly. Same rule as `/opsx:propose` (both are propose-shaped — produce the canonical artifact set in one invocation). `/opsx:new` and `/opsx:continue` follow a different rule (artifact-completion-aware; defer to upstream `isComplete`).
 
 orbit-status's tier-1 reader parses the leading `/opsx:review <name>` token into `command`/`args`.

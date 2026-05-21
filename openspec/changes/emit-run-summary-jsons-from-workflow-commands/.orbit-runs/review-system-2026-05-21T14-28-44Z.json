@@ -1,0 +1,135 @@
+{
+  "command": "review",
+  "timestamp": "2026-05-21T14:28:44Z",
+  "change": "emit-run-summary-jsons-from-workflow-commands",
+  "kind": "editorial",
+  "mode": "system",
+  "iteration": 1,
+  "depth": "full",
+  "flags": {
+    "parallel": false,
+    "focus": null,
+    "strict": false,
+    "fresh": true,
+    "mark": false,
+    "skip_verify": false
+  },
+  "passes_run": ["0", "1", "2", "3", "6"],
+  "passes_skipped": ["4", "5"],
+  "passes_skipped_reasons": {
+    "4": "No openspec/lenses/perspectives.md present in repo; perspective-review pass degenerates. Implicit perspectives considered inline within Pass 2/3.",
+    "5": "No openspec/lenses/critical-paths.md present in repo; critical-path pass degenerates. Implicit canonical flow considered inline within Pass 2."
+  },
+  "iteration_note": "Iter-1 SYSTEM-mode review with --fresh internal subagent. First true comparison of fresh-context vs external (GPT-5 Codex) at system mode. Prior cycles: proposal-iter-1 in-context (19 resolved), proposal-iter-1 external/Codex (9 resolved), proposal-iter-2 fresh-context (5 resolved), proposal-iter-3 in-context --thorough (3 resolved), verify (2 resolved), system-iter-1 external/Codex (7 resolved) = 45 prior findings resolved across 6 cycles. Pushback discipline applied; spot-checked candidate findings against current artifact state via grep + reads. Pass 0 treated as already completed per verify-2026-05-21T04-10-11Z.json (verdict=warn, 2 findings both resolved; 6 user-validation tasks unchecked per acknowledged convention).",
+  "stale_suppressed": [
+    {
+      "pass": "all",
+      "title": "45 prior findings verified resolved",
+      "evidence": "Spot-checked candidate findings across all prior cycles. Verified C1-C5 / W1-W7 / S1-S7 from proposal-iter-1 + EC1-EC2 / EW1-EW5 / ES1-ES2 from proposal-external + F1-F5 from proposal-iter-2-fresh + T1-T3 from proposal-iter-3-thorough + V1-V2 from verify + EW1-EW5 / ES1-ES2 from system-external all still resolved per their respective address-reviews resolutions. No prior-cycle findings re-surfaced."
+    },
+    {
+      "pass": "6",
+      "title": "EW5 no-forward-look sweep verified complete for spec scope (next_recommended / final_assessment only)",
+      "evidence": "Re-ran the grep on all .orbit-runs/*.json fields filtered to next_recommended and final_assessment lines. Zero issue-number references in those two fields across 26 emit JSONs. Other JSON fields (source_note, iteration_note, pushback_verification, anchoring_audit, anchoring_root_cause, action, description, title) retain legitimate issue references — these are reviewer-context fields, not subject to the spec's emit-text rule which applies only to next_recommended + final_assessment."
+    },
+    {
+      "pass": "6",
+      "title": "T3 emit JSON -> run-summary JSON sweep verified substantively complete in normative artifacts",
+      "evidence": "Spec files (specs/orbit-conventions/spec.md, specs/orbit-run-summary-emit/spec.md) and SKILL.md files contain zero 'emit JSON' noun-phrase residue. Remaining 'emit JSONs' occurrences in tasks.md (3) and explore.md (1) are verb usage ('skills' actual emit JSONs' as a possessive-verb construction). Per T3's own scope (noun-phrase terminology in canonical decisions), these are borderline at most; non-normative artifacts."
+    },
+    {
+      "pass": "6",
+      "title": "EC1 /opsx:ff vs /opsx:ff-change naming sweep verified complete",
+      "evidence": "grep for 'ff-change' command-name usage (not skill-name usage) across spec + SKILL.md + design + tasks: only legitimate skill-name occurrences (openspec-ff-change/) remain. Command form is uniformly /opsx:ff."
+    },
+    {
+      "pass": "6",
+      "title": "C2 obsolete openspec/conventions/ references swept",
+      "evidence": "grep -r 'openspec/conventions/' returns no hits in the change artifacts. Convention files now correctly located at project root per the post-C2 architecture (verified against orbit-conventions baseline 'Requirement: Convention files at project root')."
+    },
+    {
+      "pass": "2",
+      "title": "Bridge files appropriately marked as transitional",
+      "evidence": "review-proposal-*-as-findings.md files present as expected bridge artifacts (3 total). Their existence is documented in address-reviews JSONs as the JSON-to-markdown bridge per openspec-orbit#4 / #10. No mislabeling found."
+    }
+  ],
+  "findings_summary": {
+    "critical": 0,
+    "warning": 3,
+    "suggestion": 4,
+    "by_pass": {
+      "0": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "1": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "2": { "critical": 0, "warning": 2, "suggestion": 1 },
+      "3": { "critical": 0, "warning": 1, "suggestion": 1 },
+      "6": { "critical": 0, "warning": 0, "suggestion": 2 }
+    }
+  },
+  "findings": [
+    {
+      "pass": "2",
+      "severity": "WARNING",
+      "id": "FS1",
+      "file": "openspec/changes/emit-run-summary-jsons-from-workflow-commands/design.md",
+      "line": 75,
+      "title": "D-emit-1 still groups /opsx:new and /opsx:continue with /opsx:ff as 'propose-shaped' — contradicts EW1's reclassification within the same change",
+      "description": "D-emit-1 (line 75) reads: '/opsx:new, /opsx:continue, /opsx:ff are propose-shaped (produce the canonical artifact set), but each emits with its own command-name prefix.' But per EW1's resolution (address-reviews-2026-05-21T14-19-07Z.json), the spec was updated to split propose-family into TWO classes: propose-shaped (only /opsx:propose + /opsx:ff actually produce the canonical artifact set in one go) vs artifact-completion-aware (/opsx:new + /opsx:continue, gated on upstream isComplete). The spec's Requirement title was renamed to 'Propose-shaped and artifact-completion-aware recommendation logic' and an explicit scenario clarifies '/opsx:new is in the propose family but NOT propose-shaped — it doesn't produce the canonical artifact set in one go.' D-emit-1's per-variant-filename framing predates and contradicts this reclassification. The same design.md's recommendation table (lines 107-109) correctly reflects the new split, so the design contradicts itself within ~30 lines. Recommendation: rewrite D-emit-1's first sentence to 'The four propose-family commands (/opsx:propose, /opsx:new, /opsx:continue, /opsx:ff) each emit with their own command-name prefix' (drop the 'propose-shaped' label there entirely, since the per-variant-filename rule applies regardless of recommendation class). Also fix spec.md:52 which has the same residue: 'Propose-shaped variants (new, continue, ff)' — broaden to 'Per-variant filenames preserve entry-point provenance: each propose-family command uses its own command-name prefix.'"
+    },
+    {
+      "pass": "2",
+      "severity": "WARNING",
+      "id": "FS2",
+      "file": ".claude/skills/openspec-continue-change/SKILL.md",
+      "line": 159,
+      "title": "Three SKILL.md files reference the stale requirement name 'Propose-shaped recommendation logic' (renamed to 'Propose-shaped and artifact-completion-aware recommendation logic' per EW1)",
+      "description": "EW1's resolution renamed the spec requirement from 'Propose-shaped recommendation logic' to 'Propose-shaped and artifact-completion-aware recommendation logic' (spec.md:197). But three SKILL.md files still reference the OLD name: openspec-propose/SKILL.md:246 ('Per orbit-run-summary-emit's Propose-shaped recommendation logic requirement'), openspec-continue-change/SKILL.md:159 (same), openspec-ff-change/SKILL.md:142 (same). The references point at a Requirement: name that no longer exists in the spec. Per read-before-reference discipline, named-construct references must match the actual spec name. Additionally, openspec-ff-change/SKILL.md:142 says 'Same rule as /opsx:propose and /opsx:new — canonical orbit flow is propose-shaped → review → apply' but /opsx:new is now artifact-completion-aware (NOT propose-shaped per EW1); the SKILL.md prose is doubly stale. Recommendation: in all three SKILL.md files, update the requirement-name reference to 'Propose-shaped and artifact-completion-aware recommendation logic'; in ff-change SKILL.md:142, remove '/opsx:new' from the 'Same rule as' list (it's not propose-shaped; only /opsx:propose and /opsx:ff are). EW1's ripple-flag did not catch these three artifacts."
+    },
+    {
+      "pass": "2",
+      "severity": "SUGGESTION",
+      "id": "FS3",
+      "file": "openspec/changes/emit-run-summary-jsons-from-workflow-commands/tasks.md",
+      "line": 37,
+      "title": "tasks.md group 3 heading 'propose-shaped variants' still groups new/continue/ff together — stale per EW1",
+      "description": "tasks.md line 5 ('Chunk 2 (groups 2-3): Workflow command emits — explore + propose-shaped'), line 31 ('## 2. Workflow command emits — explore + propose-shaped (extend existing additions)'), and line 37 ('## 3. Workflow command emits — propose-shaped variants (add new orbit-additions)') retain the pre-EW1 label 'propose-shaped' for /opsx:new and /opsx:continue. Per EW1, these are not propose-shaped; they're artifact-completion-aware. Group 3 covers new (3.1), continue (3.2), ff (3.3), so the heading is now misleading. Recommendation: rename group 3 heading to 'Workflow command emits — propose-family variants' (or similar non-classifying term). Low-severity because tasks.md is implementation-tracking, not normative spec — but still residue that violates change-completeness."
+    },
+    {
+      "pass": "3",
+      "severity": "WARNING",
+      "id": "FS4",
+      "file": ".claude/skills/openspec-audit-drift/references/run-summary-schema.md",
+      "line": 5,
+      "title": "audit-drift schema reference still uses binary change-scoped/standalone framing — missing the THREE-mode taxonomy (change-scoped standalone, project-wide standalone, library/pre-archive) added by EC2 + EW2",
+      "description": "Lines 5-6 of openspec-audit-drift/references/run-summary-schema.md read: '**Change-scoped** (library or pre-archive): openspec/changes/<change-name>/.orbit-runs/audit-drift-<TS>.json | **Standalone** (no change context): openspec/.orbit-runs/audit-drift-<TS>.json'. This binary categorization conflates: (a) change-scoped standalone (NEW per EC2 — user invokes /opsx:audit-drift <name>; emits to openspec/changes/<name>/.orbit-runs/) with (b) library/pre-archive (caller-driven; folds into archive emit OR routes via caller). The 'context' field in the schema body (line 31) lists three values 'standalone | library | pre-archive' — so the schema body is correct, but the leading explanatory section is stale. Per EW2's resolution, /opsx:audit-drift now has 3 invocation modes (change-scoped standalone, project-wide standalone, library/pre-archive), each with different emit paths. The schema reference's leading section needs to enumerate all three. Recommendation: rewrite lines 3-6 to enumerate the THREE invocation modes with their respective emit paths: change-scoped standalone (openspec/changes/<name>/.orbit-runs/), project-wide standalone (openspec/.orbit-runs/), library/pre-archive (caller-controlled, may fold into archive emit). Also update the 'Field notes' bullet at line 71 ('context drives final_assessment phrasing (standalone / pre-archive / library) and whether the run is change-scoped or project-level') to reflect the four cells: standalone-change-scoped, standalone-project-wide, library, pre-archive."
+    },
+    {
+      "pass": "3",
+      "severity": "SUGGESTION",
+      "id": "FS5",
+      "file": "openspec/changes/emit-run-summary-jsons-from-workflow-commands/design.md",
+      "line": 118,
+      "title": "D-rec-1 recommendation table missing two rows: (a) explore Stalled state (per iter-3 T2), (b) audit-drift project-wide standalone (per EC2/EW2)",
+      "description": "The D-rec-1 table summarizes per-command recommendation rules and claims 'Codified in the spec; summarized here' (line 99). Two rows in the spec are absent from the summary: (a) explore Stalled state (4+ decisions AND >1 open question → /opsx:explore <name>); the table only lists Early, Mid, and Mature for explore — Stalled was added in iter-3 T2's resolution but design.md table was not updated. (b) audit-drift project-wide standalone (both findings and clean variants — per EC2/EW2); the table only lists 'audit-drift (standalone) | findings | ...' and 'audit-drift (standalone) | clean | ...' which conflate change-scoped with project-wide. The table reads as if there's only one standalone mode. Recommendation: (a) add a Stalled row to the explore section of the table ('explore (named) | 4+ decisions, >1 open Q | /opsx:explore <name> — resolve open questions before propose'); (b) split the audit-drift rows by mode (change-scoped standalone + project-wide standalone, each with findings/clean variants — 4 rows total). Low-severity because the spec is the normative source and the table is a summary, but the summary intentionally claims completeness ('summarized here') so divergence is misleading."
+    },
+    {
+      "pass": "6",
+      "severity": "SUGGESTION",
+      "id": "FS6",
+      "file": "openspec/changes/emit-run-summary-jsons-from-workflow-commands/specs/orbit-run-summary-emit/spec.md",
+      "line": 52,
+      "title": "Spec uses 'Propose-shaped variants' label for new/continue/ff in filename-prefix rule (contradicts the same spec's reclassification at line 222)",
+      "description": "spec.md line 52 reads: 'Propose-shaped variants (new, continue, ff) each use their own command-name prefix, NOT propose-<TS>.json.' But spec.md line 222 explicitly says '/opsx:new is in the propose family but NOT propose-shaped — it doesn't produce the canonical artifact set in one go.' The spec internally contradicts itself: it uses 'propose-shaped variants' to cover all of new/continue/ff (filename rule context) while the recommendation-classification requirement (line 197) defines propose-shaped as only /opsx:propose + /opsx:ff. An implementer reading the spec linearly would hit this inconsistency. Recommendation: rewrite spec.md:52 to drop the 'Propose-shaped' label there — e.g., 'Filenames SHALL use the per-command prefix: <command>-<TS>.json. Propose-family variants (new, continue, ff) each use their own command-name prefix, NOT propose-<TS>.json.' (Swap 'Propose-shaped variants' → 'Propose-family variants' to avoid collision with the classification term.) Related to FS1/FS2/FS3 but distinct: this is spec-internal inconsistency, not SKILL.md/design.md downstream."
+    },
+    {
+      "pass": "6",
+      "severity": "SUGGESTION",
+      "id": "FS7",
+      "file": ".claude/skills/openspec-audit-drift/references/run-summary-schema.md",
+      "line": 71,
+      "title": "audit-drift schema reference 'context' description omits the project-wide-vs-change-scoped distinction for standalone mode",
+      "description": "Line 71: 'context drives final_assessment phrasing (standalone / pre-archive / library) and whether the run is change-scoped or project-level.' The line conflates two orthogonal axes (context [standalone/library/pre-archive] and scope [change-scoped/project-level]) into the single 'context' field — but the schema doesn't have a separate 'scope' field; instead, scope is inferred from the change field being null (project-wide) vs. populated (change-scoped). Per EW2's resolution, the schema's emit path also varies by scope (openspec/changes/<name>/.orbit-runs/ vs openspec/.orbit-runs/). The field note should either: (a) add a 'scope' note explaining that for context='standalone', change=null means project-wide and change=<name> means change-scoped; or (b) acknowledge that the context value alone underdetermines the emit path/scope. Trivial-to-fix; clarifies the schema for future readers. Bundled with FS4 for natural co-resolution."
+    }
+  ],
+  "final_assessment": "7 findings: 0 CRITICAL, 3 WARNING, 4 SUGGESTION. Fresh-context Claude same-model system-mode review delivered net-new value beyond the prior 6 cycles: FS1/FS2/FS3/FS6 surface a residue cluster around EW1's propose-family reclassification — the substantive rename split propose-shaped (propose, ff) from artifact-completion-aware (new, continue), but downstream artifacts (3 SKILL.md files, design.md D-emit-1 prose, design.md recommendation table heading, tasks.md group 3 heading, spec.md line 52 filename rule) were not all updated. Pure change-completeness gap — exactly the failure mode the orbit-conventions Change completeness discipline requirement is designed to prevent. FS4/FS7 surface a parallel residue cluster around EW2's audit-drift mode split — the schema reference's leading explanatory section still uses pre-EW2 binary framing. FS5 catches two cells missing from design.md's summary table. Notable: zero critical, all findings are residue/coherence-level (not contract-gap level). Codex's external system-pass caught the contract-gap-level issues (EW1-EW5); fresh-context internal pass catches the downstream-propagation residue that external review didn't drill into. Different mode, different surface. ROI assessment: the value exists but at diminishing rates; 6 of 7 findings are residue from already-resolved fixes that ripple-flag should have caught. The empirical signal: at iter-1 system fresh-context after extensive prior review, we are largely catching ripple residue, not new architecture gaps.",
+  "next_recommended": "/opsx:address-reviews emit-run-summary-jsons-from-workflow-commands --from-file <bridge-markdown> — 3 WARNINGs (FS1, FS2, FS4) are mechanical fixes worth doing before archive to satisfy change-completeness discipline; 4 SUGGESTIONs (FS3, FS5, FS6, FS7) are polish that could defer but cluster naturally with the WARNINGs (same residue clusters). All 7 fit a single address-reviews walk. After address-reviews, proceed to /opsx:archive — the system review surface is otherwise clean."
+}
