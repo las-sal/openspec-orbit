@@ -121,4 +121,10 @@ Use this exact markdown structure (the section headers + field labels are parsed
 (Optional: overall impression, broader concerns, things you noticed that didn't fit a specific finding.)
 ```
 
-After writing the file, mention the file path in your final message so the user can find it for the `/opsx:address-reviews --from-file` step.
+After writing the file, do ALL THREE of the following:
+
+1. **Echo the findings in your chat response** — output the full markdown (the same content as the file you just wrote) so the user can read findings directly in chat without pulling the file. This is important because the user may want to scan findings in their chat session before triggering `/opsx:address-reviews`.
+
+2. **Commit and push the findings file to the remote** — run `git add <path> && git commit -m "external review: emit-run-summary-jsons-from-workflow-commands iter-1 (<your reviewer model name>)" && git push` (or equivalent for your environment). The user pulls the findings file via `git pull` to trigger `/opsx:address-reviews --from-file`. If you cannot push from your environment (no remote write access, sandboxed, etc.), explicitly say so in chat so the user knows to commit + push manually.
+
+3. **Mention the file path** in your final chat message so the user can find it for the `/opsx:address-reviews --from-file` step.
