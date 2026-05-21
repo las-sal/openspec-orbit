@@ -1,0 +1,69 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-21T01:29:34Z",
+  "change": "emit-run-summary-jsons-from-workflow-commands",
+  "kind": "editorial",
+  "iteration": 1,
+  "source": "from_file",
+  "source_file": "openspec/changes/emit-run-summary-jsons-from-workflow-commands/.orbit-runs/review-proposal-2026-05-21T00-18-14Z-as-findings.md",
+  "source_note": "Derived from review-proposal-2026-05-21T00-18-14Z.json via the markdown bridge documented in openspec-orbit#4. Original 19 findings from in-context proposal-mode /opsx:review iter-1.",
+  "executed_by": "in_context",
+  "input_findings_summary": {
+    "count": 19,
+    "by_severity": { "critical": 5, "warning": 7, "suggestion": 7 }
+  },
+  "pushback_verification": "All 19 findings verified against current artifact state at walk-time. Zero stale findings — no resolutions suppressed via pushback. Several W and S findings were preemptively resolved by C-tier resolutions (cascade documented per-finding).",
+  "resolutions": [
+    { "id": "C1", "classification": "decision_required", "action": "User chose option 1 (unify via orbit-conventions modification). Created openspec/changes/.../specs/orbit-conventions/spec.md with MODIFIED Requirements unifying the Internal-run JSON summary format spec; added orbit-conventions to proposal Modified Capabilities; updated orbit-run-summary-emit spec to defer spine to orbit-conventions; updated design D-spine-1 rationale.", "cascade": ["C5 resolved by C1", "W1 resolved by C1", "W2 resolved by C1"] },
+    { "id": "C2", "classification": "trivial_fix", "action": "Rewrote tasks.md group 1 to reflect post-C1 reality: removed obsolete tasks (1.1 conventions/-path file creation, 1.2 kind taxonomy doc, 1.3 filename convention doc, 1.5 reference-from-orbit-conventions, 1.6 example fixture). Group 1 now contains 3 tasks reflecting actual remaining work (verify spec deferral, update 3 schema refs, embed canonical example inline in orbit-conventions).", "cascade": ["W6 resolved by C2"] },
+    { "id": "C3", "classification": "trivial_fix", "action": "design.md Migration Plan step 1 now explicitly enumerates the orbit-conventions modification + the 3 per-skill schema reference updates (linked to task 1.2). Stale 'Existing emit-producing capabilities aren't formally harmonized' risk rewritten to reflect post-C1 reality (now: doc-only updates to per-skill reference files)." },
+    { "id": "C4", "classification": "trivial_fix", "action": "Reframed proposal.md and spec.md 'Editorial additions' wording. proposal.md now distinguishes (a) 7 net-new workflow command emits, (b) review-external T0 as new behavior, (c) standalone audit-drift as REFINEMENT of existing emit. spec.md Emit scope split into 'New emit behavior' and 'Refined existing emit' categories. Audit-drift recommendations requirement rewritten to acknowledge existing emit while preserving SHALL/MUST normative language." },
+    { "id": "C5", "classification": "cascade_resolved", "action": "Resolved by C1 — final_assessment and next_recommended are now formally specified in orbit-conventions's MODIFIED universal spine requirement. No additional edits needed." },
+    { "id": "W1", "classification": "cascade_resolved", "action": "Resolved by C1 — proposal.md Modified Capabilities now lists orbit-conventions with rationale." },
+    { "id": "W2", "classification": "cascade_resolved", "action": "Resolved by C1 — design.md D-spine-1 rewritten to clarify kind is structurally new and final_assessment/next_recommended formalize de facto fields." },
+    { "id": "W3", "classification": "decision_required", "action": "User chose option A (add dedicated Requirement: Emit timing semantics). Added requirement to orbit-run-summary-emit spec defining 3 command categories (one-shot / multi-turn explicit-phase / multi-turn conversational), conversation-boundary signals, and 5 scenarios. Resolves the cross-cutting fuzzy-timing concern.", "cascade": ["W4 resolved by W3"] },
+    { "id": "W4", "classification": "stale_resolved_by_W3", "action": "Verified via reading openspec-review-external/SKILL.md Steps 7+8 — T0 is a well-defined discrete completion moment (after prompt file is written + chat invocation snippet is emitted). W3's Emit timing semantics requirement classifies review-external as one-shot with emit at natural completion = T0. No additional edits needed." },
+    { "id": "W5", "classification": "trivial_fix", "action": "Removed openspec-sync-specs from task 8.4. Added inline explanation linking to openspec-orbit#6 (the overlay-removal work for deprecated sync-specs)." },
+    { "id": "W6", "classification": "cascade_resolved", "action": "Resolved by C2 — group 1 rewrite removed task 1.6 (canonical-example fixture under openspec/conventions/examples/). Canonical example now embeds inline in orbit-conventions MODIFIED spec per task 1.3." },
+    { "id": "W7", "classification": "trivial_fix", "action": "Standardized informal 'emit JSON' usage → 'run-summary JSON' in 3 spots (spec.md:67, spec.md:355, design.md:5). Left orbit-conventions requirement title 'Internal-run JSON summary format' alone to avoid RENAMED+MODIFIED operation complexity for marginal benefit." },
+    { "id": "S1", "classification": "trivial_fix", "action": "Added task 1.4 to update existing emit-producing skill SKILL.md instructions (review, address-reviews, archive, inline audit-drift) to include the kind field in their actual emit JSONs. Closes the harmonization gap so downstream consumers don't need fallback logic." },
+    { "id": "S2", "classification": "trivial_fix", "action": "Specified tasks.md chunk preamble format inline in the Apply per-chunk-end emission requirement (HTML comment block with 'Chunk N (groups X[-Y]): <chunk-name>' lines, with example). Future implementers have a concrete format spec to parse against." },
+    { "id": "S3", "classification": "trivial_fix", "action": "Cleaned explore.md structural cruft: removed misplaced '## Open questions' header (D15 now lives in Decisions section as intended); removed orphaned text from old Q1/Q3 closures that didn't get cleaned during incremental edits." },
+    { "id": "S4", "classification": "trivial_fix", "action": "Added 0-decisions scenario to Named-mode explore recommendation by maturity requirement: 'WHEN decisions_captured: 0 THEN next_recommended begins with /opsx:explore <name> and acknowledges thinking is just beginning'." },
+    { "id": "S5", "classification": "trivial_fix", "action": "Added 'Out of scope' note to Verify fail-mode recommendations requirement: partial/aborted verify runs are upstream verify-change concerns; emit-layer surfaces 'Re-run /opsx:verify <name> — prior verify run incomplete' as next_recommended when verify-change reports incomplete output." },
+    { "id": "S6", "classification": "trivial_fix", "action": "Annotated task 4.1 with the chunk-to-group mapping rule: chunks MAY span multiple groups (e.g., 'Chunk 2 (groups 2-3)'); emit fires when the LAST group in the chunk completes, not on every group boundary. Prevents implementation drift." },
+    { "id": "S7", "classification": "trivial_fix", "action": "Added 'Prior art' paragraph to design.md Context section referencing the bootstrap-openspec-orbit archive (2026-05-18) as the source of orbit-conventions, the 3 schema reference files, .orbit-runs/ persistence layout, and editorial-command emit pattern. Helps future readers understand lineage." }
+  ],
+  "resolution_summary": {
+    "resolved": 19,
+    "stale": 0,
+    "deferred": 0,
+    "escalated": 0,
+    "by_classification": {
+      "decision_required": 2,
+      "trivial_fix": 12,
+      "cascade_resolved": 4,
+      "stale_resolved_by_W3": 1
+    }
+  },
+  "ripple_flagged_files_aggregate": [
+    ".claude/skills/openspec-review/references/run-summary-schema.md (per task 1.2; doc-only update)",
+    ".claude/skills/openspec-audit-drift/references/run-summary-schema.md (per task 1.2; doc-only update)",
+    ".claude/skills/openspec-address-reviews/references/run-summary-schema.md (per task 1.2; doc-only update)",
+    ".claude/skills/openspec-review/SKILL.md (per task 1.4; add kind: 'editorial' to emit instructions)",
+    ".claude/skills/openspec-address-reviews/SKILL.md (per task 1.4; add kind: 'editorial')",
+    ".claude/skills/openspec-archive-change/SKILL.md (per task 1.4; add kind: 'lifecycle')",
+    ".claude/skills/openspec-audit-drift/SKILL.md (per task 1.4; add kind: 'editorial' for standalone + inline)"
+  ],
+  "post_resolution_state": {
+    "openspec_validate": "passes (--strict)",
+    "deltas_total": 14,
+    "deltas_by_capability": { "orbit-run-summary-emit": 13, "orbit-conventions": 1 },
+    "modified_capabilities_added_during_walk": ["orbit-conventions"],
+    "tasks_groups": 9,
+    "tasks_chunks": 7,
+    "scope_note": "Change grew from 11 ADDED requirements (1 capability) to 12 ADDED requirements + 1 MODIFIED (2 capabilities) = 14 deltas. Above OpenSpec's 'consider splitting at >10' soft threshold but consistent with foundational-change precedent (bootstrap-openspec-orbit shipped with 19 deltas)."
+  },
+  "final_assessment": "All 19 findings from the in-context proposal-mode review iter-1 resolved. 5 CRITICAL (4 substantive + 1 cascade), 7 WARNING (4 substantive + 3 cascade), 7 SUGGESTION (all substantive). Key structural change: orbit-conventions is now a Modified Capability — its Internal-run JSON summary format requirement unifies the spine across all kinds (workflow/editorial/lifecycle). Change validates with --strict.",
+  "next_recommended": "/opsx:review-external emit-run-summary-jsons-from-workflow-commands --as proposal — recommended: this address-reviews walk processed 19 findings authored by the same in-context AI that wrote the proposal artifacts. Per orbit-status retrospective evidence (openspec-orbit#20: 3/3 real bugs missed by in-context system review), an external/fresh-context pass is the right discipline to catch what anchoring suppressed in the iter-1 review. Alternative: /opsx:review emit-run-summary-jsons-from-workflow-commands --as proposal --fresh for a clean-context subagent pass, or proceed directly to /opsx:apply if confident."
+}

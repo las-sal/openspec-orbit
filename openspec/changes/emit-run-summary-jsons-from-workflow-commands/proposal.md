@@ -1,0 +1,36 @@
+## Why
+
+Orbit's editorial commands (`/opsx:review`, `/opsx:address-reviews`, `/opsx:audit-drift`, `/opsx:archive`) emit `.orbit-runs/<command>-<TS>.json` with `next_recommended`, letting downstream tools (orbit-status, dashboards, CI) read orbit's own opinion on what's next. Orbit's workflow commands (`/opsx:explore`, `/opsx:propose`, `/opsx:apply`, `/opsx:verify`, and variants) emit nothing, forcing consumers to synthesize a recommendation from artifact presence. orbit-status today ships a Tier-2 synthesis ruleset (4 rules at `orbit-status-recommendation/spec.md:23–28`) whose only purpose is to fill orbit's silence — and every future consumer would have to re-invent the same logic. This change makes orbit's own recommendation the single source of truth across the full command surface.
+
+## What Changes
+
+- **Add emit behavior to 7 workflow commands** (new behavior): `/opsx:explore` (named mode only), `/opsx:propose`, `/opsx:new`, `/opsx:continue`, `/opsx:ff-change`, `/opsx:apply`, `/opsx:verify` — none of these emit any `.orbit-runs/` JSON today.
+- **Add T0 emit to `/opsx:review-external`** (new behavior): emits `review-external-<TS>.json` when the prompt is packaged, before findings return. Today `/opsx:review-external` writes only the `.md` prompt file.
+- **Refine `/opsx:audit-drift` standalone emit** (NOT new emit; existing per `.claude/skills/openspec-audit-drift/references/run-summary-schema.md`): the emit already exists for standalone and library-mode audit-drift. This change adds the defer-to-prior-on-clean recommendation logic (D10), aligns the emit with the universal spine (`kind: "editorial"`), and documents the with-findings recommendation. Inline audit-drift during `/opsx:archive` continues to be captured in `archive-<TS>.json` — unchanged.
+- **Bare-mode `/opsx:explore` does NOT emit.** Exploration without a name is pre-commitment thinking; crystallization to a named change requires an explicit user warning surfacing the consequences (persistence, visibility, audit-trail start).
+- **Shared spine for all emits**: every JSON includes `command`, `timestamp`, `change`, `final_assessment`, `next_recommended`, and `kind` (`"workflow"` | `"editorial"` | `"lifecycle"`). Per-command extensions add command-specific state (`tasks_completed`, `chunk_complete`, `verdict`, etc.).
+- **`/opsx:apply` emits per chunk-end**, plus on mid-chunk session pause, not once per session. Enables forensic timeline reconstruction ("which chunk introduced this regression?") and creates the natural inflection point that intra-apply review cadence ([#22](https://github.com/las-sal/openspec-orbit/issues/22)) depends on.
+- **Per-command recommendation logic** documented and implemented for each command (e.g., verify-pass → `/opsx:review --as system` as canonical, with `/opsx:archive` surfaced in reason; review-external T0 → multi-step prose covering the user-paste action and follow-up address-reviews command).
+- **Emit-layer wraps upstream skills without modifying them.** Each wrapped command's behavior stays exactly as upstream defines it; the emit-layer is a thin observability shell that runs after the command completes, inspects its output, and writes the JSON. Receiving `openspec update`-driven improvements to upstream skills is unaffected.
+- **Excluded from scope** (with rationale): `/opsx:sync-specs` (deprecated upstream, slated for removal by [#6](https://github.com/las-sal/openspec-orbit/issues/6)); `/opsx:bulk-archive` (wrapper around `/opsx:archive` whose inner calls each emit); `/opsx:onboard` (meta walkthrough; doesn't transition change state).
+
+## Capabilities
+
+### New Capabilities
+
+- `orbit-run-summary-emit`: defines the emit-layer that wraps orbit commands with `.orbit-runs/<command>-<TS>.json` output. Covers the shared spine (6 required fields), the `kind` taxonomy (3 values), per-command emit triggers (when each command emits, including bare-mode explore's non-emission and apply's per-chunk-end rule), per-command `next_recommended` recommendation logic, and the emit-layer-wraps-upstream principle.
+
+### Modified Capabilities
+
+- `orbit-conventions`: the `Internal-run JSON summary format` requirement is unified to define a universal spine (`command`, `timestamp`, `change`, `final_assessment`, `next_recommended`, `kind`) that all orbit-emitting commands satisfy, with per-kind extensions (`workflow` / `editorial` / `lifecycle`). This resolves the prior fragmentation where editorial commands had a minimum spec but workflow commands had no spec, and where `final_assessment` / `next_recommended` existed de facto in actual emits but were undocumented. The 3 existing per-skill schema references (`.claude/skills/openspec-<skill>/references/run-summary-schema.md` for review, audit-drift, address-reviews) remain authoritative for their per-command extension fields but inherit the universal spine from orbit-conventions.
+
+Existing emit-producing capabilities (`orbit-review`, `orbit-address-reviews`, `orbit-audit-drift`, `orbit-archive-modifications`, `orbit-review-external`) are not modified at the spec level by this change — their existing requirements already align with the universal spine in practice. The 3 per-skill schema reference files will be updated during apply to reflect the universal spine + per-kind extensions structure (this is a documentation update, not a behavior change).
+
+## Impact
+
+- **Skills modified** (orbit-side wrappers added; upstream skill bodies unchanged per emit-layer principle):
+  `.claude/skills/openspec-explore/SKILL.md`, `openspec-propose/SKILL.md`, `openspec-new-change/SKILL.md`, `openspec-continue-change/SKILL.md`, `openspec-ff-change/SKILL.md`, `openspec-apply-change/SKILL.md`, `openspec-verify-change/SKILL.md`, `openspec-review-external/SKILL.md`, `openspec-audit-drift/SKILL.md`
+- **Conventions** (`orbit-conventions` capability): may need a reference to the new emit convention; assess during apply.
+- **Downstream consumer (`orbit-status`)**: no immediate change required. Its existing tier-1 reader (`orbit-status-recommendation/spec.md:7`) already consumes `.orbit-runs/*.json` via the verbatim-string + best-effort-parse pattern; new sources (explore/propose/apply/verify/etc. JSONs) feed into the same reader unchanged. orbit-status's tier-2 synthesis cleanup is tracked as [orbit-status#2](https://github.com/las-sal/orbit-status/issues/2), to ship after this change lands.
+- **Dependency on [#6](https://github.com/las-sal/openspec-orbit/issues/6)** (overlay drop bundled upstream files): should ship in parallel or after #6's overlay cleanup, which removes deprecated `/opsx:sync-specs` from orbit's surface. This change's scope assumes the post-#6 command set.
+- **Forward-looking integrations** (not in this change): [#15](https://github.com/las-sal/openspec-orbit/issues/15) (inflection-point option listing), [#16](https://github.com/las-sal/openspec-orbit/issues/16) (review unchanged-artifact detection), and [#22](https://github.com/las-sal/openspec-orbit/issues/22) (intra-apply review cadence) all rely on the run-summary JSONs this change provides. They become straightforwardly implementable once emit is in place.

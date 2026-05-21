@@ -1,0 +1,231 @@
+{
+  "command": "review",
+  "timestamp": "2026-05-21T00:18:14Z",
+  "change": "emit-run-summary-jsons-from-workflow-commands",
+  "mode": "proposal",
+  "iteration": 1,
+  "depth": "full",
+  "flags": {
+    "parallel": false,
+    "focus": null,
+    "strict": false,
+    "fresh": false,
+    "mark": false,
+    "skip_verify": false
+  },
+  "passes_run": ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
+  "passes_skipped": [],
+  "passes_skipped_reasons": {},
+  "iteration_note": "First proposal-mode run for this change.",
+  "stale_suppressed": [],
+  "findings_summary": {
+    "critical": 5,
+    "warning": 7,
+    "suggestion": 7,
+    "by_pass": {
+      "1": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "2": { "critical": 0, "warning": 1, "suggestion": 0 },
+      "3": { "critical": 2, "warning": 3, "suggestion": 1 },
+      "4": { "critical": 3, "warning": 0, "suggestion": 1 },
+      "5": { "critical": 0, "warning": 2, "suggestion": 2 },
+      "6": { "critical": 0, "warning": 0, "suggestion": 2 },
+      "7": { "critical": 0, "warning": 1, "suggestion": 1 },
+      "8": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "9": { "critical": 0, "warning": 0, "suggestion": 0 }
+    }
+  },
+  "findings": [
+    {
+      "pass": "4",
+      "severity": "CRITICAL",
+      "id": "C1",
+      "file": "specs/orbit-run-summary-emit/spec.md",
+      "line": 34,
+      "title": "New universal-emit-shape requirement conflicts with orbit-conventions 'Internal-run JSON summary format' requirement",
+      "description": "openspec/specs/orbit-conventions/spec.md:159 defines 'Internal-run JSON summary format' requiring `command, timestamp, change, iteration (if applicable), findings_summary, finding_titles`. My new `Requirement: Universal emit shape` requires a different spine: `command, timestamp, change, final_assessment, next_recommended, kind`. Both requirements govern internal-run JSON emit shape; they require different field sets and have overlapping scope (orbit-conventions' scenario reads 'review/audit/archive command' which doesn't bind workflow commands, but the requirement title implies broader coverage).",
+      "recommendation": "Modify orbit-conventions's 'Internal-run JSON summary format' requirement as part of this change (move to Modified Capabilities). Define a unified minimum spine that covers all kinds, with per-kind extensions documented. Add `orbit-conventions` to the proposal's Modified Capabilities section."
+    },
+    {
+      "pass": "3",
+      "severity": "CRITICAL",
+      "id": "C2",
+      "file": "tasks.md",
+      "line": 17,
+      "title": "Tasks 1.1, 1.5, 1.6 reference `openspec/conventions/` directory that doesn't exist and violates orbit-conventions convention-file location",
+      "description": "Tasks 1.1, 1.5, 1.6 say to create `openspec/conventions/run-summary-emit-schema.md` and `openspec/conventions/examples/run-summary-emit-example.json`. (a) The directory `openspec/conventions/` does not exist. (b) orbit-conventions/spec.md:243 explicitly requires convention files at PROJECT ROOT (e.g., `naming_convention.md`), NOT under `openspec/` or in a subdirectory. The tasks as written violate an existing requirement.",
+      "recommendation": "Two valid options: (1) Move the schema doc to project root as `run_summary_emit_convention.md` per orbit-conventions' naming pattern (`<topic>_convention.md`). (2) Drop the standalone convention file entirely and document the schema directly in the orbit-conventions spec via a MODIFIED requirement. Option (2) is cleaner — consolidates the spine definition in one place. Either way, remove `openspec/conventions/` references from tasks."
+    },
+    {
+      "pass": "4",
+      "severity": "CRITICAL",
+      "id": "C3",
+      "file": "proposal.md",
+      "line": 23,
+      "title": "Existing run-summary-schema.md reference files for review / audit-drift / address-reviews aren't acknowledged or coordinated with",
+      "description": "Three schema reference files already exist: `.claude/skills/openspec-review/references/run-summary-schema.md`, `.claude/skills/openspec-audit-drift/references/run-summary-schema.md`, `.claude/skills/openspec-address-reviews/references/run-summary-schema.md`. They define per-skill emit shapes today. My proposal claims 'no modified capabilities' and doesn't mention these files. Either they should be updated to reference the new universal spine, or they should be explicitly noted as 'parallel definitions accepted for v1; harmonization deferred.' Currently they're invisible — a missed scope item.",
+      "recommendation": "Add a 'Schema reference files' subsection to design.md's Migration Plan listing the 3 existing references and how this change relates to them (update / supersede / leave as-is). Add tasks under group 1 or 9 to either edit or cross-reference these files. If choosing 'leave as-is for v1,' say so explicitly so reviewers know it's a deliberate scope decision."
+    },
+    {
+      "pass": "4",
+      "severity": "CRITICAL",
+      "id": "C4",
+      "file": "proposal.md",
+      "line": 9,
+      "title": "Proposal claims standalone /opsx:audit-drift is a NEW emit, but it already emits per existing schema reference",
+      "description": "Proposal line 9 says '/opsx:audit-drift (inline audit-drift during archive is already captured in archive-<TS>.json — unchanged)' and lists standalone audit-drift as 'editorial additions' — implying it's a new emit. But `.claude/skills/openspec-audit-drift/references/run-summary-schema.md` documents standalone-mode emit today: 'Standalone (no change context): openspec/.orbit-runs/audit-drift-<TS>.json'. The actual gap this change addresses for standalone audit-drift is the defer-to-prior-on-clean recommendation logic (D10), NOT the emit itself.",
+      "recommendation": "Revise proposal.md and spec.md to clarify what's actually NEW for standalone audit-drift: the recommendation logic (D10 defer-to-prior-on-clean), the spine field alignment (`kind: 'editorial'`), and the path standardization. The emit itself isn't new — refine claims accordingly. Also revisit whether standalone audit-drift's path (`openspec/.orbit-runs/`) needs to align with change-scoped path conventions."
+    },
+    {
+      "pass": "3",
+      "severity": "CRITICAL",
+      "id": "C5",
+      "file": "specs/orbit-run-summary-emit/spec.md",
+      "line": 42,
+      "title": "`final_assessment` and `next_recommended` are de facto fields not formally specified anywhere; spec/design imply they're already-canonical",
+      "description": "Grep across orbit baseline specs shows `final_assessment` and `next_recommended` have ZERO matches. They exist in the actual emitted JSONs (verified via .orbit-runs/ from archived changes) and orbit-status reads them (per orbit-status-recommendation/spec.md:7). But the existing schema reference files (`.claude/skills/openspec-<skill>/references/run-summary-schema.md`) don't include them, and orbit-conventions doesn't mention them. My spec treats them as established when they're actually de facto extensions.",
+      "recommendation": "Either: (a) Treat this change as formally introducing `final_assessment` and `next_recommended` as canonical fields (which means modifying orbit-conventions and the 3 existing schema references to add them). (b) Explicitly say in proposal.md that this change codifies what was previously de facto — and update the existing schema references as part of the work. Option (a) is more honest; either way the proposal needs to acknowledge the gap."
+    },
+    {
+      "pass": "3",
+      "severity": "WARNING",
+      "id": "W1",
+      "file": "proposal.md",
+      "line": 23,
+      "title": "Proposal claims 'no modified capabilities' but the work needs to modify orbit-conventions and likely the 3 existing schema reference files",
+      "description": "Proposal lines 23-25 say 'Modified Capabilities: None for v1.' This contradicts: (a) C1's resolution requires modifying orbit-conventions; (b) C3's resolution likely requires updating existing schema reference files; (c) tasks.md line 21 explicitly mentions 'Reference the schema doc from orbit-conventions capability spec where relevant' which is a modification.",
+      "recommendation": "Update proposal.md to list `orbit-conventions` (and any other affected existing capabilities) as Modified Capabilities. Expand tasks.md group 1 to include the modification work explicitly."
+    },
+    {
+      "pass": "2",
+      "severity": "WARNING",
+      "id": "W2",
+      "file": "design.md",
+      "line": 59,
+      "title": "Design's 'kind is the only net-new field' claim is incorrect",
+      "description": "design.md line 59 says: 'Adding `kind` explicitly is the only net-new field; everything else codifies what existing emits already do.' But `final_assessment` and `next_recommended` are NOT in the existing schema reference files (per C5) — they're de facto in actual JSONs but not formally documented. So they're effectively net-new in spec terms even though present in practice.",
+      "recommendation": "Reword the claim to: 'The `kind` field is structurally new; `final_assessment` and `next_recommended` codify existing de facto fields into formal spec, requiring updates to the 3 existing schema reference files.'"
+    },
+    {
+      "pass": "5",
+      "severity": "WARNING",
+      "id": "W3",
+      "file": "spec.md + tasks.md",
+      "line": 0,
+      "title": "'Session end' / 'session pause' timing semantics are fuzzy across artifacts; underspecified for codegen",
+      "description": "Tasks.md line 20 mentions 'emit at session end' for non-chunked commands. Spec.md line 109 (bare-mode explore scenario) says 'converses for 30 minutes without crystallizing.' Design.md line 132 (risk section) says 'session pause = AI returns control to user without a chunk_complete: true emit in the same turn.' These signals are scattered and not formally defined. An implementer would have to invent semantics. For workflows like /opsx:explore (multi-turn conversation) the boundary is especially fuzzy.",
+      "recommendation": "Add a Requirement: Session-end and session-pause semantics to the spec, defining: (1) what 'session end' means for one-shot commands (e.g., /opsx:propose, /opsx:verify — natural completion); (2) what it means for multi-turn commands (e.g., /opsx:explore, /opsx:apply — explicit user pause signal or N turns of idle); (3) which signals trigger emit vs which don't. Without this, implementation will be heuristic and inconsistent."
+    },
+    {
+      "pass": "5",
+      "severity": "WARNING",
+      "id": "W4",
+      "file": "spec.md",
+      "line": 240,
+      "title": "review-external T0 timing assumes a clean prompt-packaging moment; needs validation against current review-external skill flow",
+      "description": "Spec.md line 240+ assumes /opsx:review-external has a clean T0 moment when the prompt is packaged, before findings return. But /opsx:review-external is itself a multi-step AI-driven process — the AI might package the prompt as part of a longer conversation, not as a discrete one-shot. The proposal doesn't verify what the actual current skill flow looks like. If T0 is fuzzy, emit timing becomes fuzzy.",
+      "recommendation": "Read .claude/skills/openspec-review-external/SKILL.md during apply phase to verify the T0 moment is well-defined. If it's not a discrete moment, add either a Requirement clarifying when emit fires, or a Risk note acknowledging the fuzziness."
+    },
+    {
+      "pass": "3",
+      "severity": "WARNING",
+      "id": "W5",
+      "file": "tasks.md",
+      "line": 73,
+      "title": "Task 8.4 references /opsx:sync-specs SKILL.md which is being deleted by #6",
+      "description": "Task 8.4 says 'Add scope-enforcement notes in openspec-bulk-archive-change/SKILL.md, openspec-onboard/SKILL.md, and openspec-sync-specs/SKILL.md.' But the proposal (line 15) explicitly excludes sync-specs because it's slated for removal by #6. Editing a file that's about to be deleted is wasted work; if this change ships before #6, the edit will need re-removal.",
+      "recommendation": "Remove openspec-sync-specs from task 8.4. The scope statement in spec.md already documents the exclusion."
+    },
+    {
+      "pass": "3",
+      "severity": "WARNING",
+      "id": "W6",
+      "file": "tasks.md",
+      "line": 22,
+      "title": "Task 1.6 references `openspec/conventions/examples/` path that doesn't exist and likely shouldn't",
+      "description": "Task 1.6 says 'Add a canonical-emit example fixture under openspec/conventions/examples/run-summary-emit-example.json'. Same root cause as C2 — `openspec/conventions/` is not a valid orbit path per the convention-file location requirement. Also, the 'examples/' subdirectory introduces a new convention pattern not established elsewhere in orbit.",
+      "recommendation": "Drop task 1.6 (the canonical-emit example fixture). Instead, embed the canonical example inline in the convention's documentation (whether that's orbit-conventions spec or a project-root convention file)."
+    },
+    {
+      "pass": "7",
+      "severity": "WARNING",
+      "id": "W7",
+      "file": "spec.md + tasks.md + design.md",
+      "line": 0,
+      "title": "Terminology drift: 'run-summary JSON' / 'emit JSON' / 'internal-run JSON summary' used interchangeably across artifacts",
+      "description": "orbit-conventions/spec.md:159 calls it 'Internal-run JSON summary format'. Existing schema reference files use '<command> run-summary schema'. My capability is named 'orbit-run-summary-emit'. My spec uses 'run-summary JSON' and 'emit JSON' interchangeably. design.md uses 'emit JSON', 'JSON summary', 'run-summary JSON'. Three+ terms for the same thing.",
+      "recommendation": "Standardize on 'run-summary JSON' (matches existing schema reference titles and the new capability name). Update orbit-conventions' 'Internal-run JSON summary format' requirement title to 'Run-summary JSON format' for consistency."
+    },
+    {
+      "pass": "5",
+      "severity": "SUGGESTION",
+      "id": "S1",
+      "file": "spec.md",
+      "line": 47,
+      "title": "Without harmonization, downstream consumers reading `kind` need fallback logic for legacy emits missing the field",
+      "description": "Spec scopes universal-emit-shape to commands in scope. Existing emits (review, address-reviews, archive) won't have `kind`. Downstream consumers (orbit-status's tier-1, future dashboards) reading `kind` for routing will need fallback logic: 'if kind missing, infer from filename prefix.' This fragmentation is workable but not great.",
+      "recommendation": "If keeping the no-harmonization decision: add explicit guidance in the spec for consumers — 'kind MAY be absent on JSONs from existing capabilities (review, address-reviews, archive) until a future harmonization change lands; consumers SHOULD fall back to filename prefix routing in that case.' Even better: file a follow-up issue for harmonization explicitly tracked."
+    },
+    {
+      "pass": "5",
+      "severity": "SUGGESTION",
+      "id": "S2",
+      "file": "spec.md",
+      "line": 161,
+      "title": "tasks.md preamble parsing for chunk detection — format not formally specified",
+      "description": "Spec.md line 161+ says apply emits when 'chunks are explicitly declared in the change's tasks.md preamble.' Task 4.1 says 'parse the tasks.md preamble comment block for `Chunk N (groups X-Y): <name>` lines'. But this preamble format isn't formally specified anywhere — neither in orbit-conventions nor in this spec. An implementer would have to reverse-engineer the format from existing examples (this change's own tasks.md preamble being one).",
+      "recommendation": "Add a Requirement: tasks.md chunk preamble format to either this spec or orbit-conventions, defining the exact regex/structure. Without it, implementation is brittle."
+    },
+    {
+      "pass": "6",
+      "severity": "SUGGESTION",
+      "id": "S3",
+      "file": "explore.md",
+      "line": 256,
+      "title": "explore.md has structural cruft from incremental edits during exploration (D15 misplaced under 'Open questions' header; orphaned Q1/Q3 text)",
+      "description": "explore.md line 256 has '## Open questions' header but contains D15 (a decision, not a question). Lines 268-289 have leftover text from earlier Q1/Q3 sections that were closed but not fully cleaned. Doesn't change substance but creates confusion for future readers.",
+      "recommendation": "Quick cleanup pass on explore.md before apply: move D15 to be with the other D-decisions; remove orphaned closed-Q text. ~5-minute fix. Not blocking but worth doing while context is fresh."
+    },
+    {
+      "pass": "6",
+      "severity": "SUGGESTION",
+      "id": "S4",
+      "file": "spec.md",
+      "line": 120,
+      "title": "Missing scenario: explore named-mode at session end with 0 decisions captured",
+      "description": "Named-mode explore maturity rules cover 0–1 / 2–3 / 4+. The 0-decision case is included in 'Early' but has no explicit scenario. If a user starts /opsx:explore foo and the session ends without capturing any decisions (just discussion), the recommendation behavior should be tested.",
+      "recommendation": "Add a scenario: 'WHEN named-mode explore emits with decisions_captured: 0; THEN next_recommended begins with /opsx:explore <name> and contains language acknowledging that thinking is just beginning.'"
+    },
+    {
+      "pass": "6",
+      "severity": "SUGGESTION",
+      "id": "S5",
+      "file": "spec.md",
+      "line": 215,
+      "title": "Missing scenarios for verify-fail mode-② error paths (e.g., concurrent task modification, partial verify run)",
+      "description": "Spec mode-② requires classifying impl-vs-spec gap. But what if verify partially completes (e.g., timeout, transient failure)? The recommendation logic only covers clean pass/fail/warn — not 'verify aborted before completing classification.' Edge case worth specifying.",
+      "recommendation": "Add a scenario for partial-verify failure or note as out-of-scope. Current spec is silent."
+    },
+    {
+      "pass": "7",
+      "severity": "SUGGESTION",
+      "id": "S6",
+      "file": "tasks.md",
+      "line": 0,
+      "title": "Task count (35) and chunk count (7) — verify chunk groupings match implementation reality",
+      "description": "tasks.md has 9 task groups across 7 chunks (per preamble). Chunk 2 spans groups 2-3, chunk 5 spans groups 6-7. The chunk-to-group mapping is a design choice that affects how D7's chunk-end emits behave when applying. Worth verifying the mapping is intentional (some chunks span multiple groups; that's fine but worth understanding).",
+      "recommendation": "Confirm during apply that chunk boundaries trigger emits correctly when crossing group boundaries (e.g., chunk 2 ends after group 3 is complete, not after group 2). Add this to task 4.1 or 4.2 as an explicit implementation note."
+    },
+    {
+      "pass": "4",
+      "severity": "SUGGESTION",
+      "id": "S7",
+      "file": "design.md",
+      "line": 0,
+      "title": "Design doesn't reference the bootstrap-openspec-orbit archived change's design.md or sketches",
+      "description": "The 2026-05-18-bootstrap-openspec-orbit archive established orbit-conventions, the schema reference files, and the broader emit architecture. My design.md treats this work as if there's no architectural prior art, except for cross-referencing orbit-status's spec. Worth referencing the prior change for context.",
+      "recommendation": "Add a 'Prior art' or 'Related work' note in design.md Context section linking to the bootstrap archive. Helps future readers understand the lineage."
+    }
+  ],
+  "final_assessment": "5 CRITICAL findings + 7 WARNING + 7 SUGGESTION. The change's conceptual design is sound — the emit-layer architecture, kind taxonomy, per-command recommendation logic, and chunk-end emit timing are all well-considered. But the proposal missed substantial prior art: 3 existing run-summary-schema.md reference files in orbit's skill directories that already define per-skill emit shapes; an orbit-conventions 'Internal-run JSON summary format' requirement that conflicts with the new spine; standalone audit-drift already emits today (per its schema reference) — only the recommendation logic is new. These misses stem from not reading the actual schema references during exploration. NOT ready to apply. Address-reviews cycle required before /opsx:apply.",
+  "next_recommended": "/opsx:address-reviews emit-run-summary-jsons-from-workflow-commands --from-file openspec/changes/emit-run-summary-jsons-from-workflow-commands/.orbit-runs/review-proposal-2026-05-21T00-18-14Z.json — 5 CRITICALs to resolve (3 require modifying orbit-conventions and the 3 existing schema references; 2 require fixing path/scope errors)."
+}
