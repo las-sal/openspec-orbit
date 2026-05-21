@@ -74,10 +74,10 @@ Without this expansion, archive emits will violate the new universal spine on th
 
 ## 8. Bare-mode explore non-emission + crystallization warning
 
-- [ ] 8.1 Refine `openspec-explore/SKILL.md`'s `## Orbit additions` to explicitly state that bare-mode (no name argument) does NOT emit any `.orbit-runs/` JSON
-- [ ] 8.2 Codify the crystallization warning text verbatim in the SKILL.md additions, including all 4 consequences (new directory created, audit trail starts, visibility to consumers, abandonment requires formal archive)
-- [ ] 8.3 Document the confirmation gate (AI MUST wait for explicit user confirmation before creating `openspec/explore/<name>/explore.md` or emitting the first `explore-<TS>.json`)
-- [ ] 8.4 Add scope-enforcement notes in `openspec-bulk-archive-change/SKILL.md` and `openspec-onboard/SKILL.md` clarifying these commands do NOT emit run-summary JSONs (defensive — explicit scope statement prevents future confusion). `openspec-sync-specs` is excluded from scope here because it is slated for removal by [openspec-orbit#6](https://github.com/las-sal/openspec-orbit/issues/6); editing it would be wasted work.
+- [x] 8.1 Refine `openspec-explore/SKILL.md`'s `## Orbit additions` to explicitly state that bare-mode (no name argument) does NOT emit any `.orbit-runs/` JSON
+- [x] 8.2 Codify the crystallization warning text verbatim in the SKILL.md additions, including all 4 consequences (new directory created, audit trail starts, visibility to consumers, abandonment requires formal archive); note `openspec list` visibility clarified per EW5
+- [x] 8.3 Document the confirmation gate (AI MUST wait for explicit user confirmation before creating `openspec/explore/<name>/explore.md` or emitting the first `explore-<TS>.json`)
+- [x] 8.4 Add scope-enforcement notes in `openspec-bulk-archive-change/SKILL.md` and `openspec-onboard/SKILL.md` clarifying these commands do NOT emit run-summary JSONs (defensive — explicit scope statement prevents future confusion). `openspec-sync-specs` is excluded from scope here because it is slated for removal by [openspec-orbit#6](https://github.com/las-sal/openspec-orbit/issues/6); editing it would be wasted work.
 
 ## 9. Integration verification + docs
 

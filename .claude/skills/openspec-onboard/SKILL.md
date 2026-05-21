@@ -551,3 +551,13 @@ Exit gracefully.
 - **Handle exits gracefully**—never pressure the user to continue
 - **Use real codebase tasks**—don't simulate or use fake examples
 - **Adjust scope gently**—guide toward smaller tasks but respect user choice
+
+---
+
+# Orbit additions
+
+## Scope: does NOT emit run-summary JSON
+
+(Per `orbit-run-summary-emit` capability — openspec-orbit#8)
+
+`/opsx:onboard` is a meta walkthrough — it teaches the user the workflow but does NOT transition any change's state itself. The sub-commands the walkthrough invokes (`/opsx:explore`, `/opsx:propose`, etc.) each emit their own run-summary JSONs per their respective conventions. The outer `/opsx:onboard` walkthrough adds NO change-state signal of its own and SHALL NOT emit an `onboard-<TS>.json`.

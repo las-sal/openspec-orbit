@@ -243,3 +243,15 @@ No active changes found. Create a new change to get started.
 - Preserve .openspec.yaml when moving to archive
 - Archive directory target uses current date: YYYY-MM-DD-<name>
 - If archive target exists, fail that change but continue with others
+
+---
+
+# Orbit additions
+
+## Scope: does NOT emit run-summary JSON
+
+(Per `orbit-run-summary-emit` capability — openspec-orbit#8)
+
+`/opsx:bulk-archive` is a wrapper around `/opsx:archive`; each inner `/opsx:archive` invocation emits its own `archive-<TS>.json` per the universal-spine convention. The outer `/opsx:bulk-archive` wrapper adds NO additional "what's next" signal and SHALL NOT emit a separate `bulk-archive-<TS>.json`.
+
+Downstream consumers see N `archive-<TS>.json` files (one per inner archive) and read each independently.

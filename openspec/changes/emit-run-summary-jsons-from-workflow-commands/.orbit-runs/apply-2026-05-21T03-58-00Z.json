@@ -1,0 +1,15 @@
+{
+  "command": "apply",
+  "timestamp": "2026-05-21T03:58:00Z",
+  "change": "emit-run-summary-jsons-from-workflow-commands",
+  "final_assessment": "Completed chunk 6 of 7 (Bare-mode explore non-emission + scope enforcement). 35 of 44 tasks done. openspec-explore/SKILL.md extended with bare-mode non-emission rule + crystallization warning text (4 consequences verbatim, openspec list visibility note per EW5, confirmation gate). openspec-bulk-archive-change/SKILL.md + openspec-onboard/SKILL.md each gained scope-enforcement # Orbit additions explicitly saying they do NOT emit run-summary JSONs (sync-specs excluded per W5).",
+  "next_recommended": "/opsx:apply emit-run-summary-jsons-from-workflow-commands — next chunk (7 of 7, FINAL): Integration verification + docs; 9 tasks in group 9",
+  "kind": "workflow",
+  "tasks_completed": 35,
+  "tasks_remaining": 9,
+  "chunk": "6 of 7",
+  "chunk_name": "Bare-mode explore non-emission + crystallization warning",
+  "chunk_complete": true,
+  "tasks_completed_this_session": 4,
+  "note": "Manual emit per D7. One chunk left."
+}

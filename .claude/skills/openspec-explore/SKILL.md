@@ -500,3 +500,49 @@ Per `orbit-run-summary-emit`'s `Named-mode explore recommendation by maturity` r
 - **Stalled (4+ decisions captured AND >1 open question)**: `"/opsx:explore <name> — N decisions captured but M open questions remain; resolve open questions before formalizing"` (N = `decisions_captured`, M = `open_questions_count`). Does NOT surface `/opsx:propose` as alternative — high open-question count signals NOT-ready regardless of decision count.
 
 orbit-status's tier-1 reader parses the leading `/opsx:<verb> <name>` token into `command`/`args`; the alternative path (Mid and Mature only) lives in the reason text.
+
+### Bare-mode non-emission
+
+**Bare-mode `/opsx:explore` (no name argument) does NOT write any `.orbit-runs/` JSON.** Exploration without a name is pre-commitment, ephemeral thinking — no persistent emit occurs until the user crystallizes the exploration to a named change.
+
+Concretely: if the user invokes `/opsx:explore` (no args), converses for any length of time, and ends the conversation without crystallizing, ZERO files are written to disk. The conversation produces no on-disk persistence. Rationale: emitting JSONs before a name exists would pollute project scope and accidentally seed partial changes the user didn't intend to start.
+
+### Crystallization to named change (bare-mode → named-mode transition)
+
+When the user requests crystallization during a bare-mode explore (e.g., "save this as `<name>`", "let's give this a name and capture it", or equivalent intent), the AI **MUST surface an explicit warning describing the persistence consequences BEFORE creating any files**.
+
+**Required warning content** — the warning MUST mention all 4 consequences:
+
+1. A new directory `openspec/explore/<name>/` will be created with `explore.md` capturing decisions to date.
+2. The first run-summary JSON (`openspec/explore/<name>/.orbit-runs/explore-<TS>.json`) will start the change's audit trail.
+3. The change will become visible to orbit-status (which scans `openspec/explore/` via its `enumerate_explorations()` function) and any other consumer that scans `openspec/explore/`. Note: upstream `openspec list` does NOT scan `openspec/explore/`; the change appears in `openspec list` only after `/opsx:propose` moves the staging directory to `openspec/changes/<name>/`.
+4. Abandonment after this point requires formal archive/discard, not just deleting the directory once it's been moved to `openspec/changes/<name>/` by `/opsx:propose`.
+
+**Confirmation gate**: the AI MUST wait for explicit user confirmation before proceeding with file creation. Examples of confirmation: "yes", "go ahead", "create it", "do it". If the user expresses any hesitation or asks a clarifying question, treat as not-yet-confirmed and answer the question rather than proceed.
+
+After confirmation, the AI:
+1. Creates `openspec/explore/<name>/explore.md` with decisions captured so far
+2. Writes the first `explore-<TS>.json` per the JSON shape above, with `crystallized_to_name: "<name>"` (the field is non-null in this case, signaling this emit is the crystallization moment)
+
+Sketch of the warning text (for reference; phrasing may adapt to conversation):
+
+```
+⚠ Crystallizing exploration into a named change: <name>
+
+This will:
+  • Create openspec/explore/<name>/explore.md (decisions captured so far)
+  • Emit openspec/explore/<name>/.orbit-runs/explore-<TS>.json
+  • Make <name> visible to orbit-status (and any consumer scanning openspec/explore/)
+  • Start the change's audit trail — every subsequent orbit command emits a JSON here
+
+Note: upstream `openspec list` does NOT scan openspec/explore/; the change
+appears in `openspec list` only after /opsx:propose moves the staging directory.
+
+Before crystallization: ephemeral in-conversation thinking.
+After crystallization: persistent on-disk presence; abandonment requires
+formal archive/discard once /opsx:propose has moved the staging directory.
+
+Confirm? [Y/n]
+```
+
+This warning convention aligns with openspec-orbit#7 (don't auto-invoke opsx commands) and openspec-orbit#15 (inflection points surface consequences).
