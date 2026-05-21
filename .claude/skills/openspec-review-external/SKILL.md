@@ -158,3 +158,56 @@ The command does not run the review and does not ingest findings:
 - **No prior external review** → recommended-session note uses iter 1 phrasing; cycle context omits "open external findings".
 - **No lenses files** → "Project context (read first)" line for those still appears (the `(if present)` qualifier handles the absence); external AI will see they're absent when it pulls the repo.
 - **No git remote / repo URL unknown** → emit the local path instead of a URL and add a note: `If you don't have access to this repo, copy it to a shared location and update the invocation.`
+
+## Run-summary emit (T0 — when prompt is packaged, before findings return)
+
+(Per `orbit-run-summary-emit` capability — openspec-orbit#8)
+
+`/opsx:review-external` writes TWO artifacts during a single invocation:
+
+1. **The prompt file** (existing behavior): `external-prompt-<as>-<TS>.md` written per Step 7.
+2. **The T0 run-summary JSON** (new per #8): emitted at command completion (after Step 8's chat invocation snippet), recording that the external pass was packaged and is awaiting findings.
+
+The T0 emit goes to:
+
+```
+openspec/changes/<name>/.orbit-runs/review-external-<TS>.json
+```
+
+Where `<TS>` is ISO-8601 UTC with hyphens. Create `.orbit-runs/` if it doesn't exist. Use a FRESH timestamp distinct from the prompt file's `<TS>` (one ISO-second resolution may make them identical; bump by one second if so).
+
+This is the T0 emit. T1 (findings returned and ingested via `/opsx:address-reviews --from-file`) is the EXISTING `address-reviews-<TS>.json` emit and is unaffected.
+
+### JSON shape
+
+Per the universal spine in `orbit-conventions`'s `Internal-run JSON summary format` + per-command extensions:
+
+```json
+{
+  "command": "review-external",
+  "timestamp": "<ISO-8601 UTC>",
+  "change": "<name>",
+  "final_assessment": "<narrative, e.g., 'External review prompt packaged for <name> (iter <N>, mode <as>); awaiting findings from <target>.'>",
+  "next_recommended": "<multi-step prose; see below>",
+  "kind": "editorial",
+  "mode": "proposal" | "system",
+  "prompt_path": "openspec/changes/<name>/.orbit-runs/external-prompt-<as>-<TS>.md",
+  "target": "<named external AI if user specified; null otherwise>",
+  "awaiting_findings": true
+}
+```
+
+`awaiting_findings: true` is always set at T0. Future tooling may flip this when findings land; for now it's a flag that downstream consumers can use to identify "T0 emit, not yet completed cycle."
+
+### `next_recommended` — multi-step prose
+
+Per `orbit-run-summary-emit`'s `Review-external T0 multi-step recommendation` requirement, the recommendation is multi-step prose describing the user action plus the follow-up command (per D14):
+
+```
+"Paste openspec/changes/<name>/.orbit-runs/external-prompt-<as>-<TS>.md
+ into the target AI, save the response as
+ openspec/changes/<name>/.orbit-runs/external-<as>-<TS>.md,
+ then /opsx:address-reviews <name> --from-file <path>"
+```
+
+orbit-status's tier-1 best-effort parse SHALL find no leading `/opsx:<verb>` (because the string leads with "Paste"); `command` and `args` are left null, and the full verbatim string is surfaced in `reason`. This is the expected behavior — multi-step user actions are accurately represented as prose, not collapsed into a single command.

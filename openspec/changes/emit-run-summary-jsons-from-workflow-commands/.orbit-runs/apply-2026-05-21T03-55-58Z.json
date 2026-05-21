@@ -1,0 +1,15 @@
+{
+  "command": "apply",
+  "timestamp": "2026-05-21T03:55:58Z",
+  "change": "emit-run-summary-jsons-from-workflow-commands",
+  "final_assessment": "Completed chunk 5 of 7 (Editorial additions — review-external T0 + standalone audit-drift). 31 of 44 tasks done. openspec-review-external/SKILL.md gained T0 emit section (writes review-external-<TS>.json alongside the existing prompt .md; multi-step prose recommendation per D14). openspec-audit-drift/SKILL.md gained standalone-mode emit section covering both change-scoped (defer-to-prior on clean per D10) and project-wide variants (per EC2's split). Inline mode unchanged — still captured in archive-<TS>.json.",
+  "next_recommended": "/opsx:apply emit-run-summary-jsons-from-workflow-commands — next chunk (6 of 7): Bare-mode explore non-emission + crystallization warning; 4 tasks in group 8",
+  "kind": "workflow",
+  "tasks_completed": 31,
+  "tasks_remaining": 13,
+  "chunk": "5 of 7",
+  "chunk_name": "Editorial additions — review-external T0 + standalone audit-drift",
+  "chunk_complete": true,
+  "tasks_completed_this_session": 7,
+  "note": "Manual emit per D7."
+}

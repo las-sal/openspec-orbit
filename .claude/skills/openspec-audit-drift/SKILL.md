@@ -214,3 +214,74 @@ Run summary: openspec/.orbit-runs/audit-drift-2026-05-18T15-04-11Z.json
 - **Empty lenses files** → Category 2 skipped with note.
 - **No project/governance docs** (`CLAUDE.md`, `project.md` absent) → Category 3 doc-vs-doc skipped; spec-only checks remain.
 - **`--focus <area>` with non-existent target** (e.g., `--focus lenses` but lenses absent) → command exits gracefully with `<focus area> unavailable; nothing to scan`.
+
+## Run-summary emit (standalone modes — change-scoped + project-wide)
+
+(Per `orbit-run-summary-emit` capability — openspec-orbit#8)
+
+`/opsx:audit-drift` already emits today per `references/run-summary-schema.md` (covering both standalone and library/pre-archive contexts). The orbit-orbit#8 work refines the **standalone** emits (both change-scoped and project-wide variants) with the universal spine + per-mode recommendation logic. The library/pre-archive emits when called by `/opsx:archive` continue to be captured inside `archive-<TS>.json` per the existing convention — that case is unaffected by #8.
+
+The two standalone variants emit to different paths:
+
+```
+# Change-scoped standalone (/opsx:audit-drift <name>)
+openspec/changes/<name>/.orbit-runs/audit-drift-<TS>.json
+
+# Project-wide standalone (/opsx:audit-drift with no argument)
+openspec/.orbit-runs/audit-drift-<TS>.json     # create the directory if needed
+```
+
+### JSON shape
+
+Per the universal spine in `orbit-conventions`'s `Internal-run JSON summary format` + per-command extensions:
+
+```json
+{
+  "command": "audit-drift",
+  "timestamp": "<ISO-8601 UTC>",
+  "change": "<name>" | null,
+  "final_assessment": "<narrative — varies by mode and findings>",
+  "next_recommended": "<per recommendation logic below>",
+  "kind": "editorial",
+  "context": "standalone",
+  "categories_run": ["1", "2", "3", "4"],
+  "findings_by_category": { "1": 0, "2": 0, "3": 0, "4": 0 },
+  "findings_total": <int>
+}
+```
+
+`change` is set to the change name for change-scoped standalone (`/opsx:audit-drift <name>`); `null` for project-wide standalone.
+
+### `next_recommended` — mode + findings combinations
+
+Per `orbit-run-summary-emit`'s `Audit-drift standalone recommendations` requirement, four cases:
+
+**Change-scoped + findings produced**:
+```
+next_recommended: "/opsx:address-reviews <name> --from-file <this-json> — N drift(s) detected; resolve before next workflow step"
+```
+
+**Change-scoped + clean (zero findings)** — defer to prior workflow narrative:
+- Read the most recent prior `.orbit-runs/*.json` for the same change (excluding the just-written audit-drift JSON itself).
+- Copy that JSON's `next_recommended` verbatim into the new emit's `next_recommended`.
+- Set `final_assessment` to: `"drift check clean; deferring to prior workflow state."`
+- Rationale: a clean drift check shouldn't reset the workflow's narrative; if the user was mid-apply, the recommendation should still be "keep applying."
+
+**Project-wide + findings produced**:
+```
+next_recommended: "/opsx:address-reviews --from-file <this-json> — N drift(s) detected project-wide; resolve before next workflow step"
+```
+
+(No `<change-name>` arg; address-reviews handles project-wide markers from `--from-file`.)
+
+**Project-wide + clean (zero findings)** — no prior per-change workflow to defer to:
+```
+next_recommended: "No project-wide drifts detected. Run /opsx:audit-drift periodically to catch new drift."
+final_assessment: "project-wide drift check clean."
+```
+
+(The `--from-file` flag in both findings cases becomes optional once openspec-orbit#10 lands and `/opsx:address-reviews` auto-discovers internal JSONs; JSON-format support also tracked at openspec-orbit#4.)
+
+### Inline mode unchanged
+
+When `/opsx:audit-drift` is called by `/opsx:archive` (library / pre-archive context), findings are captured inside `archive-<TS>.json` per the existing convention. The orbit-orbit#8 work does NOT modify the inline-mode emit.

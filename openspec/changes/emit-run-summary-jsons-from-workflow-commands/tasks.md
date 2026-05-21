@@ -61,16 +61,16 @@ Without this expansion, archive emits will violate the new universal spine on th
 
 ## 6. Editorial: review-external T0 emit
 
-- [ ] 6.1 Extend `openspec-review-external/SKILL.md` with T0 emit instructions (write `review-external-<TS>.json` at the moment the prompt is packaged, before findings return)
-- [ ] 6.2 Document the per-command extensions for review-external (`mode`, `prompt_path`, `target`, `awaiting_findings`)
-- [ ] 6.3 Document the multi-step prose `next_recommended` (D14: "Paste ... save ... then /opsx:address-reviews <name> --from-file <path>") — note that orbit-status's tier-1 parse will find no leading slash command and leave `command`/`args` null, preserving full prose in `reason`
+- [x] 6.1 Extend `openspec-review-external/SKILL.md` with T0 emit instructions (write `review-external-<TS>.json` at the moment the prompt is packaged, before findings return)
+- [x] 6.2 Document the per-command extensions for review-external (`mode`, `prompt_path`, `target`, `awaiting_findings`)
+- [x] 6.3 Document the multi-step prose `next_recommended` (D14: "Paste ... save ... then /opsx:address-reviews <name> --from-file <path>") — note that orbit-status's tier-1 parse will find no leading slash command and leave `command`/`args` null, preserving full prose in `reason`
 
 ## 7. Editorial: standalone audit-drift emit
 
-- [ ] 7.1 Extend `openspec-audit-drift/SKILL.md` with standalone-mode emit instructions (write `audit-drift-<TS>.json` when the command runs standalone — NOT for the inline-during-archive case, which remains captured in `archive-<TS>.json`)
-- [ ] 7.2 Document the per-command extensions (`categories_run`, `findings_by_category`, `findings_total`)
-- [ ] 7.3 Document the with-findings recommendation (D10: `/opsx:address-reviews <name> --from-file <this-json>`)
-- [ ] 7.4 Document the clean-findings defer-to-prior recommendation (D10: copy `next_recommended` verbatim from the most recent prior `.orbit-runs/*.json` for the same change, excluding the just-written audit-drift JSON; set `final_assessment` to note the deferral)
+- [x] 7.1 Extend `openspec-audit-drift/SKILL.md` with standalone-mode emit instructions (write `audit-drift-<TS>.json` when the command runs standalone — NOT for the inline-during-archive case, which remains captured in `archive-<TS>.json`). Covers BOTH change-scoped standalone and project-wide standalone variants per EC2.
+- [x] 7.2 Document the per-command extensions (`categories_run`, `findings_by_category`, `findings_total`)
+- [x] 7.3 Document the with-findings recommendation (D10: `/opsx:address-reviews <name> --from-file <this-json>`) — variant per change-scoped vs project-wide per EC2
+- [x] 7.4 Document the clean-findings defer-to-prior recommendation (D10: copy `next_recommended` verbatim from the most recent prior `.orbit-runs/*.json` for the same change, excluding the just-written audit-drift JSON; set `final_assessment` to note the deferral) — change-scoped only; project-wide clean has no prior to defer to (per EC2)
 
 ## 8. Bare-mode explore non-emission + crystallization warning
 
