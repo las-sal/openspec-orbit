@@ -17,7 +17,7 @@ Total: 9 groups across 7 implementation chunks.
 (Most original schema-codification tasks were resolved by **C1**'s orbit-conventions modification during the proposal review's address-reviews walk. The work remaining in this group is verification + alignment with existing per-skill schema references + a canonical-example embed.)
 
 - [ ] 1.1 Verify `orbit-run-summary-emit` capability's `Workflow-kind emit shape` requirement properly defers to `orbit-conventions`'s MODIFIED `Internal-run JSON summary format` for the universal spine (no redundant redefinition); add cross-references where useful
-- [ ] 1.2 (Per **C3** resolution) Update the 3 existing per-skill schema reference files — `.claude/skills/openspec-review/references/run-summary-schema.md`, `.claude/skills/openspec-audit-drift/references/run-summary-schema.md`, `.claude/skills/openspec-address-reviews/references/run-summary-schema.md` — to acknowledge inheritance from orbit-conventions's universal spine. Per-command extension documentation remains per-skill (`findings`, `passes_run`, etc.).
+- [ ] 1.2 (Per **C3** + **EW4** resolutions) Update the 4 existing per-skill schema reference files — `.claude/skills/openspec-review/references/run-summary-schema.md`, `.claude/skills/openspec-audit-drift/references/run-summary-schema.md`, `.claude/skills/openspec-address-reviews/references/run-summary-schema.md`, and `.claude/skills/openspec-archive-change/references/archive-summary-schema.md` — to acknowledge inheritance from orbit-conventions's universal spine (including the now-required `kind` field per the kind taxonomy). Per-command extension documentation remains per-skill (`findings`, `passes_run`, `archive_path`, `audit`, etc.).
 - [ ] 1.3 Embed a canonical example JSON inline in the `orbit-conventions` MODIFIED spec (no separate file) showing the universal spine + sample per-kind extensions for one each of workflow / editorial / lifecycle commands
 - [ ] 1.4 (Per **S1** resolution) Update existing emit-producing skill SKILL.md instructions (or `## Orbit additions` sections) for `openspec-review`, `openspec-address-reviews`, `openspec-archive-change`, and inline `openspec-audit-drift` (during archive) to include the `kind` field in their actual emit JSONs (`kind: "editorial"` for review / address-reviews / audit-drift; `kind: "lifecycle"` for archive). Without this, downstream consumers reading `kind` need fallback logic for legacy emits.
 
@@ -31,7 +31,7 @@ Total: 9 groups across 7 implementation chunks.
 
 - [ ] 3.1 Add a new `## Orbit additions` section to `openspec-new-change/SKILL.md` with emit instructions (write `new-<TS>.json`) and D12 recommendation
 - [ ] 3.2 Add `## Orbit additions` to `openspec-continue-change/SKILL.md` with emit instructions (write `continue-<TS>.json`) and the artifact-completion-aware D12 recommendation (artifacts complete → review; incomplete → continue with next missing artifact identified)
-- [ ] 3.3 Add `## Orbit additions` to `openspec-ff-change/SKILL.md` with emit instructions (write `ff-change-<TS>.json`) and D12 recommendation
+- [ ] 3.3 Add `## Orbit additions` to `openspec-ff-change/SKILL.md` with emit instructions (write `ff-<TS>.json`) and D12 recommendation
 - [ ] 3.4 Verify per-variant filename convention is honored (each variant uses its own command name prefix, NOT `propose-<TS>.json`)
 
 ## 4. Apply with chunk-end behavior
@@ -79,7 +79,7 @@ Total: 9 groups across 7 implementation chunks.
 - [ ] 9.3 Live-test end-to-end: run `/opsx:verify foo` (pass case); verify the JSON's `next_recommended` parses correctly and `/opsx:archive` is mentioned in reason text
 - [ ] 9.4 Cross-repo integration test: in `~/code/orbit-status`, run `opsx-status` against a change with new workflow-command JSONs present; verify tier-1 reader picks them up and surfaces recommendations correctly (no orbit-status code change required)
 - [ ] 9.5 Backward-compatibility check: run `/opsx:review`, `/opsx:address-reviews`, `/opsx:archive` (existing emitters); verify their existing JSON shapes are unchanged (no regressions from this change)
-- [ ] 9.6 Update orbit's `README.md` to document the new emit behavior (one-paragraph summary + link to `openspec/conventions/run-summary-emit-schema.md`)
+- [ ] 9.6 (Per **ES1** resolution) Update orbit's `README.md` to document the new emit behavior (one-paragraph summary + link to `openspec/specs/orbit-conventions/spec.md`'s `Internal-run JSON summary format` requirement, plus cross-reference to the new `orbit-run-summary-emit` capability spec)
 - [ ] 9.7 Assess whether `CLAUDE.md` needs a new convention note about the emit pattern; add if useful
 - [ ] 9.8 Run `openspec validate emit-run-summary-jsons-from-workflow-commands --strict` to confirm spec validity
 - [ ] 9.9 (User-validation handoff) User runs `/opsx:verify emit-run-summary-jsons-from-workflow-commands` and confirms all artifacts match implementation

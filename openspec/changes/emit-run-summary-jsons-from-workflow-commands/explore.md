@@ -20,13 +20,13 @@ The producer (orbit) emits `next_recommended` as a single string, possibly prose
 
 ### D2: Per-variant filenames for propose-shaped commands
 
-`/opsx:new`, `/opsx:continue`, `/opsx:ff-change` each emit JSONs with their own command-name prefix in the filename:
+`/opsx:new`, `/opsx:continue`, `/opsx:ff` each emit JSONs with their own command-name prefix in the filename:
 
 - `explore-<TS>.json`
 - `propose-<TS>.json`
 - `new-<TS>.json`
 - `continue-<TS>.json`
-- `ff-change-<TS>.json`
+- `ff-<TS>.json`
 - `apply-<TS>.json`
 - `verify-<TS>.json`
 - `review-external-<TS>.json`
@@ -38,7 +38,7 @@ The producer (orbit) emits `next_recommended` as a single string, possibly prose
 
 Every run-summary JSON includes a `kind` field with one of three values:
 
-- `kind: "workflow"` — forward-progressing commands: `explore`, `propose`, `new`, `continue`, `ff-change`, `apply`, `verify`
+- `kind: "workflow"` — forward-progressing commands: `explore`, `propose`, `new`, `continue`, `ff`, `apply`, `verify`
 - `kind: "editorial"` — evaluative or resolution-focused: `review`, `address-reviews`, `audit-drift`, `review-external`
 - `kind: "lifecycle"` — terminal transitions: `archive`
 
@@ -53,7 +53,7 @@ Concretely: `/opsx:verify` is the clearest example. Verify's job stays exactly w
 This principle generalizes to all wrapped commands:
 
 - `/opsx:explore`, `/opsx:propose`, `/opsx:apply`, `/opsx:verify` — upstream skills, unchanged. Emit-layer wraps each with JSON output.
-- `/opsx:new`, `/opsx:continue`, `/opsx:ff-change` — upstream skills, unchanged. Emit-layer wraps each.
+- `/opsx:new`, `/opsx:continue`, `/opsx:ff` — upstream skills, unchanged. Emit-layer wraps each.
 
 Where orbit MODIFIES an upstream skill (the `## Orbit additions` pattern used today for `openspec-explore`, `openspec-propose`, `openspec-archive-change`), that's a separate concern from #8. #8 only adds emit; it does not introduce new behavior into any upstream skill.
 
@@ -173,7 +173,7 @@ Bare-mode explore does not emit per D5.
 
 ### D12: Propose-shaped commands recommend `/opsx:review`; continue's logic depends on artifact completeness
 
-`/opsx:propose`, `/opsx:new`, `/opsx:ff-change` all produce the canonical artifact set (proposal.md, design.md, tasks.md, specs/) in one go; their recommendation is always:
+`/opsx:propose`, `/opsx:new`, `/opsx:ff` all produce the canonical artifact set (proposal.md, design.md, tasks.md, specs/) in one go; their recommendation is always:
 
 ```
 next_recommended: "/opsx:review <name> — proposal artifacts ready; review before apply"

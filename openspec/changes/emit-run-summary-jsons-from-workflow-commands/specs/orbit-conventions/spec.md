@@ -17,8 +17,8 @@ kind             enum         "workflow" | "editorial" | "lifecycle"
 
 Per-kind extensions:
 
-- **`kind: "workflow"`** — emitted by `explore`, `propose`, `new`, `continue`, `ff-change`, `apply`, `verify`. Per-command extensions are defined in the `orbit-run-summary-emit` capability (e.g., `apply.chunk_complete`, `verify.verdict`, `explore.decisions_captured`).
-- **`kind: "editorial"`** — emitted by `review`, `address-reviews`, `audit-drift`, `review-external`. Per-command extensions include: `iteration` (when applicable to the command — e.g., review iter-N, address-reviews iter-N), `findings_summary` (counts by severity, optionally by pass/category), `finding_titles` (array of brief titles), plus command-specific fields defined in per-skill schema references at `.claude/skills/openspec-<skill>/references/run-summary-schema.md`.
+- **`kind: "workflow"`** — emitted by `explore`, `propose`, `new`, `continue`, `ff`, `apply`, `verify`. Per-command extensions are defined in the `orbit-run-summary-emit` capability (e.g., `apply.chunk_complete`, `verify.verdict`, `explore.decisions_captured`).
+- **`kind: "editorial"`** — emitted by `review`, `address-reviews`, `audit-drift`, `review-external`. Per-command extensions include: `iteration` (when applicable to the command — e.g., review iter-N, address-reviews iter-N), `findings_summary` (counts by severity; included when findings are present — i.e., review/address-reviews/audit-drift completion emits; review-external at T0 emits before external findings return and SHALL omit this field), `finding_titles` (array of brief titles; included with `findings_summary`, omitted in the same cases), plus command-specific fields defined in per-skill schema references at `.claude/skills/openspec-<skill>/references/run-summary-schema.md`.
 - **`kind: "lifecycle"`** — emitted by `archive` only. Per-command extensions include: `archive_path`, `audit`, `sync_specs`, `unresolved_markers`, `user_decision`, plus other fields defined in the archive skill.
 
 #### Scenario: Universal spine present on every emit
@@ -31,10 +31,15 @@ Per-kind extensions:
 - **WHEN** a workflow command (e.g., `/opsx:propose`, `/opsx:apply`, `/opsx:verify`) writes its JSON
 - **THEN** `kind` equals `"workflow"`; per-command extensions are present per the `orbit-run-summary-emit` capability (which defines the specific extension fields per workflow command)
 
-#### Scenario: Editorial command emit shape
+#### Scenario: Editorial command emit shape (with findings)
 
-- **WHEN** an editorial command (e.g., `/opsx:review`, `/opsx:address-reviews`, `/opsx:audit-drift`, `/opsx:review-external`) writes its JSON
+- **WHEN** an editorial command that has produced findings (`/opsx:review`, `/opsx:address-reviews`, `/opsx:audit-drift`) writes its JSON
 - **THEN** `kind` equals `"editorial"`; per-command extensions include `iteration` (when the command tracks iterations), `findings_summary` (counts by severity), `finding_titles` (array of brief titles), plus command-specific fields documented at `.claude/skills/openspec-<skill>/references/run-summary-schema.md`
+
+#### Scenario: Editorial command emit shape (pre-findings T0 case)
+
+- **WHEN** `/opsx:review-external` writes its T0 JSON (prompt packaged, external findings not yet returned)
+- **THEN** `kind` equals `"editorial"`; per-command extensions include `mode`, `prompt_path`, `target`, `awaiting_findings: true` — and OMIT `findings_summary` and `finding_titles` because no findings exist yet
 
 #### Scenario: Lifecycle command emit shape
 

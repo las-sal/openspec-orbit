@@ -5,7 +5,7 @@
 The following orbit commands SHALL emit `openspec/changes/<name>/.orbit-runs/<command>-<TS>.json` (or `openspec/explore/<name>/.orbit-runs/<command>-<TS>.json` for explore) when invoked. This requirement covers two categories:
 
 - **New emit behavior** (commands that don't emit any run-summary JSON today):
-  - Workflow commands: `/opsx:explore` (named mode only — bare mode does NOT emit), `/opsx:propose`, `/opsx:new`, `/opsx:continue`, `/opsx:ff-change`, `/opsx:apply`, `/opsx:verify`
+  - Workflow commands: `/opsx:explore` (named mode only — bare mode does NOT emit), `/opsx:propose`, `/opsx:new`, `/opsx:continue`, `/opsx:ff`, `/opsx:apply`, `/opsx:verify`
   - `/opsx:review-external` at T0 (when the prompt is packaged, before findings return — today it writes only the `.md` prompt file)
 - **Refined existing emit** (already emits today; this change refines the recommendation logic and aligns with the universal spine from orbit-conventions):
   - Standalone `/opsx:audit-drift` (already documented at `.claude/skills/openspec-audit-drift/references/run-summary-schema.md`)
@@ -49,7 +49,7 @@ kind             enum         "workflow" | "editorial" | "lifecycle"  (always "w
 
 For workflow-kind emits specifically, `kind` SHALL equal `"workflow"`. Per-command extensions (defined in subsequent requirements in this capability) add command-specific state beyond the spine.
 
-Filenames SHALL use the per-command prefix (preserving entry-point provenance): `<command>-<TS>.json`. Propose-shaped variants (`new`, `continue`, `ff-change`) each use their own command-name prefix, NOT `propose-<TS>.json`.
+Filenames SHALL use the per-command prefix (preserving entry-point provenance): `<command>-<TS>.json`. Propose-shaped variants (`new`, `continue`, `ff`) each use their own command-name prefix, NOT `propose-<TS>.json`.
 
 #### Scenario: explore emit includes all 6 spine fields
 - **WHEN** the emit-layer writes `explore-<TS>.json` for a named-mode explore
@@ -72,7 +72,7 @@ Filenames SHALL use the per-command prefix (preserving entry-point provenance): 
 The emit-layer SHALL fire at well-defined moments per command type. Three categories cover the full command surface:
 
 **One-shot commands** — emit ONCE on natural command completion (when the AI completes the command's intended work and is about to return control to the user):
-- `/opsx:propose`, `/opsx:new`, `/opsx:ff-change`, `/opsx:continue`
+- `/opsx:propose`, `/opsx:new`, `/opsx:ff`, `/opsx:continue`
 - `/opsx:verify`
 - `/opsx:audit-drift` standalone (excluding the inline-during-archive case captured in `archive-<TS>.json`)
 - `/opsx:review-external` at T0 (when the prompt is packaged, before findings return)
@@ -83,10 +83,14 @@ The emit-layer SHALL fire at well-defined moments per command type. Three catego
 **Multi-turn conversational commands** — emit at conversation boundaries:
 - `/opsx:explore` (named mode) — emits per `Requirement: Named-mode explore recommendation by maturity` with the timing defined here
 
-A **conversation boundary** for multi-turn conversational commands is defined as ANY of:
-1. AI hands control back to the user without a follow-up question, AND the next user message does not continue the same line of work within the same conversation
-2. User explicitly signals stop or pause ("stop", "pause", "that's it for now", "we'll come back to this later", or equivalent intent)
-3. AI-initiated wrap (AI says "I've captured everything; type `/opsx:propose` when ready" or equivalent intent)
+A **conversation boundary** for multi-turn conversational commands is defined as EITHER of (both rules are operational signals the emit-layer can detect at JSON-write time without requiring future-message inspection):
+
+1. **User explicitly signals stop or pause** — "stop", "pause", "that's it for now", "we'll come back to this later", or equivalent intent
+2. **AI-initiated wrap** — AI says "I've captured everything; type `/opsx:propose <name>` when ready" or equivalent intent (an explicit suggestion of the next workflow step, signalling the conversation is at a natural pause point)
+
+**Canonical orbit UX convention**: to make most natural handoffs become explicit boundaries, when the AI hands control back to the user after a multi-turn conversational command session (such as `/opsx:explore` named-mode), the AI SHOULD include an explicit wrap phrase suggesting the next step (e.g., "type `/opsx:propose <name>` when ready" or "type `/opsx:explore <name>` to continue capturing"). This turns the handoff itself into a rule-2 signal and triggers the emit naturally without requiring the AI to predict future user behavior.
+
+**Known limitation** (accepted tradeoff): if the user closes the conversation without either an explicit stop signal or an AI-initiated wrap (e.g., user simply walks away mid-session), no emit fires for that session. The change's state persists in on-disk artifacts (e.g., `explore.md`), but the `.orbit-runs/` JSON timeline misses the implicit boundary. Capturing the implicit case would require future-message inspection unavailable to the emit-layer at JSON-write time; explicit-signal-only is the operationally simpler tradeoff.
 
 For `/opsx:apply` mid-chunk pause specifically, the same conversation-boundary rules apply — in addition to the explicit chunk-completion trigger.
 
@@ -104,13 +108,17 @@ For `/opsx:apply` mid-chunk pause specifically, the same conversation-boundary r
 - **WHEN** during `/opsx:apply foo` the user says "stopping here for now"
 - **THEN** the emit-layer treats this as a conversation boundary and emits `apply-<TS>.json` with `chunk_complete: false` per the per-chunk-end requirement's rule 2
 
-#### Scenario: Named-mode explore emits at natural conversation end
-- **WHEN** `/opsx:explore foo` has captured N decisions; AI hands control to user with no follow-up question; the conversation does not continue the exploration in subsequent turns
-- **THEN** the emit-layer treats this as a conversation boundary and emits `explore-<TS>.json` with current decision and question counts and recommendation per maturity rules
+#### Scenario: Named-mode explore emits when AI includes wrap phrase on handoff
+- **WHEN** `/opsx:explore foo` has captured N decisions; AI returns control to user with an explicit wrap phrase such as `"type /opsx:propose foo when ready"`
+- **THEN** the emit-layer treats this as a rule-2 (AI-initiated wrap) boundary and emits `explore-<TS>.json` with current decision and question counts and recommendation per maturity rules
 
 #### Scenario: Continuation within a conversation is NOT a boundary
 - **WHEN** during `/opsx:explore foo` the user asks a tangential question, the AI answers, and the user returns to the exploration topic in the same conversation
-- **THEN** the emit-layer does NOT emit during the tangent or upon return; emit only fires when an actual conversation boundary is reached
+- **THEN** the emit-layer does NOT emit during the tangent or upon return; emit only fires when an actual conversation boundary (rule 1 explicit signal, or rule 2 AI-wrap) is reached
+
+#### Scenario: User abandons conversation without explicit signal (known limitation)
+- **WHEN** `/opsx:explore foo` has captured N decisions; AI returns control to user without an explicit wrap phrase; the user does not respond and the conversation effectively ends
+- **THEN** no emit fires for that session. The `openspec/explore/foo/explore.md` artifact retains captured state. The next `/opsx:explore foo` invocation picks up from disk and will emit at its own boundary; the prior session's implicit boundary is not captured in the `.orbit-runs/` timeline
 
 #### Scenario: AI-initiated wrap fires emit
 - **WHEN** during `/opsx:explore foo` the AI says "I've captured everything; type `/opsx:propose foo` when ready"
@@ -142,7 +150,7 @@ When the user requests crystallization during a bare-mode explore (e.g., "give t
 
 1. A new directory `openspec/explore/<name>/` will be created with `explore.md` capturing decisions to date
 2. A `.orbit-runs/explore-<TS>.json` will start the change's audit trail
-3. The change will become visible to `openspec list`, orbit-status, and other consumers
+3. The change will become visible to orbit-status (which scans `openspec/explore/` via its `enumerate_explorations()` function) and any other consumer that scans `openspec/explore/`. Note: upstream `openspec list` does NOT scan `openspec/explore/`; the change appears in `openspec list` only after `/opsx:propose` moves the staging directory to `openspec/changes/<name>/`.
 4. Abandonment after this point requires formal archive/discard, not just deleting the directory
 
 The AI MUST wait for explicit user confirmation before proceeding.
@@ -183,7 +191,7 @@ In each case the leading `/opsx:<verb> <name>` token is the canonical recommenda
 
 ### Requirement: Propose-shaped recommendation logic
 
-The propose-shaped commands `/opsx:propose`, `/opsx:new`, `/opsx:ff-change` SHALL emit `next_recommended: "/opsx:review <name> — proposal artifacts ready; review before apply"` (or equivalent prose containing the same leading `/opsx:review` command).
+The propose-shaped commands `/opsx:propose`, `/opsx:new`, `/opsx:ff` SHALL emit `next_recommended: "/opsx:review <name> — proposal artifacts ready; review before apply"` (or equivalent prose containing the same leading `/opsx:review` command).
 
 `/opsx:continue` SHALL emit a recommendation that depends on artifact completeness:
 
@@ -280,6 +288,15 @@ When verify completes with warnings (passes but with non-blocking findings), the
 
 The classification SHALL happen in the emit-layer; verify itself does not gain marker-dropping or other behaviors (see `Requirement: Emit-layer wraps upstream skills without modifying them`).
 
+**Precedence when multiple fail signals fire simultaneously** (highest precedence first):
+
+1. **Mode ③ (openspec-validate failure)** — if `openspec validate` itself errors, verify cannot meaningfully evaluate impl-vs-spec until the spec is fixable. Mode ③'s recommendation wins over modes ① and ②.
+2. **Mode ① (tasks-incomplete)** — if tasks.md has unchecked items, evaluation is premature regardless of any impl-vs-spec signal. Mode ①'s recommendation wins over mode ②.
+3. **Mode ② (impl-vs-spec gap)** — applies when modes ③ and ① are clean.
+4. **Warn state** — applies on pass with warnings only when none of the failure modes fire.
+
+This precedence directs the user to the root cause first: fix the spec (mode ③) → complete the implementation (mode ①) → resolve impl-vs-spec gaps (mode ②).
+
 **Out of scope**: partial or aborted verify runs (e.g., verify timed out before classifying findings, transient validator failure). These are upstream verify-change concerns; the emit-layer SHALL emit whatever verify-change reports. If verify-change reports incomplete output, the emit-layer SHALL set `next_recommended` to `"Re-run /opsx:verify <name> — prior verify run incomplete (see verify-change output for details)"`.
 
 #### Scenario: Mode-① fail recommends /opsx:apply
@@ -293,6 +310,10 @@ The classification SHALL happen in the emit-layer; verify itself does not gain m
 #### Scenario: Mode-③ fail preserves verbatim validator message
 - **WHEN** `/opsx:verify foo` fails because `openspec validate` itself errors (e.g., malformed spec frontmatter)
 - **THEN** `verify-<TS>.json`'s `next_recommended` text begins with `"Fix artifact validation errors:"` and includes the validator's verbatim error message; orbit-status's tier-1 parse finds no leading slash command and preserves the full text in `reason`
+
+#### Scenario: Multiple fail signals — precedence ③ > ① > ②
+- **WHEN** `/opsx:verify foo` reports BOTH unchecked tasks (mode ① signal) AND `openspec validate` errors (mode ③ signal) simultaneously
+- **THEN** `verify-<TS>.json`'s `next_recommended` follows mode ③ (verbatim validator message), NOT mode ①; the user is directed to fix the spec validation error first, after which a re-run will surface the tasks-incomplete signal
 
 ### Requirement: Review-external T0 multi-step recommendation
 
@@ -328,10 +349,21 @@ T1 (findings returned, `/opsx:address-reviews --from-file` invoked) is the exist
 
 ### Requirement: Audit-drift standalone recommendations
 
-Standalone `/opsx:audit-drift` already emits `audit-drift-<TS>.json` today per `.claude/skills/openspec-audit-drift/references/run-summary-schema.md`. The emit SHALL include the universal spine from `orbit-conventions`'s `Internal-run JSON summary format` (with `kind: "editorial"`) and SHALL set `next_recommended` depending on whether findings were produced:
+Standalone `/opsx:audit-drift` already emits `audit-drift-<TS>.json` today per `.claude/skills/openspec-audit-drift/references/run-summary-schema.md`. The emit SHALL include the universal spine from `orbit-conventions`'s `Internal-run JSON summary format` (with `kind: "editorial"`). The emit-layer recognizes TWO standalone invocation modes — **change-scoped** (`/opsx:audit-drift <name>`) and **project-wide** (`/opsx:audit-drift` with no argument) — each with distinct emit path, `change` value, and recommendation logic:
 
-- **Findings produced**: `"/opsx:address-reviews <name> --from-file <this-json> — N drift(s) detected; resolve before next workflow step"` (the `--from-file` flag becomes optional once openspec-orbit#10 lands and `/opsx:address-reviews` auto-discovers internal JSONs)
-- **No findings (clean)**: the emit-layer SHALL copy `next_recommended` from the most recent prior `.orbit-runs/*.json` for the same change, excluding the just-written audit-drift JSON itself. The `final_assessment` SHALL note "drift check clean; deferring to prior workflow state."
+**Change-scoped standalone** (`/opsx:audit-drift <name>`):
+- Emit path: `openspec/changes/<name>/.orbit-runs/audit-drift-<TS>.json`
+- `change` field: the change name
+- `next_recommended` on findings: `"/opsx:address-reviews <name> --from-file <this-json> — N drift(s) detected; resolve before next workflow step"`
+- `next_recommended` on clean (zero findings): copy from the most recent prior `.orbit-runs/*.json` for the same change, excluding the just-written audit-drift JSON itself. `final_assessment` SHALL note "drift check clean; deferring to prior workflow state."
+
+**Project-wide standalone** (`/opsx:audit-drift` with no argument):
+- Emit path: `openspec/.orbit-runs/audit-drift-<TS>.json` (create the directory if it doesn't exist)
+- `change` field: `null` (no change scope)
+- `next_recommended` on findings: `"/opsx:address-reviews --from-file <this-json> — N drift(s) detected project-wide; resolve before next workflow step"` (no `<change-name>` arg; address-reviews handles project-wide markers from --from-file)
+- `next_recommended` on clean (zero findings): `"No project-wide drifts detected. Run /opsx:audit-drift periodically to catch new drift."` (no prior-workflow defer because project-wide audit-drift has no per-change workflow narrative to defer to). `final_assessment` SHALL note "project-wide drift check clean."
+
+(The `--from-file` flag in both modes becomes optional once openspec-orbit#10 lands and `/opsx:address-reviews` auto-discovers internal JSONs; the JSON-format support is also tracked at openspec-orbit#4.)
 
 Per-command extensions for audit-drift SHALL include:
 
@@ -341,15 +373,23 @@ findings_by_category  object   counts per category
 findings_total        int
 ```
 
-This requirement applies only to **standalone** `/opsx:audit-drift` invocations. Inline audit-drift during `/opsx:archive` is captured in `archive-<TS>.json` per the existing archive emit convention (unchanged).
+This requirement applies only to **standalone** `/opsx:audit-drift` invocations (both change-scoped and project-wide). Inline audit-drift during `/opsx:archive` is captured in `archive-<TS>.json` per the existing archive emit convention (unchanged).
 
-#### Scenario: Audit-drift with findings recommends address-reviews
+#### Scenario: Change-scoped standalone audit-drift with findings recommends address-reviews
 - **WHEN** `/opsx:audit-drift foo` runs and detects 3 drifts
-- **THEN** `audit-drift-<TS>.json` is written with `findings_total: 3` and `next_recommended` beginning with `"/opsx:address-reviews foo --from-file"`
+- **THEN** `openspec/changes/foo/.orbit-runs/audit-drift-<TS>.json` is written with `change: "foo"`, `findings_total: 3`, and `next_recommended` beginning with `"/opsx:address-reviews foo --from-file"`
 
-#### Scenario: Clean audit-drift defers to prior workflow recommendation
+#### Scenario: Change-scoped clean audit-drift defers to prior workflow recommendation
 - **WHEN** `/opsx:audit-drift foo` runs and detects 0 drifts, and the prior latest `.orbit-runs/*.json` for `foo` is `apply-2026-05-21T10-00-00Z.json` with `next_recommended: "/opsx:apply foo — chunk 3 of 5 done"`
 - **THEN** the new `audit-drift-<TS>.json` has `findings_total: 0` and `next_recommended` equal to the verbatim string `"/opsx:apply foo — chunk 3 of 5 done"`, and `final_assessment` notes drift-check-clean + deferral
+
+#### Scenario: Project-wide standalone audit-drift with findings
+- **WHEN** `/opsx:audit-drift` runs with no change argument and detects 2 project-wide drifts
+- **THEN** `openspec/.orbit-runs/audit-drift-<TS>.json` is written with `change: null`, `findings_total: 2`, and `next_recommended` beginning with `"/opsx:address-reviews --from-file"` (no `<change-name>` arg)
+
+#### Scenario: Project-wide clean audit-drift (no prior workflow to defer to)
+- **WHEN** `/opsx:audit-drift` runs with no change argument and detects 0 drifts
+- **THEN** `openspec/.orbit-runs/audit-drift-<TS>.json` is written with `change: null`, `findings_total: 0`, and `next_recommended` reads `"No project-wide drifts detected. Run /opsx:audit-drift periodically to catch new drift."`
 
 #### Scenario: Inline audit-drift during archive unchanged
 - **WHEN** `/opsx:archive foo` runs and the inline audit-drift step produces findings

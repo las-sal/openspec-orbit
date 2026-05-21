@@ -1,0 +1,50 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-21T02:11:34Z",
+  "change": "emit-run-summary-jsons-from-workflow-commands",
+  "kind": "editorial",
+  "iteration": 2,
+  "source": "from_file",
+  "source_file": "openspec/changes/emit-run-summary-jsons-from-workflow-commands/.orbit-runs/external-proposal-2026-05-21T01-39-56Z.md",
+  "source_note": "External-review iter-1 findings from GPT-5 Codex (cross-AI; fresh-context vs Claude Opus 4.7 which authored proposal artifacts AND internal review iter-1). 9 findings: 2 CRITICAL, 5 WARNING, 2 SUGGESTION.",
+  "executed_by": "in_context",
+  "external_reviewer": "GPT-5 Codex",
+  "input_findings_summary": {
+    "count": 9,
+    "by_severity": { "critical": 2, "warning": 5, "suggestion": 2 }
+  },
+  "pushback_verification": "All 9 findings verified against current artifact state at walk-time. Notable pushback on EC1: external AI recommended /opsx:ff as the correct command name; verified via grep (5 hits across fast-forward.md / onboard.md / openspec-onboard SKILL.md) — external AI was correct AND my session-start available-skills indexer showed 'opsx:fast-forward' as a separate drift. Adopted external AI's /opsx:ff name. Zero stale findings — no resolutions suppressed via pushback.",
+  "resolutions": [
+    { "id": "EC1", "classification": "trivial_fix", "action": "Replaced /opsx:ff-change → /opsx:ff (10 occurrences), ff-change-<TS>.json → ff-<TS>.json (2), bare `ff-change` → `ff` (5) across proposal/design/tasks/explore/2 specs (6 files). Preserved SKILL filename `openspec-ff-change/SKILL.md` (filesystem path unchanged). Post-replacement sweep confirmed zero residue + no corruption + validation passes.", "anchoring_root_cause": "Authored using the SKILL name as command name (openspec-ff-change → /opsx:ff-change). Should have read the actual command file." },
+    { "id": "EC2", "classification": "trivial_fix", "action": "Split Audit-drift standalone recommendations requirement into change-scoped vs project-wide sub-cases. Each has distinct emit path (openspec/changes/<name>/.orbit-runs/ vs openspec/.orbit-runs/), change field value (name vs null), and recommendation logic (defer-to-prior vs no-prior-to-defer-to). Added 2 new scenarios for project-wide case; kept existing scenarios for change-scoped.", "anchoring_root_cause": "C4 fix earlier addressed audit-drift refinement but didn't carve out the project-wide variant the existing schema documents." },
+    { "id": "EW1", "classification": "decision_required", "action": "User chose option A (operationalize — drop implicit continuation rule). Conversation-boundary signals collapsed from 3 to 2: rule 1 = explicit user stop/pause, rule 2 = AI-initiated wrap. Added canonical orbit UX convention (AI should include explicit wrap phrase on handoff) and known-limitation note (user-walks-away case loses timeline capture but on-disk artifacts survive). Updated 1 scenario + added 1 new scenario for the known limitation.", "anchoring_root_cause": "My W3 fix introduced rule 1 with the implicit 'next user message does not continue' clause that required future knowledge — unimplementable at JSON-write time." },
+    { "id": "EW2", "classification": "trivial_fix", "action": "orbit-conventions's editorial per-kind extension now marks findings_summary / finding_titles as 'included when findings are present' with explicit call-out that review-external T0 omits them. Split editorial-emit-shape scenario into with-findings vs pre-findings-T0 variants.", "anchoring_root_cause": "C1's unification was too strict for the pre-findings T0 case — required fields that don't exist yet." },
+    { "id": "EW3", "classification": "trivial_fix", "action": "design.md Non-Goal rewritten to draw the right line: capability-spec-level harmonization (out — only orbit-conventions gets a MODIFIED delta) vs SKILL.md-level behavior harmonization (in — task 1.4 adds kind to existing emits). Contradiction with task 1.4 resolved.", "anchoring_root_cause": "S1 fix added task 1.4 (in-scope harmonization) without updating the stale non-goal entry that said harmonization was out-of-scope." },
+    { "id": "EW4", "classification": "trivial_fix", "action": "Task 1.2 expanded to cover 4 schema reference files (added archive-summary-schema.md). Swept proposal.md (2 spots) and design.md (3 spots) updating '3 existing per-skill schema references' → '4', each mention now lists the archive ref explicitly.", "anchoring_root_cause": "C3 + the design narrative cited '3 schema references' (the three named run-summary-schema.md files) and missed that openspec-archive-change has its own archive-summary-schema.md that needed parallel treatment." },
+    { "id": "EW5", "classification": "trivial_fix", "action": "Verified via grep on opsx-status code: orbit-status DOES scan openspec/explore/ (enumerate_explorations() at line 231) but upstream openspec list does NOT (verified empirically — current openspec list output shows only openspec/changes/ entries). Updated crystallization warning consequence #3 to accurately reflect this distinction: 'visible to orbit-status' (kept) + explicit note that openspec list visibility comes only after /opsx:propose moves staging to openspec/changes/.", "anchoring_root_cause": "Warning text drafted without verifying upstream CLI scan behavior; assumed openspec list would see explorations." },
+    { "id": "ES1", "classification": "trivial_fix", "action": "Task 9.6 README link target updated from openspec/conventions/run-summary-emit-schema.md (path eliminated by C2) → openspec/specs/orbit-conventions/spec.md's Internal-run JSON summary format requirement + cross-reference to new orbit-run-summary-emit capability.", "anchoring_root_cause": "C2's cleanup of openspec/conventions/ path references missed task 9.6 (sweep was scoped to group 1 tasks)." },
+    { "id": "ES2", "classification": "trivial_fix", "action": "Added explicit precedence rule to Verify fail-mode recommendations requirement: mode ③ > ① > ② > warn. Rationale: directs user to root cause first (fix spec → complete impl → resolve gaps). Added new scenario for overlapping fail signals.", "anchoring_root_cause": "D13 / Verify fail-modes spec listed cases but didn't address precedence; my own implicit assumption was 'whichever fails first' but the spec didn't formalize it." }
+  ],
+  "resolution_summary": {
+    "resolved": 9,
+    "stale": 0,
+    "deferred": 0,
+    "escalated": 0,
+    "by_classification": {
+      "decision_required": 1,
+      "trivial_fix": 8
+    }
+  },
+  "ripple_flagged_files_aggregate": [
+    "(All ripple effects of the external findings were applied inline during this walk — proposal/design/tasks/explore + both spec files updated. No external ripples remain.)"
+  ],
+  "post_resolution_state": {
+    "openspec_validate": "passes (--strict)",
+    "deltas_total": 14,
+    "deltas_by_capability": { "orbit-run-summary-emit": 13, "orbit-conventions": 1 },
+    "scope_note": "Delta count unchanged from prior iteration; external findings drove refinements (additions to existing requirements, scenario additions, text fixes) rather than structural additions/removals.",
+    "anchoring_audit": "8 of 9 findings traced to anchoring or incompleteness in prior in-context work: EC1 (anchored on SKILL name vs command name), EC2 (C4 missed project-wide variant), EW1 (W3 fix introduced unimplementable rule), EW2 (C1 unification too strict), EW3 (S1 fix contradicted stale non-goal), EW4 (C3 missed 4th schema ref), EW5 (warning text drafted without grep), ES1 (C2 cleanup missed task 9.6). 1 of 9 (ES2) is a true gap (precedence never specified, not an anchoring artifact). This pattern matches openspec-orbit#20's empirical evidence that external review catches what in-context anchoring suppresses."
+  },
+  "final_assessment": "All 9 external findings resolved. The external review validated the orbit-orbit-orbit dogfood discipline: GPT-5 Codex's fresh-context pass caught 8 substantive issues that in-context Claude Opus 4.7 (both author and internal reviewer) had anchored away from. Change validates with --strict; 14 deltas across 2 capabilities.",
+  "next_recommended": "/opsx:apply emit-run-summary-jsons-from-workflow-commands — proposal-mode review cycle complete (internal iter-1 + external iter-1 + 2 address-reviews walks). Ready for implementation. Per the dogfood-posture commitment, no further proposal-mode review iterations are needed unless new substantive concerns surface; the cross-AI loop has been exercised. After apply completes, recommended /opsx:verify, then /opsx:review --as system (and per openspec-orbit#20 evidence, consider /opsx:review-external --as system for the canonical fresh-context system pass before archive)."
+}
