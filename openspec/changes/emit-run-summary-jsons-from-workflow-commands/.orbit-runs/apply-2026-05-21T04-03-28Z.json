@@ -1,0 +1,15 @@
+{
+  "command": "apply",
+  "timestamp": "2026-05-21T04:03:28Z",
+  "change": "emit-run-summary-jsons-from-workflow-commands",
+  "final_assessment": "Completed chunk 7 of 7 (FINAL — Integration verification + docs). All AI-doable apply tasks complete: 38 of 44 tasks done. 6 user-validation tasks (9.1-9.5 + 9.9) intentionally left unchecked — they require post-apply live testing of orbit commands and cross-repo orbit-status integration; per orbit convention these get validated during /opsx:verify and surface as warnings (not blockers) at archive time. README.md updated with new Run-summary JSON emission section; CLAUDE.md assessed (no update needed; existing Persistence layout + skills pointer suffice).",
+  "next_recommended": "/opsx:verify emit-run-summary-jsons-from-workflow-commands — apply phase AI-side complete. Verify will: (a) run upstream verify-change to check tasks-vs-spec coherence; (b) be the natural place for user to also walk through 9.1-9.5 live-tests and 9.9 user-validation. After verify, the chain continues to /opsx:review --as system → /opsx:address-reviews (if findings) → /opsx:archive.",
+  "kind": "workflow",
+  "tasks_completed": 38,
+  "tasks_remaining": 6,
+  "chunk": "7 of 7",
+  "chunk_name": "Integration verification + docs",
+  "chunk_complete": true,
+  "tasks_completed_this_session": 3,
+  "note": "Final chunk. 6 user-validation tasks remain unchecked: 9.1 (live-test propose), 9.2 (live-test apply), 9.3 (live-test verify), 9.4 (cross-repo orbit-status integration test), 9.5 (post-task-1.4 emit-shape verification — verify existing emitters now include intended spine additions), 9.9 (user-validation handoff). These get validated during /opsx:verify per established orbit convention."
+}

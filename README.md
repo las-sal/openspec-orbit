@@ -195,6 +195,14 @@ Three stances that shape every design decision in orbit:
 
 3. **Specs as the ultimate source of truth** — orbit's tooling assumes the spec set is authoritative; code is one realization. A fresh AI handed the curated `openspec/specs/` should reproduce the system. Users who hold the opposite stance still benefit from the editorial reviews and drift audits; `/opsx:distill-specs` (v2) is the opt-in lever for the spec-truth camp specifically.
 
+## Run-summary JSON emission
+
+Every artifact-mutating orbit command writes a `.orbit-runs/<command>-<TS>.json` run-summary at completion (chunk-end for chunked apply; one-shot for everything else). The JSON includes a 6-field **universal spine** — `command`, `timestamp`, `change`, `final_assessment`, `next_recommended`, `kind` (`"workflow"` | `"editorial"` | `"lifecycle"`) — plus per-command extensions specific to the emitter (e.g., apply's `chunk_complete`, verify's `verdict`, review's `findings_summary`).
+
+The spine is defined canonically in `openspec/specs/orbit-conventions/spec.md`'s `Internal-run JSON summary format` requirement. The orbit-authored `orbit-run-summary-emit` capability defines per-command emit triggers and `next_recommended` recommendation rules for each in-scope command.
+
+Downstream consumers (orbit-status, dashboards, CI integrations) read `next_recommended` directly — orbit's own recommendation for "what's next" is the single source of truth across the full command surface, replacing per-consumer synthesis logic.
+
 ## Cross-cutting disciplines
 
 Beyond the three guiding principles above, orbit codifies three cross-cutting **execution disciplines** in the `orbit-conventions` spec. Together they bracket the authoring lifecycle: read-before-reference at authoring time, completeness at modification time, pushback at review time.
