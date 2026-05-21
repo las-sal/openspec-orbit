@@ -1,0 +1,15 @@
+{
+  "command": "apply",
+  "timestamp": "2026-05-21T03:52:18Z",
+  "change": "emit-run-summary-jsons-from-workflow-commands",
+  "final_assessment": "Completed chunk 4 of 7 (Verify with mode classification). 24 of 44 tasks done. openspec-verify-change/SKILL.md gained its first `# Orbit additions` section: emit instructions + verify-pass recommendation (D9, with /opsx:archive in reason) + 3 fail-mode classification (modes ①/②/③ + warn) per D13 + ES2 precedence rule + explicit no-behavior-change note for verify itself (emit-layer is observability shell only). Mode ② routes to /opsx:review --as system --mark, keeping verify upstream-unchanged.",
+  "next_recommended": "/opsx:apply emit-run-summary-jsons-from-workflow-commands — next chunk (5 of 7): Editorial additions — review-external T0 + standalone audit-drift; 7 tasks in groups 6-7",
+  "kind": "workflow",
+  "tasks_completed": 24,
+  "tasks_remaining": 20,
+  "chunk": "4 of 7",
+  "chunk_name": "Verify with mode classification",
+  "chunk_complete": true,
+  "tasks_completed_this_session": 6,
+  "note": "Manual emit per D7."
+}
