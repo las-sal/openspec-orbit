@@ -1,0 +1,73 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-23T20:28:07Z",
+  "change": "lean-overlay-and-add-orbit-onboard",
+  "kind": "editorial",
+  "iteration": 7,
+  "source": "from_review_emit_via_bridge",
+  "source_file": "openspec/changes/lean-overlay-and-add-orbit-onboard/.orbit-runs/review-proposal-2026-05-23T20-06-43Z-as-findings.md",
+  "source_note": "Fresh-context Claude iter-4 review found 5 mechanical residue findings from iter-6 cleanup. 0 CRITICAL, 4 WARNING, 1 SUGGESTION. All trivial/near-trivial; no architectural concerns.",
+  "executed_by": "in_context",
+  "input_findings_summary": {
+    "count": 5,
+    "by_severity": { "critical": 0, "warning": 4, "suggestion": 1 }
+  },
+  "pushback_verification": "All 5 findings verified at walk-time. FF4-1 verified at tasks.md:26 + :56. FF4-2 verified — D-conventions-1 sequence had gap 5. FF4-3 verified — comment vs heading mismatch. FF4-4 verified — orbit-conventions baseline Purpose L5 has old framing verbatim. FF4-5 verified — explore.md D7 heading lacks amendment marker. 0 stale to suppress.",
+  "user_choice_implicit": "All 3 decision-shaped findings applied with sensible defaults aligned with iter-6's option-(b) framing (strict-with-historical-cleanup). FF4-2: added gap-note rather than renumber (preserves audit trail of what was merged). FF4-4: added inline task 1.4 (parallel to task 1.3 pattern of fixing baseline-prose drift in this change). FF4-5: added historical-record annotation to heading (more honest to preservation intent than renaming).",
+  "resolutions": [
+    {
+      "id": "FF4-1",
+      "classification": "trivial_fix",
+      "action": "Used replace_all on tasks.md to substitute 'task 3.6' → 'task 3.5' (2 instances at L26 task 2.3 and L56 task 5.4a). Renumbering residue from iter-6 task 3.5 removal."
+    },
+    {
+      "id": "FF4-2",
+      "classification": "decision_required_lite",
+      "user_choice_default": "Add gap-note (preserves audit trail) rather than renumber (loses historical 'something was merged here' signal)",
+      "action": "Added one-line note at end of design.md item 4: '(Numbering note: item 5 was merged into item 4 during iter-6 cleanup; sequence continues at item 6 below.)'. Preserves the numbering as iter-6 left it; explains the gap for fresh readers."
+    },
+    {
+      "id": "FF4-3",
+      "classification": "trivial_fix",
+      "action": "Updated tasks.md L4 chunk-1 comment from 'Overlay cleanup — delete feedback skill' to 'Overlay cleanup — delete feedback skill + sweep stale spec language' to match Section 1 heading at L16. Also expanded the chunk-1 description note to mention 'baseline-prose stale-text fixes in .claude/ per address-reviews iter-3 FF1 and iter-7 FF4-4' for fuller scope description."
+    },
+    {
+      "id": "FF4-4",
+      "classification": "decision_required_lite",
+      "user_choice_default": "Add inline task 1.4 (option b — parallel to task 1.3 which fixes baseline-prose drift at archive-summary-schema.md). Aligns with iter-6's strict-with-historical-cleanup framing.",
+      "action": "Added new task 1.4 to tasks.md chunk 1: rewrite openspec/specs/orbit-conventions/spec.md:5 Purpose summary to use post-rename 'Distribution model (pegged engine + orbit-owned surface)' framing instead of old '(overlay, not CLI fork)'. Hand-edit required because OpenSpec archive-sync only updates Requirements blocks, not Purpose prose. Tasks: 27 → 28."
+    },
+    {
+      "id": "FF4-5",
+      "classification": "decision_required_lite",
+      "user_choice_default": "Add annotation note to heading (option a — more honest to historical-record intent) rather than rename heading.",
+      "action": "Added italicized parenthetical note after explore.md D7 heading explaining the heading preserves original 2026-05-22 framing while the 2026-05-23 amendment is the standing decision. Points readers to [[orbit-supports-full-openspec-1-3-1]] for the implicit-sync-retention principle and option-b strict-with-historical-cleanup as the justification for heading preservation."
+    }
+  ],
+  "resolution_summary": {
+    "resolved": 5,
+    "stale": 0,
+    "accepted_as_is": 0,
+    "deferred": 0,
+    "escalated": 0,
+    "by_classification": {
+      "trivial_fix": 2,
+      "decision_required_lite": 3
+    }
+  },
+  "ripple_flagged_files_aggregate": [
+    "openspec/changes/lean-overlay-and-add-orbit-onboard/tasks.md (3 edits: replace_all task 3.6→3.5; chunk-1 comment expanded; task 1.4 added)",
+    "openspec/changes/lean-overlay-and-add-orbit-onboard/design.md (1 edit: item 4 numbering note appended)",
+    "openspec/changes/lean-overlay-and-add-orbit-onboard/explore.md (1 edit: D7 heading annotation added)"
+  ],
+  "post_resolution_state": {
+    "openspec_validate": "passes (--strict)",
+    "tasks_total": 28,
+    "tasks_done": 1,
+    "deltas_total": 12,
+    "deltas_by_capability": { "orbit-conventions": "1 RENAMED + 1 MODIFIED + 2 ADDED = 4", "orbit-onboard": "8 ADDED" }
+  },
+  "anchor_break_observation": "iter-7 closed the residue iter-4 fresh-context caught — exactly the cluster-1 pattern. Fresh-context after substantial scope changes catches mechanical-cleanup misses; the in-context author resolves them mechanically because they're not architecturally novel. This 'post-cleanup cleanup' cycle is the expected tail of a deep review process — not a sign of incomplete prior work but of the natural cost of substantial mid-process simplifications.",
+  "final_assessment": "All 5 fresh-context iter-4 findings resolved (2 trivial fixes, 3 decision-lite with sensible defaults applied). Tasks: 27 → 28 (task 1.4 added). Deltas unchanged at 12. Validates --strict.",
+  "next_recommended": "/opsx:apply lean-overlay-and-add-orbit-onboard — proposal definitively converged. 4 review cycles (iter-1 in-context, iter-2 fresh-context, iter-3 --thorough, iter-4 fresh-context) + 2 external Codex passes + 7 address-reviews iterations. 34 total findings resolved + 1 user-pushback correction. Cycle ROI flat; mechanical-residue category is the only thing emerging now. Ready for implementation."
+}

@@ -151,6 +151,8 @@ When #26 lands, it'll have a pinned version to check against (this change provid
 
 4. ~~**MODIFY** `Internal-run JSON summary format`~~ + ~~**MODIFY** (in `orbit-run-summary-emit` capability delta) `Emit scope`~~ — **REMOVED**: both originally proposed to rewrite parenthetical text in baseline specs that prematurely claimed `/opsx:sync-specs` would be "deprecated/removed by openspec-orbit#6". Under [[orbit-supports-full-openspec-1-3-1]], orbit doesn't author requirements about upstream behavior orbit inherits implicitly. The baseline stale text persists as documentation drift to be addressed in a future doc-hygiene change — NOT load-bearing for this change's cluster-2 goals (pegging declaration + onboard skill).
 
+(Numbering note: item 5 was merged into item 4 during iter-6 cleanup; sequence continues at item 6 below.)
+
 **Overlay install model implication** (added in address-reviews iter-2 per EC1; refined per iter-4 EW1-reversal):
 
 6. The overlay install mechanism (`cp -r`) does NOT delete files in the user's target project that don't exist in orbit's source. So orbit deleting `.claude/skills/feedback/` from its repo only ensures that file won't be *added* by overlay; it doesn't actively remove pre-existing copies. README install + update + uninstall sections SHALL document an explicit `rm -rf .claude/skills/feedback` command users run after the overlay copy to keep user-project state consistent with overlay intent. Future install-script work (#26) will automate this; until then, doc-only enforcement.

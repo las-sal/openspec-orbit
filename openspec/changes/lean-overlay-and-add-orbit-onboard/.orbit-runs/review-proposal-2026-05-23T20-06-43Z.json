@@ -1,0 +1,86 @@
+{
+  "command": "review",
+  "timestamp": "2026-05-23T20:06:43Z",
+  "change": "lean-overlay-and-add-orbit-onboard",
+  "kind": "editorial",
+  "mode": "proposal",
+  "iteration": 4,
+  "depth": "full",
+  "flags": {
+    "fresh": true,
+    "parallel": false,
+    "focus": null,
+    "strict": false,
+    "mark": false
+  },
+  "executor": "fresh_context_subagent_claude",
+  "executor_note": "Fresh-context Claude subagent invoked post-iter-6 principle-application cleanup. Purpose: catch mechanical residue from iter-6's removals (orbit-run-summary-emit delta deleted, orbit-conventions MODIFIED Internal-run JSON summary format removed, task 3.5 removed, D-arch-4 simplified, multiple sync-decision parentheticals stripped). Same anchor-break pattern as iter-2 fresh-context: in-context author tends to under-sweep after substantial scope changes.",
+  "passes_run": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+  "findings_summary": {
+    "critical": 0,
+    "warning": 4,
+    "suggestion": 1,
+    "stale_suppressed": 0,
+    "by_dimension": {
+      "completeness": { "critical": 0, "warning": 1, "suggestion": 0 },
+      "correctness": { "critical": 0, "warning": 0, "suggestion": 1 },
+      "coherence": { "critical": 0, "warning": 3, "suggestion": 0 }
+    }
+  },
+  "findings": [
+    {
+      "id": "FF4-1",
+      "severity": "WARNING",
+      "dimension": "coherence",
+      "title": "tasks.md task 2.3 + task 5.4a reference removed task 3.6",
+      "file": "openspec/changes/lean-overlay-and-add-orbit-onboard/tasks.md",
+      "line": "26 and 56",
+      "details": "Iter-6 removed task 3.5 and renumbered former 3.6 → 3.5. Two cross-references to 'task 3.6' survived: L26 task 2.3 ('chunk 3 task 3.6') and L56 task 5.4a ('per task 3.6 anchor points'). Both should read 'task 3.5'.",
+      "recommendation": "s/task 3.6/task 3.5/g in tasks.md (2 instances)."
+    },
+    {
+      "id": "FF4-2",
+      "severity": "WARNING",
+      "dimension": "coherence",
+      "title": "design.md D-conventions-1 numbering skips item 5",
+      "file": "openspec/changes/lean-overlay-and-add-orbit-onboard/design.md",
+      "line": "152-170",
+      "details": "Iter-6 merged old items 4 + 5 into a single consolidated item 4 but never renumbered trailing items. Current sequence: 1, 2, 3, 4, 6, 7, 8, 9, 10, 11 — no item 5. Fresh reader sees missing item and wonders whether something was elided.",
+      "recommendation": "Renumber 6→5 through 11→10. OR accept the gap and add a one-line note '(item 5 merged into item 4 during iter-6 cleanup)'."
+    },
+    {
+      "id": "FF4-3",
+      "severity": "WARNING",
+      "dimension": "coherence",
+      "title": "tasks.md Chunk 1 comment header lost task 1.3 description",
+      "file": "openspec/changes/lean-overlay-and-add-orbit-onboard/tasks.md",
+      "line": "4 (HTML comment block)",
+      "details": "Chunk-1 comment at L4 reads 'Overlay cleanup — delete feedback skill' (one-liner). Section 1 heading at L16 reads 'Overlay cleanup — delete feedback skill + sweep stale spec language' to reflect task 1.3 (archive-summary-schema.md fix). Chunk planner comment under-scopes vs actual chunk content; future implementer reading just the comment block will miss task 1.3.",
+      "recommendation": "Update L4 chunk-1 description to match L16 heading: 'Overlay cleanup — delete feedback skill + sweep stale spec language'."
+    },
+    {
+      "id": "FF4-4",
+      "severity": "SUGGESTION",
+      "dimension": "correctness",
+      "title": "orbit-conventions baseline Purpose (L5) still names old `Distribution model — overlay, not CLI fork` verbatim",
+      "file": "openspec/specs/orbit-conventions/spec.md",
+      "line": 5,
+      "details": "Baseline Purpose enumerates 'the **distribution model** (overlay, not CLI fork)' — verbatim the OLD requirement title this change RENAMES. The delta has no Purpose-section edit; after archive sync the renamed Requirement title and the Purpose summary will textually disagree (OpenSpec archive-sync only updates Requirements blocks, not Purpose prose). Analogous to but distinct from the known stale `/opsx:sync-specs deprecated` bullet in orbit-run-summary-emit baseline that IS deliberately documented as known-issue in design.md item 4. This Purpose-line drift was not flagged in any prior review iteration and isn't in design.md's documented-known-issues list.",
+      "recommendation": "Either (a) add to design.md item 4 'Baseline-language drift deferred' a second bullet calling out `orbit-conventions/spec.md:5 Purpose summary` as a sibling known-issue, OR (b) add a small task 1.4 fixing it inline (parallel to task 1.3 which fixes baseline prose at archive-summary-schema.md:18). Option (b) is the cleaner parallel."
+    },
+    {
+      "id": "FF4-5",
+      "severity": "WARNING",
+      "dimension": "coherence",
+      "title": "explore.md D7 heading still singles out sync as co-decision after iter-6 simplification",
+      "file": "openspec/changes/lean-overlay-and-add-orbit-onboard/explore.md",
+      "line": 52,
+      "details": "D7's heading still reads 'D7: Q-peg-4 — delete feedback, keep openspec-sync-specs'. Iter-6's principle-application explicitly stopped authoring positive decisions about sync (iter-6 cleanup id `iter-6-7` rewrote design.md D-arch-4 heading from analogous title to 'Delete feedback skill from overlay'). The body has the 2026-05-23 amendment but the HEADING still elevates 'keep openspec-sync-specs' as a co-equal decision — exactly the special-case framing iter-6 removed elsewhere.",
+      "recommendation": "Either (a) accept under 'explore.md is historical record per option (b)' but add a one-line note at the heading saying 'title preserves original framing — see amendment below for standing decision'; or (b) update heading to 'D7: Q-peg-4 — delete feedback skill' matching iter-6 design.md D-arch-4 rename. (a) is more honest to the historical-record intent."
+    }
+  ],
+  "pushback_verification": "All 5 findings verified at review-time by in-context author via grep. FF4-1 verified at tasks.md:26 and :56. FF4-2 verified via grep '^[0-9]+\\.' in design.md showing gap. FF4-3 verified by reading tasks.md L4 + L16 — confirmed mismatch. FF4-4 verified by reading orbit-conventions baseline L5 — confirmed verbatim old title in Purpose. FF4-5 verified at explore.md:52. 0 stale to suppress.",
+  "anchor_break_observation": "Fresh-context Claude iter-4 caught exactly the kind of mechanical residue iter-6 in-context cleanup tends to introduce: renumbering misses, task-cross-reference misses, heading-vs-body drift, baseline-prose drift orthogonal to spec-delta scope. None of these are architectural issues — they're cleanup-after-cleanup residue. The cluster-1 pattern holds: each fresh-context pass after substantial scope changes catches ~5 mechanical findings (cluster-1 emit change fresh-context iter-1 also found 5).",
+  "final_assessment": "0 CRITICAL — proposal converged. 4 WARNING + 1 SUGGESTION are mechanical residue from iter-6 cleanup, exactly the kind of 'known residue MUST NOT be left for downstream review' that the change-completeness discipline targets. None block /opsx:apply; all are 30-second fixes.",
+  "next_recommended": "/opsx:address-reviews lean-overlay-and-add-orbit-onboard — walk 5 findings (all trivial or near-trivial). Then proceed to /opsx:apply. Cycle ROI definitively flat at the architectural level; this final fresh-context pass surfaced only mechanical-cleanup residue."
+}

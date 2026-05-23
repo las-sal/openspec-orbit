@@ -51,6 +51,8 @@ Rewrite the opening of CLAUDE.md and README to position orbit as "a workflow too
 
 ### D7: Q-peg-4 — delete `feedback`, keep `openspec-sync-specs`
 
+*(Note: this heading preserves the original 2026-05-22 framing of D7 as a two-decision item. The 2026-05-23 amendment below reverses the "keep openspec-sync-specs" framing as a per-decision call: under [[orbit-supports-full-openspec-1-3-1]], sync-specs retention is implicit, not an orbit decision. Treat the amendment as the standing decision; the heading is historical record per option-b strict-with-historical-cleanup.)*
+
 **`feedback`** (truly unmodified upstream): DELETE from overlay. Description: "Collect and submit user feedback about OpenSpec with context enrichment and anonymization." Sends feedback upstream to Fission-AI. Orbit only references it from the soon-to-be-replaced upstream `openspec-onboard` skill. For pegged orbit users, sending feedback upstream serves orbit's mission near-zero.
 
 **`openspec-sync-specs`** (truly unmodified upstream): KEEP in overlay. It's a primitive used by orbit's archive flow via subagent.
