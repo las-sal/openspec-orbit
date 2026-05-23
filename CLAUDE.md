@@ -1,6 +1,8 @@
 # CLAUDE.md — openspec-orbit
 
-This is the source repository for [openspec-orbit](https://github.com/las-sal/openspec-orbit), an opinionated `.claude/` overlay on `@fission-ai/openspec`. The overlay adds editorial review, drift audit, and capture layers on top of upstream OpenSpec.
+This is the source repository for [openspec-orbit](https://github.com/las-sal/openspec-orbit), a workflow tool that owns the `.claude/` surface (skills, commands, supporting docs) and uses `@fission-ai/openspec` at a pinned version (currently **`@fission-ai/openspec@1.3.1`**) as a CLI engine. Orbit ships its own editorial review, drift audit, and capture layers as part of that surface; the upstream CLI binary is unchanged and version-pegged.
+
+Orbit is NOT a fork, NOT an automatic-update overlay, and NOT a thin augmentation of upstream. Treat the pegged upstream version as a deliberate dependency — upstream improvements after 1.3.1 do not auto-propagate; a version upgrade is its own deliberate change proposal.
 
 The repo dogfoods orbit's own conventions: changes to orbit are themselves authored as openspec changes (see `openspec/changes/`), reviewed with the very review commands orbit ships, and archived via `/opsx:archive`.
 

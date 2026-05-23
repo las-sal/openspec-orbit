@@ -15,7 +15,7 @@ This schema inherits the 6-field **universal spine** from `orbit-conventions`'s 
 
 The schema below documents per-command extensions ADDED to that spine (`archive_path`, `audit`, `unresolved_markers`, `user_decision`, `sync_specs`, `warnings`). Per-command extensions are archive-specific state.
 
-**Note on `sync_specs`** (transitional): this field persists from pre-#6 architecture. `openspec-orbit#6` will deprecate `/opsx:sync-specs` entirely; at that point `sync_specs` may be removed or repurposed in a follow-up change.
+**Note on `sync_specs`**: this field reports the result of orbit's archive flow invoking the `openspec-sync-specs` upstream primitive (per orbit-conventions `Distribution model — pegged engine + orbit-owned surface`).
 
 ## Schema
 

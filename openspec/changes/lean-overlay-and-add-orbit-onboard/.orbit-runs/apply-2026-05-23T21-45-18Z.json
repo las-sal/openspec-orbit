@@ -1,0 +1,24 @@
+{
+  "command": "apply",
+  "timestamp": "2026-05-23T21:45:18Z",
+  "change": "lean-overlay-and-add-orbit-onboard",
+  "kind": "workflow",
+  "chunk": "2 of 5",
+  "chunk_name": "Narrative reframe (CLAUDE.md + README opening)",
+  "chunk_complete": true,
+  "tasks_completed": 8,
+  "tasks_remaining": 20,
+  "user_validation_remaining": 3,
+  "tasks_completed_this_session": 7,
+  "tasks_completed_this_chunk": ["2.1", "2.2", "2.3"],
+  "files_changed": [
+    "CLAUDE.md (rewrote opening paragraphs L1-5: post-pegging framing + pinned-version mention + NOT-fork/NOT-overlay/NOT-augmentation contrast)",
+    "README.md (rewrote opening L1-3: post-pegging framing + pinned version)",
+    "README.md (rewrote 'What this is' section L42-54: post-pegging framing + pinned-version dependency note + forward-ref to Pegging strategy section)",
+    "README.md L225 (CLAUDE.md snippet for adopters: post-pegging reframe)",
+    "README.md L900 (install section opening: post-pegging reframe + forward-ref to Pegging strategy)",
+    "README.md L935 (idempotent-overlay note: clarified under pegging)"
+  ],
+  "final_assessment": "Chunk 2 complete. Narrative reframe applied across CLAUDE.md + README opening + adopter-snippet + install-section opening. Post-pegging framing positions orbit as workflow tool owning .claude/ surface + using openspec CLI as pinned engine. NOT-fork/NOT-overlay/NOT-augmentation contrast added in 3 places to prevent future confusion. Pinned version (@fission-ai/openspec@1.3.1) cited in opening of both files. Forward-references to 'Pegging strategy' section added — that section gets created in chunk 3 task 3.1.",
+  "next_recommended": "/opsx:apply lean-overlay-and-add-orbit-onboard — next chunk: Pegging declaration + README install corrections (knock-on from #6 body)"
+}

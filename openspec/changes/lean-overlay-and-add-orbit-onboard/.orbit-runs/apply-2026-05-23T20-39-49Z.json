@@ -1,0 +1,21 @@
+{
+  "command": "apply",
+  "timestamp": "2026-05-23T20:39:49Z",
+  "change": "lean-overlay-and-add-orbit-onboard",
+  "kind": "workflow",
+  "chunk": "1 of 5",
+  "chunk_name": "Overlay cleanup — delete feedback skill + sweep stale spec language",
+  "chunk_complete": true,
+  "tasks_completed": 5,
+  "tasks_remaining": 23,
+  "user_validation_remaining": 3,
+  "tasks_completed_this_session": 4,
+  "tasks_completed_this_chunk": ["1.1", "1.2", "1.3", "1.4"],
+  "files_changed": [
+    ".claude/skills/feedback/ (DELETED)",
+    ".claude/skills/openspec-archive-change/references/archive-summary-schema.md (rewrote line 18 sync_specs framing)",
+    "openspec/specs/orbit-conventions/spec.md (Purpose L5 rewritten: post-rename Distribution model framing + added upstream-version-pinning + overlay-file-disposition references)"
+  ],
+  "final_assessment": "Chunk 1 complete. Deleted feedback skill (no orbit-mission value per orbit-conventions Overlay file disposition not-shipped category). Cleaned 2 baseline-prose stale-text instances (archive-summary-schema.md:18 + orbit-conventions Purpose L5) — both reflected post-rename + post-pegging framing. Sanity sweep verified no orbit-shipped file references the deleted feedback SKILL.",
+  "next_recommended": "/opsx:apply lean-overlay-and-add-orbit-onboard — next chunk: Narrative reframe (CLAUDE.md + README opening, sweep overlay terminology)"
+}

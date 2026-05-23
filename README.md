@@ -1,6 +1,6 @@
 # openspec-orbit
 
-An `.claude/` overlay for [@fission-ai/openspec](https://github.com/Fission-AI/OpenSpec) that bakes a tested review-and-capture workflow into spec-driven development.
+A workflow tool that owns the `.claude/` surface (skills, commands, supporting docs) and uses [@fission-ai/openspec](https://github.com/Fission-AI/OpenSpec) at a pinned version (currently **`@fission-ai/openspec@1.3.1`**) as a CLI engine. orbit ships editorial review, drift audit, and capture layers as part of its `.claude/` surface; the upstream CLI binary is unchanged and version-pegged.
 
 > **Status**: v1 design exploration. Command/skill sketches complete; implementation pending. Repo currently contains design records under `openspec/changes/bootstrap-openspec-orbit/`.
 
@@ -41,17 +41,19 @@ An `.claude/` overlay for [@fission-ai/openspec](https://github.com/Fission-AI/O
 
 ## What this is
 
-orbit is **not** a fork of the OpenSpec CLI. It's a downstream overlay that sits next to your project's existing `.claude/` directory after `openspec init` has run. It overrides/extends specific opsx skills and adds new ones — the CLI binary is unchanged.
+orbit is a workflow tool with its own `.claude/` surface. It uses `@fission-ai/openspec` at a specific pinned version (currently `1.3.1`) as a CLI engine — the upstream CLI binary is unchanged. orbit is NOT a fork, NOT an automatic-update overlay, and NOT a thin augmentation; it's an opinionated tool that shares concepts with upstream OpenSpec but ships its own surface.
 
-The overlay adds four new opsx commands and modifies three existing ones to bake in disciplines that have been working ad-hoc across real projects:
+orbit's `.claude/` surface adds four new opsx commands and modifies several upstream skills to bake in disciplines that have been working ad-hoc across real projects:
 
 - **Editorial review passes** that complement upstream's structural `verify-change`
-- **A drift audit** that catches the gaps `sync-specs` doesn't (the lesson: delta-driven sync is necessary but not sufficient)
+- **A drift audit** that catches gaps a pure delta-sync doesn't (the lesson: delta-driven sync is necessary but not sufficient)
 - **A formal marker convention** (`@review:`) for inline review notes
 - **External-AI handoff packaging** so the cross-AI review cycle has no copy-paste friction
 - **An exploration capture layer** so think-mode work becomes durable design records
 
-orbit is developed with the discipline that *if* it were ever upstreamed, the diff should read like a contributor's PR — not like two products mashed together. See [`openspec/changes/bootstrap-openspec-orbit/explore.md`](./openspec/changes/bootstrap-openspec-orbit/explore.md) for the full set of guiding principles and decisions.
+The pinned upstream version is a deliberate dependency — orbit users do NOT receive upstream improvements automatically; a version upgrade is its own deliberate change proposal. See [Pegging strategy](#pegging-strategy) under installation for details.
+
+orbit is developed with the discipline that *if* it were ever upstreamed at a major-version boundary, individual orbit additions could read like a contributor's PR. But forward-compatibility with upstream is not a goal under the current pegging strategy. See [`openspec/changes/bootstrap-openspec-orbit/explore.md`](./openspec/changes/bootstrap-openspec-orbit/explore.md) for the full set of guiding principles and decisions.
 
 ---
 
@@ -220,7 +222,7 @@ If you want to reinforce orbit's disciplines at the project level (recommended),
 ```markdown
 ## Working with orbit
 
-This project uses [openspec-orbit](https://github.com/las-sal/openspec-orbit), an opinionated `.claude/` overlay on `@fission-ai/openspec`. Orbit codifies three disciplines worth reinforcing here, one for each phase of authoring work:
+This project uses [openspec-orbit](https://github.com/las-sal/openspec-orbit), a workflow tool that owns the `.claude/` surface and uses `@fission-ai/openspec` (currently pinned at v1.3.1) as a CLI engine. Orbit codifies three disciplines worth reinforcing here, one for each phase of authoring work:
 
 **Read-before-reference (authoring-time)**. When you generate code, tests, specs, or documentation that names a specific construct in this codebase — a function, type, interface, field, file path, spec requirement, CLI flag — read the actual definition first. Use `Read`, `grep`, or `openspec instructions` as appropriate. Do NOT assume the shape based on common patterns or training-data conventions. If you can't verify the reference, ask or flag with `@review:`; never invent a plausible-looking reference and proceed silently. Conceptual reasoning (architectural patterns, design style) does not require this verification — the discipline kicks in when a specific named construct enters the output.
 
@@ -895,7 +897,9 @@ Plus `/opsx:distill-specs` (canonical-spec hygiene — periodic curation toward 
 
 ## Installation
 
-orbit is a **`.claude/` overlay** on `@fission-ai/openspec`. You install upstream OpenSpec first, then drop orbit's files in on top. The upstream CLI binary is unchanged; orbit's behavior is the markdown content under `.claude/`.
+orbit owns the `.claude/` surface (skills + commands + supporting docs); it uses upstream `@fission-ai/openspec` **at a pinned version** (currently **`1.3.1`**) as a CLI engine. Install upstream OpenSpec first at the pinned version, then drop orbit's `.claude/` files on top. The upstream CLI binary is unchanged; orbit's behavior is the markdown content under `.claude/`.
+
+See [Pegging strategy](#pegging-strategy) below for the rationale and upgrade discipline.
 
 ### Prerequisites
 
@@ -930,7 +934,7 @@ This:
 - **Overwrites the three corresponding slash command bodies** (`.claude/commands/opsx/explore.md`, `propose.md`, `archive.md`) the same way.
 - **Leaves the other 8 upstream `openspec-*` skills + `feedback` untouched.**
 
-The overlay is **idempotent** — re-running it picks up newer orbit versions without breaking anything (assuming upstream hasn't changed shape underneath you; see "Updating orbit").
+The overlay copy is **idempotent** — re-running it picks up newer orbit versions without breaking anything, as long as you keep upstream pinned at orbit's required version (see [Pegging strategy](#pegging-strategy)). Upgrading upstream beyond the pinned version is a separate, deliberate event that may require a coordinated orbit version-upgrade change.
 
 ### 3. (Recommended) Add the orbit discipline reminder to your CLAUDE.md
 
