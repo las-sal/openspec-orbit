@@ -21,12 +21,12 @@ Orbit is infrastructure for the user's real engineering project (homeENV); ship 
 
 **Non-Goals:**
 
-- **Option 2 work** — dropping the `# Orbit additions` pattern as a discipline; orbit's skills becoming purely "orbit's skills" without the upstream-derived layering annotation. Tracked as the next explore cycle.
+- **Option 2 work** — dropping the `# Orbit additions` pattern as a discipline; orbit's skills becoming purely "orbit's skills" without the upstream-derived layering annotation. Tracked as [openspec-orbit#27](https://github.com/las-sal/openspec-orbit/issues/27) for a future explore/change cycle.
 - **Option 3/4** — hard-forking or replacing the upstream CLI binary. Reserved for when the CLI contract becomes painful (it isn't yet).
 - **Install script with version-check enforcement** — tracked as [#26](https://github.com/las-sal/openspec-orbit/issues/26). Doc-only pin is sufficient for now.
 - **Interactive guided tour for orbit-onboard** — over-built for current audience (primarily AI sessions + future-self). Future enhancement if reference-leaning proves insufficient.
 - **Upstream version upgrade (>1.3.1)** — explicitly deferred. Will be a deliberate, separately-proposed change when upstream evolves in a way that earns the upgrade-and-port cost.
-- **Renaming orbit-authored skills from `openspec-*` to `orbit-*`** — if/when it happens, do it all at once in its own change; don't partially rename now.
+- **Renaming orbit-authored skills from `openspec-*` to `orbit-*`** — if/when it happens, do it all at once in its own change; don't partially rename now. Tracked as [openspec-orbit#28](https://github.com/las-sal/openspec-orbit/issues/28).
 - **Refactoring orbit's archive flow to use `openspec archive` CLI sync absorption** — current pattern (sync-specs subagent + manual `mv`) works and is not deviating from upstream behavior; no follow-up issue needed.
 
 ## Decisions
@@ -143,11 +143,21 @@ When #26 lands, it'll have a pinned version to check against (this change provid
 
 2. **ADD** `Upstream version pinning` — codify that orbit declares + enforces (doc-only for now) a specific pinned upstream version. Scenarios cover: version declared in CLAUDE.md + README; install-time check is future work tracked elsewhere; version-upgrade is a deliberate change-proposal event.
 
-3. **ADD** `Overlay file disposition` — codify the rule for what files orbit ships in `.claude/`. Three categories:
+3. **ADD** `Overlay file disposition` — codify the rule for what files orbit ships in `.claude/` (both skills AND commands per address-reviews iter-2 EW3). Four categories:
    - **Orbit-authored** (full ownership): orbit ships the file, no upstream-derived content
    - **Orbit-modified with `# Orbit additions`** (current pattern for some skills): orbit ships upstream body + appended additions (this pattern is transitional under Option 2)
    - **Upstream-required primitive** (kept verbatim because orbit depends on it as a callable primitive): e.g., `openspec-sync-specs`
-   - **NOT shipped**: pure-upstream files that don't add orbit value and orbit doesn't depend on (e.g., `feedback` — removed)
+   - **NOT shipped**: pure-upstream files that don't add orbit value and orbit doesn't depend on (e.g., `feedback` — removed); also user-callable command files for primitives that orbit retains but does not expose as a user surface (e.g., `.claude/commands/opsx/sync.md` — corresponds to the `openspec-sync-specs` primitive; user-callable command pruned, primitive skill kept)
+
+**Additional MODIFICATIONS** (added in address-reviews iter-2 per EW1):
+
+4. **MODIFY** `Internal-run JSON summary format` — the per-kind extensions list previously claimed `sync_specs` field was "transitional, persists from pre-#6 architecture; #6 will deprecate/remove `/opsx:sync-specs` entirely". Under pegging (D-arch-1), #6 closes differently; sync-specs is retained as a primitive. Rephrase the parenthetical to describe the current/permanent state rather than the obsolete removal expectation.
+
+5. **MODIFY** (in `orbit-run-summary-emit` capability delta) `Emit scope` — the list of commands NOT emitting JSON previously said `/opsx:sync-specs` was "deprecated upstream; slated for removal by openspec-orbit#6". Replace with "primitive only under pegging strategy; used by orbit's archive flow via subagent; not exposed as a user-callable command (sync.md pruned)".
+
+**Overlay install model implication** (added in address-reviews iter-2 per EC1):
+
+6. The overlay install mechanism (`cp -r`) does NOT delete files in the user's target project that don't exist in orbit's source. So orbit deleting `.claude/skills/feedback/` and `.claude/commands/opsx/sync.md` from its repo only ensures those files won't be *added* by overlay; it doesn't actively remove pre-existing copies. README install + update + uninstall sections SHALL document explicit `rm` commands users run after the overlay copy to keep user-project state consistent with overlay intent. Future install-script work (#26) will automate this; until then, doc-only enforcement.
 
 ## Risks / Trade-offs
 

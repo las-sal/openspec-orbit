@@ -35,12 +35,17 @@ The orbit-authored `openspec-onboard` SKILL.md body SHALL contain exactly 5 sect
 
 ### Requirement: Setup verification section
 
-The Setup verification section SHALL check that orbit is correctly installed and the upstream CLI matches orbit's pinned version.
+The Setup verification section SHALL check that orbit is correctly installed and the upstream CLI matches orbit's pinned version. Verification SHALL be based on stable post-install artifacts only — NOT on workflow-state directories that may not exist on a fresh install.
 
-#### Scenario: Verify overlay applied
+#### Scenario: Verify overlay applied via stable post-install artifacts
 
 - **WHEN** the Setup verification section executes
-- **THEN** it confirms presence of orbit-authored skills (e.g., checks `.claude/skills/openspec-review/SKILL.md` exists) and at least one orbit-specific directory (e.g., `openspec/lenses/` or `openspec/explore/`)
+- **THEN** it confirms presence of orbit-authored skills + orbit-authored commands that are present immediately after a successful overlay install: at minimum `.claude/skills/openspec-review/SKILL.md`, `.claude/skills/openspec-audit-drift/SKILL.md`, `.claude/commands/opsx/review.md`, `.claude/commands/opsx/address-reviews.md`; verification does NOT depend on `openspec/lenses/` or `openspec/explore/` (those are workflow-state, created later by first use, and a correct install may have neither)
+
+#### Scenario: Verify pruned upstream files are absent
+
+- **WHEN** the Setup verification section executes
+- **THEN** it confirms absence of upstream files orbit explicitly prunes from the overlay: at minimum `.claude/skills/feedback/` and `.claude/commands/opsx/sync.md` (per orbit-conventions `Overlay file disposition` for the NOT-shipped category); a correct install has these absent after the user runs the documented post-overlay-copy prune step
 
 #### Scenario: Verify upstream version matches pin
 
@@ -49,8 +54,8 @@ The Setup verification section SHALL check that orbit is correctly installed and
 
 #### Scenario: Verification failures are informational
 
-- **WHEN** the user's installation has issues (overlay incomplete, version mismatch)
-- **THEN** the skill reports findings clearly and recommends fixes; the skill does NOT auto-repair or auto-install
+- **WHEN** the user's installation has issues (overlay incomplete, version mismatch, prune step not run)
+- **THEN** the skill reports findings clearly and recommends fixes (including pointing to README's prune steps if pruned files are still present); the skill does NOT auto-repair or auto-install
 
 ### Requirement: Identity statement section
 

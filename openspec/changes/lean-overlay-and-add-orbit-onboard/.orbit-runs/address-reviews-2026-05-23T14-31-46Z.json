@@ -1,0 +1,85 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-23T14:31:46Z",
+  "change": "lean-overlay-and-add-orbit-onboard",
+  "kind": "editorial",
+  "iteration": 2,
+  "source": "from_file",
+  "source_file": "openspec/changes/lean-overlay-and-add-orbit-onboard/.orbit-runs/external-proposal-2026-05-23T14-06-15Z.md",
+  "source_note": "External Codex (GPT-5 Codex 2026-05-23) proposal-mode iter-1 findings. 7 findings: 2 CRITICAL, 3 WARNING, 2 SUGGESTION. All findings verified actionable (no staleness). Codex caught real in-context anchoring residue — particularly EC1 (install-vs-repo-state gap) and EC2 (command file vs skill file distinction).",
+  "executed_by": "in_context",
+  "input_findings_summary": {
+    "count": 7,
+    "by_severity": { "critical": 2, "warning": 3, "suggestion": 2 }
+  },
+  "pushback_verification": "All 7 external findings verified against current artifact + file state at walk-time. EW1 verified: 3 baseline specs (orbit-run-summary-emit:23, orbit-conventions:207, orbit-archive-modifications:68) still reference #6 sync-specs removal language; .claude/commands/opsx/sync.md still ships. EC1 verified: overlay cp -r model doesn't delete target-only files. EC2 verified: .claude/commands/opsx/onboard.md still has upstream Phase 1-8 + openspec new change content. EW2 verified against orbit-onboard spec Setup verification scenarios. EW3 verified against orbit-conventions Overlay file disposition requirement. ES2 verified: design.md:146 said 'Three categories' then listed 4. No stale findings to suppress.",
+  "resolutions": [
+    {
+      "id": "EW1",
+      "classification": "decision_required",
+      "user_choice": "Primitive-only (sync user-callable command deleted; openspec-sync-specs skill primitive kept)",
+      "action": "Multi-part resolution. (a) Added task 1.2: delete .claude/commands/opsx/sync.md from overlay. (b) Added MODIFIED Internal-run JSON summary format requirement to orbit-conventions delta — full requirement copy with the sync_specs parenthetical rephrased from '#6 will deprecate/remove' to 'retained under pegging strategy per Distribution model'. (c) Created new orbit-run-summary-emit delta file with MODIFIED Emit scope requirement — full requirement copy with the /opsx:sync-specs bullet rephrased from 'deprecated upstream; slated for removal by #6' to 'primitive only under pegging strategy; user-callable command sync.md pruned'. (d) Updated proposal.md Modified Capabilities to add orbit-run-summary-emit + extra orbit-conventions modification. (e) Updated design.md with additional MODIFY items (4 and 5) documenting these spec changes."
+    },
+    {
+      "id": "EC1",
+      "classification": "decision_required",
+      "user_choice": "Documented `rm` commands in README",
+      "action": "Added task 3.6: document explicit `rm -rf .claude/skills/feedback` and `rm -f .claude/commands/opsx/sync.md` commands in README install, update, and uninstall sections. Rationale: overlay cp -r doesn't delete target-only files. Updated task 3.4 reference to fresh-sandbox verification asserting absence. Added install-model implication (#6 in design.md) explaining the overlay model gap and the doc-only enforcement pending install-script #26. Updated orbit-conventions Overlay file disposition Not-shipped scenario to note absence-in-overlay is necessary but not sufficient; README must document rm steps."
+    },
+    {
+      "id": "EC2",
+      "classification": "decision_required",
+      "user_choice": "Duplicate content — match existing opsx command pattern",
+      "action": "Rewrote task 4.7: instead of 'verify .claude/commands/opsx/onboard.md correctly resolves' (assumption-based), now explicitly 'Rewrite .claude/commands/opsx/onboard.md with the same 5-section orbit-authored content as the new SKILL.md (per the existing opsx-command pattern of duplicate-content — see propose.md for reference)'. Added grep-verification for old guided-tour residue (`openspec new change`, `Phase 4`, `do real work in their codebase`)."
+    },
+    {
+      "id": "EW2",
+      "classification": "trivial_fix",
+      "action": "Rewrote orbit-onboard spec `Setup verification section` requirement scenarios. Replaced 'at least one orbit-specific directory (e.g., openspec/lenses/ or openspec/explore/)' with stable post-install artifacts: .claude/skills/openspec-review/SKILL.md, .claude/skills/openspec-audit-drift/SKILL.md, .claude/commands/opsx/review.md, .claude/commands/opsx/address-reviews.md. Added new scenario `Verify pruned upstream files are absent` to assert absence of .claude/skills/feedback/ and .claude/commands/opsx/sync.md per the EC1 prune-step pattern."
+    },
+    {
+      "id": "EW3",
+      "classification": "decision_required",
+      "user_choice": "Expand to cover commands too",
+      "action": "Added 2 new scenarios to orbit-conventions Overlay file disposition requirement: `Commands follow the same 4-category framework` (enumerates orbit-authored vs orbit-modified vs upstream-required-primitive vs not-shipped for command files, with examples mapping current commands to categories) and `Command-file disposition documented in the same change as a removal or addition` (analogous to per-skill disposition rule, with rm-step requirement for pruned commands)."
+    },
+    {
+      "id": "ES1",
+      "classification": "trivial_fix",
+      "action": "Filed 2 GH issues with full context: [openspec-orbit#27](https://github.com/las-sal/openspec-orbit/issues/27) for Option 2 (drop `# Orbit additions` pattern) at P2, and [openspec-orbit#28](https://github.com/las-sal/openspec-orbit/issues/28) for the global `openspec-*` → `orbit-*` rename at P3. Both reference the lean-overlay-and-add-orbit-onboard change as the predecessor that declares the pegging strategy. Updated design.md Non-Goals to reference #27 and #28 (replacing 'tracked as next explore cycle' and 'in its own change' language). Added task 5.7 (marked done) documenting the filing in tasks.md."
+    },
+    {
+      "id": "ES2",
+      "classification": "trivial_fix",
+      "action": "Edit folded into the larger D-conventions-1 rewrite in design.md (which also added the new MODIFY items 4-5 and the install-model implication item 6 per EW1+EC1). The 'Three categories:' phrase was replaced with 'Four categories:' in the rewritten paragraph."
+    }
+  ],
+  "resolution_summary": {
+    "resolved": 7,
+    "stale": 0,
+    "already_resolved": 0,
+    "deferred": 0,
+    "escalated": 0,
+    "by_classification": {
+      "trivial_fix": 3,
+      "decision_required": 4
+    }
+  },
+  "ripple_flagged_files_aggregate": [
+    "openspec/changes/lean-overlay-and-add-orbit-onboard/tasks.md (4 edits: chunk 1 expanded with 1.2 sync.md delete + 1.3 sweep updated; chunk 3 added 3.6 rm docs; task 4.7 rewritten; task 5.7 added)",
+    "openspec/changes/lean-overlay-and-add-orbit-onboard/specs/orbit-conventions/spec.md (3 additions: MODIFIED Internal-run JSON summary format added; Overlay file disposition Not-shipped scenario updated with overlay model note; 2 new scenarios for commands)",
+    "openspec/changes/lean-overlay-and-add-orbit-onboard/specs/orbit-run-summary-emit/spec.md (NEW file — adds MODIFIED Emit scope requirement to remove #6-removal language)",
+    "openspec/changes/lean-overlay-and-add-orbit-onboard/specs/orbit-onboard/spec.md (1 edit: Setup verification section rewritten with stable post-install artifacts + new absence-verification scenario)",
+    "openspec/changes/lean-overlay-and-add-orbit-onboard/proposal.md (1 edit: Modified Capabilities expanded)",
+    "openspec/changes/lean-overlay-and-add-orbit-onboard/design.md (1 large edit: D-conventions-1 rewritten with MODIFY items 4-5, install model implication, Three→Four; Non-Goals updated with #27/#28 references)"
+  ],
+  "post_resolution_state": {
+    "openspec_validate": "passes (--strict)",
+    "tasks_total": 28,
+    "tasks_done": 1,
+    "deltas_total": 13,
+    "deltas_by_capability": { "orbit-conventions": 4, "orbit-onboard": 8, "orbit-run-summary-emit": 1 }
+  },
+  "final_assessment": "All 7 external findings resolved (4 decisions, 3 trivial fixes). 2 new orbit GH issues filed (#27 Option 2, #28 Global rename). Substantive scope additions: now 13 deltas across 3 capabilities (was 11 across 2); 28 tasks across 5 chunks (was 25). Codex caught real in-context anchoring residue — EC1 install-vs-repo-state gap and EC2 command-file-vs-skill-file distinction were both genuine blind spots. EW1 surfaced baseline-spec language drift from the just-closed #6 framing. Validates --strict.",
+  "next_recommended": "/opsx:review lean-overlay-and-add-orbit-onboard --fresh — proposal iter-2 fresh-context review to verify the substantial iter-1 + iter-2 changes are coherent. Alternative: proceed to /opsx:apply since the address-reviews walks have produced a thoroughly-reviewed proposal."
+}

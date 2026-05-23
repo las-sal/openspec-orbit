@@ -45,7 +45,8 @@ This change implements the immediate phase of that strategy (Option 1: declare +
 
 ### Modified Capabilities
 
-- `orbit-conventions`: MODIFIES the `Distribution model` requirement to reflect pegging + orbit-owned-surface framing. ADDS requirements for upstream version pinning and overlay file disposition (which upstream skills orbit ships vs which it omits, under what rationale).
+- `orbit-conventions`: MODIFIES the `Distribution model` requirement to reflect pegging + orbit-owned-surface framing. MODIFIES the `Internal-run JSON summary format` requirement to remove the obsolete "openspec-orbit#6 will deprecate/remove `/opsx:sync-specs`" framing (per address-reviews iter-2 EW1: sync-specs is retained as a primitive under pegging). ADDS requirements for upstream version pinning and overlay file disposition (which upstream skills + commands orbit ships vs which it omits, under what rationale).
+- `orbit-run-summary-emit`: MODIFIES the `Emit scope` requirement to remove the obsolete "openspec-orbit#6 will deprecate/remove `/opsx:sync-specs`" framing (per address-reviews iter-2 EW1: primitive-only retention, user-callable surface pruned).
 
 ## Impact
 
