@@ -53,9 +53,11 @@ Rewrite the opening of CLAUDE.md and README to position orbit as "a workflow too
 
 **`feedback`** (truly unmodified upstream): DELETE from overlay. Description: "Collect and submit user feedback about OpenSpec with context enrichment and anonymization." Sends feedback upstream to Fission-AI. Orbit only references it from the soon-to-be-replaced upstream `openspec-onboard` skill. For pegged orbit users, sending feedback upstream serves orbit's mission near-zero.
 
-**`openspec-sync-specs`** (truly unmodified upstream): KEEP in overlay. It's deprecated from *direct user invocation* in 1.3.1, NOT deprecated as a capability — it's a primitive that upstream's `openspec archive` CLI orchestrates internally. Orbit's archive flow calls it via subagent during the sync step. We're using the primitive the same way upstream uses it. No deviation.
+**`openspec-sync-specs`** (truly unmodified upstream): KEEP in overlay. It's a primitive used by orbit's archive flow via subagent.
 
 **Composition nuance**: orbit's archive currently invokes sync-specs + `mv` as separate steps rather than calling `openspec archive` CLI which does both. End state is identical; orbit's style is to weave its own pre-archive sweep + archive-run-summary around the pieces. Not a meaningful deviation; no follow-up refactor needed.
+
+**Amendment 2026-05-23 (address-reviews iter-4 reversal, per external Codex iter-2 ES1')**: The original D7 text above said `openspec-sync-specs` is "deprecated from *direct user invocation* in 1.3.1, NOT deprecated as a capability". **This claim was FALSE** — propagated from issue #6's body without verification against current upstream docs. Verified at iter-4: upstream's [commands.md](https://github.com/Fission-AI/OpenSpec/blob/main/docs/commands.md) describes `/opsx:sync` as **"Optional command"** — not deprecated. Under project memory [[orbit-supports-full-openspec-1-3-1]], orbit keeps both `/opsx:sync` user-callable command AND `openspec-sync-specs` SKILL. Treat this amendment as the standing decision. Lesson: pushback discipline must verify "deprecated upstream" claims against current upstream state — propagated summaries cannot be trusted.
 
 ### D8: Orbit-onboard skill named `openspec-onboard` (option α)
 

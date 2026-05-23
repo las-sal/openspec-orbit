@@ -18,12 +18,10 @@ This change implements the immediate phase of that strategy (Option 1: declare +
 - Rewrite CLAUDE.md opening to position orbit as a workflow tool using openspec's CLI as a pinned engine
 - Rewrite README opening + install section with the same reframe
 - Audit and update references to "overlay" terminology where the new framing fits better
-- Correct install instructions per #6 (interactive `openspec config profile`, accurate skill counts, remove obsolete `openspec-sync-specs` direct-use mention)
+- Correct install instructions per #6 (interactive `openspec config profile`, accurate skill counts)
 
 **Overlay cleanup**:
 - DELETE `feedback` skill from `.claude/skills/` (truly upstream, no orbit value, no orbit dependency)
-- KEEP `openspec-sync-specs` SKILL (still a needed primitive used by orbit's archive flow)
-- KEEP `/opsx:sync` command (per address-reviews iter-4 EW1-reversal: upstream lists it as "Optional command", NOT deprecated; under project memory `orbit-supports-full-openspec-1-3-1` we retain optional upstream commands unless real reason to drop)
 
 **Orbit-onboard skill** (closes #23):
 - Replace upstream `openspec-onboard` skill body with 100% orbit-authored content (same directory, same name)
@@ -46,8 +44,7 @@ This change implements the immediate phase of that strategy (Option 1: declare +
 
 ### Modified Capabilities
 
-- `orbit-conventions`: MODIFIES the `Distribution model` requirement to reflect pegging + orbit-owned-surface framing. MODIFIES the `Internal-run JSON summary format` requirement to remove the obsolete "openspec-orbit#6 will deprecate/remove `/opsx:sync-specs`" framing (per address-reviews iter-2 EW1: sync-specs is retained as a primitive under pegging). ADDS requirements for upstream version pinning and overlay file disposition (which upstream skills + commands orbit ships vs which it omits, under what rationale).
-- `orbit-run-summary-emit`: MODIFIES the `Emit scope` requirement to remove the obsolete "openspec-orbit#6 will deprecate/remove `/opsx:sync-specs`" framing (per address-reviews iter-2 EW1: primitive-only retention, user-callable surface pruned).
+- `orbit-conventions`: RENAMES `Distribution model — overlay, not CLI fork` → `Distribution model — pegged engine + orbit-owned surface` and MODIFIES the requirement body to reflect pegging + orbit-owned-surface framing. ADDS requirements for upstream version pinning and overlay file disposition (which upstream skills orbit ships vs which it omits, under what rationale).
 
 ## Impact
 

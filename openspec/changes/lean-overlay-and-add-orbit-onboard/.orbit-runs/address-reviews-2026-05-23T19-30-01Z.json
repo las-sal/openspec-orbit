@@ -1,0 +1,132 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-23T19:30:01Z",
+  "change": "lean-overlay-and-add-orbit-onboard",
+  "kind": "editorial",
+  "iteration": 6,
+  "source": "user_principle_application",
+  "source_note": "Iter-6 is not a review-emit walk. Triggered by user question 'have we achieved this?' testing whether the iter-5 work fully achieved the principle: 'sync is just an original openspec command that should be supported just because it's part of 1.3.1; don't say anything in the form of requirements or implementation around it.' Honest audit revealed iter-5 had cleaned the spec deltas + the most-egregious stale language but left ~10 places that still authored sync-as-orbit-decision framing.",
+  "executed_by": "in_context",
+  "user_choice": "Option (b): strict-with-historical-cleanup — apply principle to forward-looking framing but KEEP task 1.3 (archive-summary-schema fix) because that stale text is actively wrong in shipped baseline.",
+  "cleanup_resolutions": [
+    {
+      "id": "iter-6-1",
+      "scope": "proposal.md Overlay cleanup section",
+      "action": "Removed 'KEEP openspec-sync-specs SKILL' and 'KEEP /opsx:sync command' bullets entirely. Section now reads only the feedback DELETE bullet — sync retention is implicit per [[orbit-supports-full-openspec-1-3-1]]."
+    },
+    {
+      "id": "iter-6-2",
+      "scope": "proposal.md Modified Capabilities (orbit-conventions entry)",
+      "action": "Removed 'MODIFIES the Internal-run JSON summary format requirement to simplify the sync_specs parenthetical' clause. Capability summary now describes the legitimate orbit-conventions delta (RENAMED Distribution model + MODIFIED body + 2 ADDED) without the sync-only MODIFY."
+    },
+    {
+      "id": "iter-6-3",
+      "scope": "proposal.md Impact section",
+      "action": "Removed 'remove obsolete openspec-sync-specs direct-use mention' from install-instructions bullet — task 3.5 was removed in this same walk, leaving the proposal reference dangling."
+    },
+    {
+      "id": "iter-6-4",
+      "scope": "design.md D-arch-4",
+      "action": "Renamed section from 'Delete feedback, keep openspec-sync-specs' to 'Delete feedback skill from overlay'. Removed the 'openspec-sync-specs KEEP' bullet, the 'Why this asymmetry' framing, and the 'deprecated from direct user invocation' false-claim residue. Added single closing parenthetical noting all other upstream files stay implicitly under the project memory."
+    },
+    {
+      "id": "iter-6-5",
+      "scope": "design.md D-conventions-1 item 3 (Overlay file disposition category descriptions)",
+      "action": "Removed 'e.g., openspec-sync-specs' example from Upstream-required primitive category. Removed entire parenthetical 'also user-callable command files for primitives that orbit retains but does not expose as a user surface (e.g., .claude/commands/opsx/sync.md ...)' from NOT shipped category. Categories now describe themselves without singling out sync."
+    },
+    {
+      "id": "iter-6-6",
+      "scope": "design.md D-conventions-1 items 4 + 5",
+      "action": "Merged items 4 (MODIFY Internal-run JSON summary format) and 5 (MODIFY orbit-run-summary-emit Emit scope) into a single 'baseline-language drift deferred' item documenting both as REMOVED. Frames the removal under [[orbit-supports-full-openspec-1-3-1]] principle — orbit doesn't author requirements about upstream behavior orbit inherits implicitly."
+    },
+    {
+      "id": "iter-6-7",
+      "scope": "design.md Risks/Trade-offs bullet",
+      "action": "Reframed 'Asymmetric upstream-file disposition (delete feedback, keep openspec-sync-specs)' as 'Per-skill prune judgment' — explains feedback is the one skill being pruned with rationale; future prune decisions need similar concrete justification. Drops the asymmetric framing that singled out sync as a special case."
+    },
+    {
+      "id": "iter-6-8",
+      "scope": "tasks.md task 1.2 parenthetical",
+      "action": "Removed the long '(Note per iter-4 EW1-reversal: /opsx:sync command is RETAINED — upstream lists it as Optional command...)' parenthetical. Task 1.2 now describes only the feedback sweep."
+    },
+    {
+      "id": "iter-6-9",
+      "scope": "tasks.md task 3.5 (was: sweep README for sync mentions)",
+      "action": "REMOVED entirely. README cleanup of sync mentions happens organically via task 2.3 (overlay terminology sweep) and task 3.4 (install verification rewrite under post-pegging framing) — no sync-specific task needed."
+    },
+    {
+      "id": "iter-6-10",
+      "scope": "tasks.md task 3.6 (was: 3.6 with sync.md note)",
+      "action": "Removed '(Note per iter-4 EW1-reversal: /opsx:sync command is RETAINED in overlay; do NOT add a prune step for .claude/commands/opsx/sync.md.)' parenthetical. Task 3.6 now describes only the feedback rm step."
+    },
+    {
+      "id": "iter-6-11",
+      "scope": "tasks.md task 5.5a",
+      "action": "Removed '(including /opsx:sync — retained per iter-4 EW1-reversal)' callout. Task 5.5a now simply says 'Quick-reference command table lists all current opsx/* commands' without singling out sync."
+    },
+    {
+      "id": "iter-6-12",
+      "scope": "specs/orbit-conventions/spec.md MODIFIED Internal-run JSON summary format",
+      "action": "REMOVED the entire MODIFIED requirement from the delta. Baseline's sync_specs parenthetical stays unchanged — its stale 'will be deprecated by #6' text is documented in design.md item 4-5 as known-issue deferred to future doc-hygiene change."
+    },
+    {
+      "id": "iter-6-13",
+      "scope": "specs/orbit-conventions/spec.md Overlay file disposition Upstream-required primitive scenario",
+      "action": "Removed '(e.g., openspec-sync-specs, which orbit's archive flow invokes via subagent for delta-spec sync)' example from the scenario. Description now reads 'when orbit depends on an upstream skill as a callable primitive (invoked at the orchestration layer, not modified at the skill-body layer)' — describes the category without singling out sync-specs."
+    }
+  ],
+  "preserved_sync_references": [
+    {
+      "location": "task 1.3",
+      "rationale": "Per option (b): archive-summary-schema.md:18 stale text is actively wrong in shipped baseline; cleanup task fixes it. Justified deviation from strict principle."
+    },
+    {
+      "location": "design.md:5 premise-invalidation note",
+      "rationale": "Historical: cites the 2 unmodified upstream skills that invalidated #6's premise."
+    },
+    {
+      "location": "design.md:30 Non-Goals",
+      "rationale": "Names what we're NOT doing (no positive sync decision)."
+    },
+    {
+      "location": "design.md item 4 strikethrough explanation",
+      "rationale": "Documents the structural removal per Codex EW1' principle — itself a non-decision marker."
+    },
+    {
+      "location": "design.md item 7 iter-4 reversal note",
+      "rationale": "Codex explicitly OK'd as historical record."
+    },
+    {
+      "location": "design.md item 9 TR2 resolution",
+      "rationale": "Documents the dependency-as-implicit non-decision."
+    },
+    {
+      "location": "explore.md D7 + amendment",
+      "rationale": "Intentional decision history per option (b)."
+    },
+    {
+      "location": "orbit-conventions spec Commands scenario opsx/sync.md in 10+ command list",
+      "rationale": "Natural enumeration — sync appears among ~10 sibling commands without being singled out."
+    },
+    {
+      "location": "proposal.md 'archive sync'",
+      "rationale": "Refers to openspec archive's sync, not /opsx:sync."
+    }
+  ],
+  "resolution_summary": {
+    "cleanup_edits": 13,
+    "spec_deltas_removed": 1,
+    "tasks_removed": 1,
+    "task_simplifications": 4
+  },
+  "post_resolution_state": {
+    "openspec_validate": "passes (--strict)",
+    "tasks_total": 27,
+    "tasks_done": 1,
+    "deltas_total": 12,
+    "deltas_by_capability": { "orbit-conventions": "1 RENAMED + 1 MODIFIED + 2 ADDED = 4", "orbit-onboard": "8 ADDED" },
+    "principle_achieved": "Forward-looking artifacts (proposal/specs/tasks) author zero requirements/implementation/decisions about sync. Remaining sync references all justified per option (b) — natural enumerations, historical/reversal records, or actively-wrong baseline cleanup."
+  },
+  "final_assessment": "Principle achieved per user verification. Sync is now treated as 'just an upstream command we naturally support' across all forward-looking change artifacts. 13 cleanup edits applied; 1 spec delta removed (MODIFIED Internal-run JSON summary format); 1 task removed (3.5); 4 tasks simplified (1.2, 3.6, 5.5a parentheticals stripped). 28→27 tasks, 13→12 deltas. Validates --strict.",
+  "next_recommended": "Commit + push iter-5 + iter-6 work. Then /opsx:apply lean-overlay-and-add-orbit-onboard — proposal converged after 5 reviews + 6 address-reviews iterations + iter-6 principle-application cleanup. Cycle ROI definitively flattened; ready for implementation."
+}

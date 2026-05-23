@@ -59,13 +59,11 @@ Orbit is infrastructure for the user's real engineering project (homeENV); ship 
 - **γ** (defer narrative work entirely to Option 2 cycle): cheapest now but leaves CLAUDE.md actively contradicting reality (still describes orbit as an "overlay" while we just pinned upstream). Acceptable but ugly.
 - **β** (forward-looking rewrite now): half-day of writing across CLAUDE.md + README; survives Option 2 without re-work; fixes the source of confusion that caused #6's bad premise.
 
-### D-arch-4: Delete `feedback`, keep `openspec-sync-specs`
+### D-arch-4: Delete `feedback` skill from overlay
 
-**Decision**:
-- **`feedback`** (truly unmodified upstream): DELETE from `.claude/skills/`. Sends user feedback upstream to Fission-AI. For pegged orbit users, this serves orbit's mission near-zero. Orbit only references it from the soon-to-be-replaced upstream `openspec-onboard` skill.
-- **`openspec-sync-specs`** (truly unmodified upstream): KEEP. It's deprecated from *direct user invocation* in 1.3.1, NOT deprecated as a capability — it's a primitive that upstream's `openspec archive` CLI orchestrates internally. Orbit's archive flow calls it via subagent during the sync step. We're using the primitive the same way upstream uses it.
+**Decision**: DELETE `feedback` from `.claude/skills/`. Sends user feedback upstream to Fission-AI; serves orbit's pegged-user mission near-zero. Orbit only references it from the soon-to-be-replaced upstream `openspec-onboard` skill.
 
-**Why this asymmetry**: the disposition test under pegging is "does this skill serve orbit's user-facing mission OR is it a primitive that orbit depends on?". `feedback` fails both. `openspec-sync-specs` passes the second.
+(All other upstream skills + commands stay implicitly under project memory [[orbit-supports-full-openspec-1-3-1]] — orbit fully and cleanly supports the openspec@1.3.1 functionality set unless there's a real reason to deviate. `feedback` is the only deviation in scope for this change.)
 
 ### D-arch-5: Replace `openspec-onboard` body in-place (option α)
 
@@ -146,14 +144,12 @@ When #26 lands, it'll have a pinned version to check against (this change provid
 3. **ADD** `Overlay file disposition` — codify the rule for what files orbit ships in `.claude/` (both skills AND commands per address-reviews iter-2 EW3). Four categories:
    - **Orbit-authored** (full ownership): orbit ships the file, no upstream-derived content
    - **Orbit-modified with `# Orbit additions`** (current pattern for some skills): orbit ships upstream body + appended additions (this pattern is transitional under Option 2)
-   - **Upstream-required primitive** (kept verbatim because orbit depends on it as a callable primitive): e.g., `openspec-sync-specs`
-   - **NOT shipped**: pure-upstream files that don't add orbit value and orbit doesn't depend on (e.g., `feedback` — removed); also user-callable command files for primitives that orbit retains but does not expose as a user surface (e.g., `.claude/commands/opsx/sync.md` — corresponds to the `openspec-sync-specs` primitive; user-callable command pruned, primitive skill kept)
+   - **Upstream-required primitive** (kept verbatim because orbit depends on it as a callable primitive)
+   - **NOT shipped** (rare — applied per-file when an upstream skill provides no orbit-mission value): e.g., `feedback` — removed in this change
 
-**Additional MODIFICATIONS** (added in address-reviews iter-2 per EW1):
+**Baseline-language drift deferred** (per address-reviews iter-5/iter-6 per Codex EW1' principle):
 
-4. **MODIFY** `Internal-run JSON summary format` — the per-kind extensions list previously claimed `sync_specs` field was "transitional, persists from pre-#6 architecture; #6 will deprecate/remove `/opsx:sync-specs` entirely". Under pegging (D-arch-1), #6 closes differently; sync-specs is retained as a primitive. Rephrase the parenthetical to describe the current/permanent state rather than the obsolete removal expectation.
-
-5. **MODIFY** (in `orbit-run-summary-emit` capability delta) `Emit scope` — the list of commands NOT emitting JSON previously said `/opsx:sync-specs` was "deprecated upstream; slated for removal by openspec-orbit#6". Replace with "primitive only under pegging strategy; used by orbit's archive flow via subagent; not exposed as a user-callable command (sync.md pruned)".
+4. ~~**MODIFY** `Internal-run JSON summary format`~~ + ~~**MODIFY** (in `orbit-run-summary-emit` capability delta) `Emit scope`~~ — **REMOVED**: both originally proposed to rewrite parenthetical text in baseline specs that prematurely claimed `/opsx:sync-specs` would be "deprecated/removed by openspec-orbit#6". Under [[orbit-supports-full-openspec-1-3-1]], orbit doesn't author requirements about upstream behavior orbit inherits implicitly. The baseline stale text persists as documentation drift to be addressed in a future doc-hygiene change — NOT load-bearing for this change's cluster-2 goals (pegging declaration + onboard skill).
 
 **Overlay install model implication** (added in address-reviews iter-2 per EC1; refined per iter-4 EW1-reversal):
 
@@ -183,6 +179,6 @@ When #26 lands, it'll have a pinned version to check against (this change provid
 
 - **Doc-only pin enforcement is honor-system** — a user running a different upstream version won't be warned. Acceptable for now (small user base); install-script in #26 will close this.
 
-- **Asymmetric upstream-file disposition (delete `feedback`, keep `openspec-sync-specs`)** — introduces a per-skill judgment call rather than a blanket rule. Mitigated by the new `Overlay file disposition` requirement codifying the criteria.
+- **Per-skill prune judgment** — `feedback` is the one skill this change prunes, on the criterion "no orbit-mission value". Future prune decisions for upstream skills require similar concrete justification per [[orbit-supports-full-openspec-1-3-1]]. Mitigated by the new `Overlay file disposition` requirement codifying the categories.
 
 - **Interactive guided tour deferred** — if collaborators actually need hands-on guidance to learn orbit, reference-leaning may prove insufficient. Mitigation: the natural extension point ("try-it nudge") could later become an interactive prompt without rewriting the rest of the skill.
