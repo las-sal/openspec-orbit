@@ -15,7 +15,7 @@
 
 The iter-4 reversal is correct: upstream currently documents `/opsx:sync` as an "Optional command" that merges delta specs, not as deprecated. However, the proposal still says the `orbit-run-summary-emit` delta represents "primitive-only retention, user-callable surface pruned." The same false premise remains in `design.md:66` ("deprecated from direct user invocation"), `design.md:150` (sync.md example under NOT shipped / user-callable command pruned), `design.md:156` ("primitive only ... not exposed as a user-callable command (sync.md pruned)"), and `tasks.md:34` ("upstream deprecated direct invocation"). These lines directly contradict `proposal.md:26`, `design.md:164`, and `tasks.md:19`, which now say `/opsx:sync` is retained. An implementer could still remove or under-document `/opsx:sync` by following the stale task/design language, even though the reversal was supposed to settle that.
 
-**Recommendation**: Sweep the active change artifacts, not just `.claude/`, for stale sync-deprecation/pruning language. Remove "deprecated from direct user invocation," "primitive-only," "user-callable surface pruned," and "sync.md pruned" from proposal.md, design.md, and tasks.md unless explicitly presented as a historical false claim inside the iter-4 reversal note. Update task 3.5 to say README should document `/opsx:sync` as retained optional upstream functionality while avoiding obsolete direct-use recommendations only where they are genuinely obsolete.
+**Recommendation**: Sweep the active change artifacts, not just `.claude/`, for stale sync-deprecation/pruning language. Remove "deprecated from direct user invocation," "primitive-only," "user-callable surface pruned," and "sync.md pruned" from proposal.md, design.md, and tasks.md unless explicitly presented as a historical false claim inside the iter-4 reversal note. Do not replace those with new sync-specific implementation tasks or requirements. `/opsx:sync` should be supported because it is part of the pinned OpenSpec 1.3.1 command set; it only needs to appear where the repo naturally enumerates current commands.
 
 ### EC2' - Onboard implementation tasks still contradict the corrected onboard spec
 
@@ -29,15 +29,15 @@ The orbit-onboard spec was corrected after prior reviews to use stable post-inst
 
 ## WARNING
 
-### EW1' - Emit scope names the skill, not the retained slash command
+### EW1' - Emit-scope delta still over-specifies sync
 
 **File**: openspec/changes/lean-overlay-and-add-orbit-onboard/specs/orbit-run-summary-emit/spec.md
 **Line**: 17
 **Dimension**: correctness
 
-The `Emit scope` delta is in the "following commands SHALL NOT emit" list, but it lists `/opsx:sync-specs` while also saying the retained user-callable command is `/opsx:sync`. In this repo the command file is `.claude/commands/opsx/sync.md` and its input text is `/opsx:sync`; `openspec-sync-specs` is the skill/primitive name. After the reversal, the manual `/opsx:sync` path is retained, so the spec should explicitly define whether `/opsx:sync` emits or not. As written, an implementer could read the exclusion as applying only to the primitive invoked during archive and leave manual `/opsx:sync` emit behavior ambiguous.
+The `Emit scope` delta still adds sync-specific language, listing `/opsx:sync-specs` and explaining its relationship to `/opsx:sync`. That is the wrong direction after the iter-4 reversal. `/opsx:sync` is not an orbit-owned behavior decision; it is an original OpenSpec 1.3.1 command that orbit should support because orbit pegs to and supports the full 1.3.1 surface unless there is a verified reason to deviate. Adding a bespoke no-emit rule for sync turns ordinary upstream support into an orbit-specific requirement and keeps the old false premise alive in a softer form.
 
-**Recommendation**: Rename the bullet to `/opsx:sync` (or `/opsx:sync` / `openspec-sync-specs` if both surfaces need naming) and state explicitly: manual `/opsx:sync` does not emit a standalone run-summary JSON; archive-invoked sync results are captured in `archive-<TS>.json`'s `sync_specs` field. Mirror the same naming in proposal/design/task prose.
+**Recommendation**: Remove the sync-specific `orbit-run-summary-emit` delta unless this change is intentionally modifying sync behavior. Do not add a replacement requirement stating that manual `/opsx:sync` does or does not emit. The support rule should be implicit: pinned upstream OpenSpec 1.3.1 commands are present unless orbit has a concrete reason to drop or modify them. Keep sync references only where naturally inherited surfaces are listed, such as command tables or file inventories.
 
 ## SUGGESTION
 
