@@ -1,6 +1,13 @@
+## RENAMED Requirements
+
+- FROM: `### Requirement: Distribution model — overlay, not CLI fork`
+- TO: `### Requirement: Distribution model — pegged engine + orbit-owned surface`
+
+(Rename rationale per design D-conventions-1 item 1 and address-reviews iter-3 FF2 resolution: the "overlay, not CLI fork" framing is the exact source of confusion that this change argues against. The MODIFIED requirement body describes pegging; the title was kept in the MODIFIED block to satisfy the MODIFY-by-name match rule, but the RENAMED operation completes the alignment at archive sync. Cross-references throughout this change's deltas reference the new name.)
+
 ## MODIFIED Requirements
 
-### Requirement: Distribution model — overlay, not CLI fork
+### Requirement: Distribution model — pegged engine + orbit-owned surface
 
 The system SHALL be distributed as a `.claude/` overlay pegged to a specific upstream `@fission-ai/openspec` version, not as a fork of the upstream OpenSpec CLI. Orbit owns the `.claude/` surface (skills, commands, supporting docs); upstream supplies the CLI binary as a pinned engine.
 
@@ -46,7 +53,7 @@ Per-kind extensions:
 
 - **`kind: "workflow"`** — emitted by `explore`, `propose`, `new`, `continue`, `ff`, `apply`, `verify`. Per-command extensions are defined in the `orbit-run-summary-emit` capability (e.g., `apply.chunk_complete`, `verify.verdict`, `explore.decisions_captured`).
 - **`kind: "editorial"`** — emitted by `review`, `address-reviews`, `audit-drift`, `review-external`. Per-command extensions include: `iteration` (when applicable to the command — e.g., review iter-N, address-reviews iter-N), `findings_summary` (counts by severity; included when findings are present — i.e., review/address-reviews/audit-drift completion emits; review-external at T0 emits before external findings return and SHALL omit this field), `finding_titles` (array of brief titles; included with `findings_summary`, omitted in the same cases), plus command-specific fields defined in per-skill schema references at `.claude/skills/openspec-<skill>/references/run-summary-schema.md`.
-- **`kind: "lifecycle"`** — emitted by `archive` only. Per-command extensions include: `archive_path`, `audit`, `sync_specs` (sync results captured from orbit's archive flow invoking the `openspec-sync-specs` upstream primitive; the primitive is retained under pegging strategy per orbit-conventions `Distribution model — overlay, not CLI fork`), `unresolved_markers`, `user_decision`, plus other fields defined in the archive skill.
+- **`kind: "lifecycle"`** — emitted by `archive` only. Per-command extensions include: `archive_path`, `audit`, `sync_specs` (sync results captured from orbit's archive flow invoking the `openspec-sync-specs` upstream primitive; the primitive is retained under pegging strategy per orbit-conventions `Distribution model — pegged engine + orbit-owned surface`), `unresolved_markers`, `user_decision`, plus other fields defined in the archive skill.
 
 **Canonical examples** (one per kind, illustrating spine + per-kind extensions):
 

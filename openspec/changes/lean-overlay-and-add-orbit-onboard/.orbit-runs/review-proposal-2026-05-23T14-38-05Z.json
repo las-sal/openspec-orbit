@@ -1,0 +1,106 @@
+{
+  "command": "review",
+  "timestamp": "2026-05-23T14:38:05Z",
+  "change": "lean-overlay-and-add-orbit-onboard",
+  "kind": "editorial",
+  "mode": "proposal",
+  "iteration": 2,
+  "depth": "full",
+  "flags": {
+    "fresh": true,
+    "parallel": false,
+    "focus": null,
+    "strict": false,
+    "mark": false
+  },
+  "executor": "fresh_context_subagent_claude",
+  "executor_note": "Spawned via general-purpose subagent type with clean context — no access to in-context iter-1 session history. Read project context, all change artifacts, prior 4 .orbit-runs/ JSONs for iteration awareness, then ran 9 proposal-mode passes.",
+  "passes_run": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+  "findings_summary": {
+    "critical": 1,
+    "warning": 3,
+    "suggestion": 3,
+    "stale_suppressed": 0,
+    "by_dimension": {
+      "completeness": { "critical": 0, "warning": 1, "suggestion": 0 },
+      "correctness": { "critical": 0, "warning": 1, "suggestion": 1 },
+      "coherence": { "critical": 1, "warning": 1, "suggestion": 2 }
+    }
+  },
+  "findings": [
+    {
+      "id": "FF1",
+      "severity": "CRITICAL",
+      "dimension": "coherence",
+      "title": "Stale '#6 will deprecate /opsx:sync-specs' survives in archive-summary-schema.md (EW1 cleanup incomplete)",
+      "file": ".claude/skills/openspec-archive-change/references/archive-summary-schema.md",
+      "line": 18,
+      "details": "Codex EW1 implicitly named 3 locations carrying stale #6-removal framing. iter-2 swept orbit-conventions and orbit-run-summary-emit but missed this third location. Once this change archives, baseline orbit-conventions says sync_specs is permanent-under-pegging while archive-skill's own schema reference still predicts its removal.",
+      "recommendation": "Add task (chunk 1 sweep or new chunk 3 task) to update archive-summary-schema.md:18 with post-pegging framing. Also explicitly grep .claude/ for openspec-orbit#6 / 'slated for removal' to confirm no further residue."
+    },
+    {
+      "id": "FF2",
+      "severity": "WARNING",
+      "dimension": "coherence",
+      "title": "MODIFIED requirement title 'Distribution model — overlay, not CLI fork' contradicts its post-pegging body",
+      "file": "openspec/changes/lean-overlay-and-add-orbit-onboard/specs/orbit-conventions/spec.md",
+      "line": 3,
+      "details": "MODIFY-by-name match rule requires keeping baseline title verbatim, so title is structurally correct. But body now opens describing pegging, and the title's 'overlay, not CLI fork' framing is exactly what design D-arch-3 argues is the source of confusion. Cross-references in this change point to this requirement as source of truth for pegging concept while citing the stale title. Design.md item 1 mentions the rename as planned; the delta spec does not perform it.",
+      "recommendation": "Either (a) add RENAMED Requirements section to rename to 'Distribution model — pegged engine + orbit-owned surface' per design D-conventions-1 item 1; or (b) explicitly note in design.md that rename was rejected and update cross-references accordingly. Pick one."
+    },
+    {
+      "id": "FF3",
+      "severity": "WARNING",
+      "dimension": "correctness",
+      "title": "Setup verification distinction between 'overlay-incomplete' vs 'prune-step-not-run' unclear",
+      "file": "openspec/changes/lean-overlay-and-add-orbit-onboard/specs/orbit-onboard/spec.md",
+      "line": "45-48",
+      "details": "Scenario 'Verify pruned upstream files are absent' says 'a correct install has these absent after the user runs the documented post-overlay-copy prune step.' But that's conditional. Adjacent 'Verify overlay applied via stable post-install artifacts' asserts unconditional presence. Implementation must distinguish 'fail because user didn't rm' (warning) from 'fail because overlay is incomplete' (error) — spec gives no guidance.",
+      "recommendation": "Add scenario text clarifying that presence of pruned files is reported as 'prune step not run yet' finding (informational warning) distinct from 'overlay-incomplete' (error). One-line addition to 'Verification failures are informational' scenario would suffice."
+    },
+    {
+      "id": "FF4",
+      "severity": "WARNING",
+      "dimension": "completeness",
+      "title": "Task 3.4 'if possible / otherwise best-known' leaves verification ambiguous",
+      "file": "openspec/changes/lean-overlay-and-add-orbit-onboard/tasks.md",
+      "line": 33,
+      "details": "Task 3.4 contains 'Verify counts against a fresh sandbox install if possible; otherwise mark as best-known and note the verification gap.' Combined with task 5.4 user-validation, no firm forcing function exists: 3.4 may ship with best-known counts; 5.4 may validate those without true sandbox check. Post-pegging counts were the source of #6's original premise problem — need to be authoritative.",
+      "recommendation": "Make 3.4 unconditional ('Run a fresh-sandbox install; reconcile counts against orbit-conventions Overlay file disposition categories') OR add explicit task 5.4-equivalent that performs the sandbox install as the verification gate."
+    },
+    {
+      "id": "FF5",
+      "severity": "SUGGESTION",
+      "dimension": "coherence",
+      "title": "Task 3.6 doesn't specify README anchor points for `rm` commands",
+      "file": "openspec/changes/lean-overlay-and-add-orbit-onboard/tasks.md",
+      "line": 35,
+      "details": "Chunk 2 (narrative sweep) runs before chunk 3 (README rm-step docs). If chunk 2's sweep encounters install-section text referencing `feedback`, in-context author may delete/rewrite without knowing chunk 3 needs docs anchors in same area. Chunking comment doesn't flag this knock-on; task 3.6 doesn't reference anchor points.",
+      "recommendation": "Task 3.6 should specify WHERE rm commands land in README (after cp -r step in install ~L920-925; in update section ~L978-986; in uninstall section ~L1000-1010). Also note in task 2.3 that install-section feedback references will get explicit rm lines in chunk 3."
+    },
+    {
+      "id": "FF6",
+      "severity": "SUGGESTION",
+      "dimension": "coherence",
+      "title": "orbit-onboard Quick-reference command table should explicitly exclude pruned sync.md",
+      "file": "openspec/changes/lean-overlay-and-add-orbit-onboard/specs/orbit-onboard/spec.md",
+      "line": "102-105",
+      "details": "Scenario says 'every command currently shipped in .claude/commands/opsx/ appears in table'. After chunk 1.2 prunes sync.md, 'currently shipped' excludes it. But implementer might wonder: should /opsx:sync appear with deprecation note? orbit-conventions Overlay file disposition addresses this; orbit-onboard table scenario doesn't cross-reference.",
+      "recommendation": "Add one sentence: 'Pruned commands (per orbit-conventions Overlay file disposition not-shipped category, e.g., opsx/sync.md) are NOT listed — the table reflects orbit's current user-callable surface only.'"
+    },
+    {
+      "id": "FF7",
+      "severity": "SUGGESTION",
+      "dimension": "correctness",
+      "title": "User-validation tasks 5.3-5.5 don't reflect iter-2 expanded scope",
+      "file": "openspec/changes/lean-overlay-and-add-orbit-onboard/tasks.md",
+      "line": "56-58",
+      "details": "iter-2 added sync.md pruning, EC1 rm steps, EW3 command-disposition, EW2 stable-artifact verification rewrite — user-validation tasks didn't grow to match. 5.3 doesn't name the new 'Verify pruned upstream files are absent' scenario; 5.4 doesn't validate rm step docs land in all 3 README sections; 5.5 doesn't cover Quick-reference table.",
+      "recommendation": "Add sub-items: (5.3a) verify Setup verification reports absence of feedback/ + sync.md; (5.4a) verify rm commands appear in install + update + uninstall README sections; (5.5a) verify Quick-reference table excludes sync.md."
+    }
+  ],
+  "pushback_verification": "All 7 findings verified against current artifact state by in-context author at review-time. FF1 confirmed via grep on .claude/ — single stale instance at archive-summary-schema.md:18 (matches subagent's claim exactly). FF4 verified via grep on tasks.md showing 'if possible / best-known' wording. FF6 verified via spec.md inspection. Subagent's '0 stale findings' claim holds — no findings to suppress.",
+  "anchor_break_observation": "Fresh-context Claude subagent caught what in-context Claude (iter-1 + iter-2 self-walks) anchored away from: FF1 is exactly the kind of EW1-completeness residue a fresh pass surfaces. The empirical pattern from cluster 1's emit change holds — fresh-context same-model catches ripple-flag completeness gaps after extensive prior review. Subagent also surfaced FF2 (title-vs-body coherence) and FF3 (verification ambiguity) that in-context author treated as 'design decisions' rather than 'gap'. ROI of the --fresh pass: 1 real CRITICAL caught + 6 quality refinements.",
+  "final_assessment": "1 CRITICAL finding (FF1 — third stale #6 reference Codex implicitly named but iter-2 sweep missed). 3 WARNING + 3 SUGGESTION. Proposal NOT ready for /opsx:apply until FF1 resolved. Recommend address-reviews iter-3 to walk all 7 — most are mechanical fixes or short text-additions.",
+  "next_recommended": "/opsx:address-reviews lean-overlay-and-add-orbit-onboard — 7 findings to walk (1 CRITICAL, 3 WARNING, 3 SUGGESTION; 0 stale). FF1 is must-fix before apply; FF2 is a real coherence question worth pause; FF3-FF7 are mechanical refinements that can mostly batch."
+}

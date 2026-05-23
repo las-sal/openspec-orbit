@@ -1,0 +1,82 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-23T14:48:08Z",
+  "change": "lean-overlay-and-add-orbit-onboard",
+  "kind": "editorial",
+  "iteration": 3,
+  "source": "from_review_emit_via_bridge",
+  "source_file": "openspec/changes/lean-overlay-and-add-orbit-onboard/.orbit-runs/review-proposal-2026-05-23T14-38-05Z-as-findings.md",
+  "source_note": "Fresh-context Claude subagent proposal-mode iter-2 findings. 7 findings: 1 CRITICAL, 3 WARNING, 3 SUGGESTION, 0 stale. Subagent caught the EW1-completeness gap that iter-2 in-context sweep missed (FF1: third stale #6 reference in archive-summary-schema.md), plus 6 quality refinements on the iter-2 expansion.",
+  "executed_by": "in_context",
+  "input_findings_summary": {
+    "count": 7,
+    "by_severity": { "critical": 1, "warning": 3, "suggestion": 3 }
+  },
+  "pushback_verification": "All 7 findings verified at walk-time. FF1 verified via grep on .claude/ confirming single stale instance at archive-summary-schema.md:18 (no others). FF2 verified via spec.md inspection — title indeed contradicts body. FF3 verified — verification scenarios are conditional vs unconditional with no distinguishing guidance. FF4 verified — task 3.4 has 'if possible / best-known' escape hatch. FF5 verified — task 3.6 has no anchor points. FF6 verified — quick-ref table scenario doesn't exclude pruned commands. FF7 verified — user-validation tasks unchanged since iter-1. 0 stale to suppress.",
+  "resolutions": [
+    {
+      "id": "FF1",
+      "classification": "trivial_fix",
+      "action": "Added new task 1.4 to chunk 1: rewrite .claude/skills/openspec-archive-change/references/archive-summary-schema.md:18 to remove the obsolete '#6 will deprecate /opsx:sync-specs' framing, replacing with post-pegging language. Task includes a grep-for-residue verification step to confirm no further stale instances remain."
+    },
+    {
+      "id": "FF2",
+      "classification": "decision_required",
+      "user_choice": "Add RENAMED Requirements",
+      "action": "Added ## RENAMED Requirements section to orbit-conventions delta with FROM/TO entries. Renamed 'Distribution model — overlay, not CLI fork' → 'Distribution model — pegged engine + orbit-owned surface'. Updated MODIFIED requirement header to use new name (validator rejected old-name MODIFIED header after RENAMED present — fixed). Updated 3 in-delta cross-references to use new name: (a) orbit-conventions/spec.md Internal-run JSON summary format sync_specs parenthetical; (b) orbit-onboard/spec.md Identity statement section; (c) orbit-run-summary-emit/spec.md Emit scope /opsx:sync-specs bullet. Historical .orbit-runs/ files (external prompt, review JSON, bridge file) left intact — they're forensic record of pre-rename state."
+    },
+    {
+      "id": "FF3",
+      "classification": "trivial_fix",
+      "action": "Added new scenario to orbit-onboard `Setup verification section` requirement: 'Verification failures distinguish overlay-incomplete from prune-step-not-run'. Specifies that 'overlay incomplete' (missing orbit-authored artifacts) is reported as ERROR with re-run-overlay-install recommendation, while 'prune step not run' (pruned files still present) is reported as WARNING with rm-commands-from-README recommendation. Explicitly forbids the skill from conflating them in its report."
+    },
+    {
+      "id": "FF4",
+      "classification": "decision_required",
+      "user_choice": "Make task 3.4 unconditional sandbox install",
+      "action": "Rewrote task 3.4 to strip 'if possible / otherwise best-known' escape hatch. Now mandates running fresh-sandbox install per documented README sequence; counts must be verified against actual install state before task completion. If sandbox install is genuinely infeasible, escalate via @review(escalated): rather than ship un-verified."
+    },
+    {
+      "id": "FF5",
+      "classification": "trivial_fix",
+      "action": "Updated task 3.6 to specify anchor points for `rm` commands in README: (a) install section after cp -r step (~L920-925); (b) update section after openspec update + overlay re-copy (~L978-986); (c) uninstall section (~L1000-1010). Added cross-chunk note to task 2.3 alerting that install-section feedback references will get rm lines in chunk 3 — preserve context during sweep."
+    },
+    {
+      "id": "FF6",
+      "classification": "trivial_fix",
+      "action": "Added sentence to orbit-onboard `All current /opsx:* commands listed` scenario: 'Pruned commands (per orbit-conventions Overlay file disposition not-shipped category, e.g., opsx/sync.md) are NOT listed — the table reflects orbit's current user-callable surface only.'"
+    },
+    {
+      "id": "FF7",
+      "classification": "trivial_fix",
+      "action": "Expanded user-validation tasks 5.3, 5.4, 5.5 with sub-items (5.3a/b, 5.4a/b, 5.5a/b/c) covering iter-2 + iter-3 expansions: prune-file absence reporting, post-pegging Identity framing, README rm-step presence in 3 sections, post-pegging install verification framing, Quick-reference table excludes pruned commands, lens introduction in walkthrough, abstract external-review demo."
+    }
+  ],
+  "resolution_summary": {
+    "resolved": 7,
+    "stale": 0,
+    "already_resolved": 0,
+    "deferred": 0,
+    "escalated": 0,
+    "by_classification": {
+      "trivial_fix": 5,
+      "decision_required": 2
+    }
+  },
+  "ripple_flagged_files_aggregate": [
+    "openspec/changes/lean-overlay-and-add-orbit-onboard/tasks.md (5 edits: 1.4 added, 2.3 expanded, 3.4 rewritten, 3.6 expanded with anchors, 5.3/4/5 expanded with sub-items)",
+    "openspec/changes/lean-overlay-and-add-orbit-onboard/specs/orbit-conventions/spec.md (3 edits: RENAMED section added; MODIFIED title updated to new name; cross-ref in sync_specs parenthetical updated)",
+    "openspec/changes/lean-overlay-and-add-orbit-onboard/specs/orbit-onboard/spec.md (3 edits: cross-ref in Identity statement updated; new Verification failures distinction scenario added; Quick-reference table scenario expanded)",
+    "openspec/changes/lean-overlay-and-add-orbit-onboard/specs/orbit-run-summary-emit/spec.md (1 edit: cross-ref in /opsx:sync-specs bullet updated)"
+  ],
+  "post_resolution_state": {
+    "openspec_validate": "passes (--strict)",
+    "tasks_total": 29,
+    "tasks_done": 1,
+    "deltas_total": 14,
+    "deltas_by_capability": { "orbit-conventions": "1 RENAMED + 2 MODIFIED + 2 ADDED = 5", "orbit-onboard": "10 ADDED (was 8; FF3 added 1 scenario which is part of existing Setup verification requirement — same requirement count; FF6 expanded existing scenario)", "orbit-run-summary-emit": "1 MODIFIED" }
+  },
+  "anchor_break_observation": "Fresh-context Claude subagent caught what 2 prior in-context Claude walks anchored away from. FF1 specifically: external Codex EW1 implicitly named 3 locations; in-context iter-2 swept the 2 spec locations Codex explicitly cited, missed the 3rd schema-reference file. Pattern: in-context author scopes work to what was explicitly named; fresh-context catches the implicit ripple. This is the same anchor-break pattern that's now documented across the just-archived emit change cluster 1.",
+  "final_assessment": "All 7 fresh-context findings resolved (5 trivial fixes, 2 decisions). Tasks: 28 → 29. Deltas: 13 → 14 (orbit-conventions gained RENAMED requirement). All cross-references updated to use post-rename name. Validates --strict. Pre-pegging title/body contradiction (FF2) resolved by rename. Install-count verification gap (FF4) closed by mandating sandbox install. EW1 sweep completed (FF1). 4 quality refinements (FF3/5/6/7) tighten specs + tasks against iter-2 expansion residue.",
+  "next_recommended": "Proposal is well-reviewed (3 review cycles: in-context iter-1, external Codex iter-1, fresh-context Claude iter-2; 25 findings resolved total). Either: /opsx:review --thorough for one more anchor-break pass (constraint-probe focus); OR /opsx:apply lean-overlay-and-add-orbit-onboard to start implementation. Diminishing-returns territory likely reached — fresh-context iter-2 found 1 real CRITICAL but the cycle ROI is flattening."
+}

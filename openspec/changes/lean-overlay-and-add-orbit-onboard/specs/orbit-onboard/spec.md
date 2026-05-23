@@ -57,9 +57,14 @@ The Setup verification section SHALL check that orbit is correctly installed and
 - **WHEN** the user's installation has issues (overlay incomplete, version mismatch, prune step not run)
 - **THEN** the skill reports findings clearly and recommends fixes (including pointing to README's prune steps if pruned files are still present); the skill does NOT auto-repair or auto-install
 
+#### Scenario: Verification failures distinguish overlay-incomplete from prune-step-not-run
+
+- **WHEN** Setup verification finds an inconsistency
+- **THEN** the report distinguishes two failure modes by severity and remedy: (1) "overlay incomplete" — orbit-authored skills or commands ARE MISSING from `.claude/` — surfaced as ERROR with recommendation to re-run overlay install; (2) "prune step not run" — pruned files (`feedback`, `sync.md`) ARE PRESENT in `.claude/` — surfaced as WARNING with recommendation to run the documented `rm` commands per README's install/update sections. These are distinct conditions with distinct remedies; the skill SHALL NOT conflate them in its report
+
 ### Requirement: Identity statement section
 
-The Identity statement section SHALL convey what orbit IS, using the post-pegging forward-looking framing (per orbit-conventions `Distribution model — overlay, not CLI fork`).
+The Identity statement section SHALL convey what orbit IS, using the post-pegging forward-looking framing (per orbit-conventions `Distribution model — pegged engine + orbit-owned surface`).
 
 #### Scenario: Workflow-tool framing
 
@@ -102,7 +107,7 @@ The Quick-reference command table section SHALL list all current `/opsx:*` slash
 #### Scenario: All current /opsx:* commands listed
 
 - **WHEN** the Quick-reference table is read
-- **THEN** every command currently shipped in `.claude/commands/opsx/` appears in the table with a one-line description of its purpose
+- **THEN** every command currently shipped in `.claude/commands/opsx/` appears in the table with a one-line description of its purpose. Pruned commands (per orbit-conventions `Overlay file disposition` not-shipped category, e.g., `opsx/sync.md`) are NOT listed — the table reflects orbit's current user-callable surface only
 
 #### Scenario: Table format is markdown
 
