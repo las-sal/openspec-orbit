@@ -1,0 +1,57 @@
+<!--
+Implementation chunks (per orbit canonical chunking — drives apply chunk-end emits):
+
+  Chunk 1 (group 1):     Overlay cleanup — delete feedback skill
+                         (Chunk 1 first per address-reviews F3 resolution: subsequent chunks edit
+                          README/CLAUDE.md content that referenced feedback; do the deletion first
+                          so chunks 2-3 work against a consistent state.)
+  Chunk 2 (group 2):     Narrative reframe (CLAUDE.md + README opening, audit "overlay" terminology)
+  Chunk 3 (group 3):     Pegging declaration + README install corrections (knock-on from #6 body)
+  Chunk 4 (group 4):     Orbit-authored openspec-onboard skill (5-section body)
+  Chunk 5 (group 5):     Issue closures + user-validation handoff
+
+Total: 5 groups across 5 implementation chunks.
+-->
+
+## 1. Overlay cleanup — delete feedback skill
+
+- [ ] 1.1 Delete `.claude/skills/feedback/` directory entirely (the SKILL.md and any other files in it).
+- [ ] 1.2 Sanity sweep: `grep -r 'feedback' .claude/ --include="*.md"` after deletion; confirm remaining "feedback" matches are prose-only (the `approval/feedback` wording in `.claude/commands/opsx/onboard.md:237` and `.claude/skills/openspec-onboard/SKILL.md:241` — NOT references to the deleted skill). No orbit-shipped file should reference the `feedback` SKILL.
+
+## 2. Narrative reframe (CLAUDE.md + README opening)
+
+- [ ] 2.1 Rewrite CLAUDE.md opening paragraphs (~lines 1-15 currently) to post-pegging framing per design D-arch-3 / orbit-conventions MODIFIED `Distribution model`. Position orbit as a workflow tool that owns the `.claude/` surface and uses `@fission-ai/openspec` at its pinned version as a CLI engine. Drop or heavily qualify "overlay that augments cleanly" language. Mention the pinned version contextually.
+- [ ] 2.2 Rewrite README opening (`# openspec-orbit` intro + any "What is openspec-orbit" section) with the same reframe. Tone-match CLAUDE.md but README is user-facing (slightly more welcoming, less terse).
+- [ ] 2.3 Sweep CLAUDE.md and README for other instances of "overlay" terminology; update each where the new framing better fits. Acceptable "overlay" usages: technical references to the `.claude/` directory itself ("orbit's `.claude/` overlay surface"). Unacceptable: language implying upstream-update compatibility ("overlay that picks up upstream improvements") or augmentation framing ("layered on top of upstream").
+
+## 3. Pegging declaration + README install corrections
+
+- [ ] 3.1 Add a "Pegging strategy" section to README (after the install section or as part of it), naming the pinned version `@fission-ai/openspec@1.3.1` and the rationale (orbit is pegged; upstream improvements do not auto-propagate; upgrade is a deliberate change event).
+- [ ] 3.2 Add pinned-version reference to CLAUDE.md install/prerequisites context. This may be woven into the chunk-2 reframe or added as a discrete sentence — either is acceptable.
+- [ ] 3.3 Correct README install order per #6 body: the documented sequence MUST include `openspec config profile` (interactive picker; choose expanded) between `openspec init --tools claude` and `openspec update`. The non-interactive expanded-profile path is upstream-gap and SHOULD be noted as a known limitation (see chunk 5 task 5.6 — file upstream issue and reference it here).
+- [ ] 3.4 (Per address-reviews F2 + F4 resolutions) Rewrite README install verification section under post-pegging framing. Sweep README for all references to "upstream skills" / pre-pegging accounting (e.g., L915 "11 upstream openspec-* skills", L931 "the other 8 upstream openspec-* skills + feedback", L943 "15 directories total: 11 upstream + 4 new orbit", L969 troubleshooting prose). Replace upstream-vs-orbit accounting with orbit's overlay surface description (orbit-authored + orbit-modified + upstream-required primitives per orbit-conventions `Overlay file disposition`). Verify counts against a fresh sandbox install if possible; otherwise mark as best-known and note the verification gap.
+- [ ] 3.5 Remove obsolete `openspec-sync-specs` direct-use mention from README per #6 body — upstream deprecated direct invocation in v1.3.1 (absorbed into `openspec archive` CLI). Orbit still uses it as a primitive but README should not recommend direct user invocation.
+
+## 4. Orbit-authored openspec-onboard skill (5-section body)
+
+- [ ] 4.1 Delete existing `.claude/skills/openspec-onboard/SKILL.md` content (upstream-bodied with `# Orbit additions` appended). The skill directory stays; the file gets fully rewritten with 100% orbit-authored content per orbit-onboard spec `Skill body 5-section structure`.
+- [ ] 4.2 Write Section 1 (Setup verification) per orbit-onboard spec `Setup verification section`. Scenarios: verify overlay applied (check for orbit-authored skill presence + at least one orbit-specific directory); verify upstream version matches pin (run `openspec --version`, compare against pinned `@fission-ai/openspec@1.3.1` from orbit-conventions); report findings clearly without auto-repair.
+- [ ] 4.3 Write Section 2 (Identity statement) per orbit-onboard spec `Identity statement section`. Use post-pegging workflow-tool framing (drop "overlay" language). Enumerate orbit's distinctive layers: editorial review (`/opsx:review`, `/opsx:review-external`, `/opsx:address-reviews`), drift audit (`/opsx:audit-drift`), capture (lenses), JSON run-summary emission, execution disciplines.
+- [ ] 4.4 Write Section 3 (Canonical-flow walkthrough) per orbit-onboard spec `Canonical-flow walkthrough section`. Split across 4.4a/b/c per address-reviews F5 resolution.
+  - [ ] 4.4a Write the canonical-flow diagram (ASCII or markdown table) showing the 9-phase flow: explore → propose → review → address-reviews → apply → verify → review --as system → address-reviews → archive. Write one-paragraph-per-phase content for phases 1-4 (explore, propose, review proposal-mode, address-reviews after proposal-mode review). Each paragraph describes purpose + primary command + typical output.
+  - [ ] 4.4b Write one-paragraph-per-phase content for phases 5-9 (apply, verify, review --as system, address-reviews after system-mode review, archive). Same shape as 4.4a paragraphs.
+  - [ ] 4.4c Weave lens introduction + abstract external-review demo into the appropriate paragraphs. Lenses: introduce in explore-phase paragraph (where `perspectives.md` / `critical-paths.md` are captured per `openspec-explore` capture triggers); re-reference in review-phase paragraphs (where `/opsx:review --as system` Passes 4-5 consult them). External-review: in review-phase or address-reviews-phase paragraph, name `/opsx:review-external`, one-paragraph what-it-does (packages review request for different AI; emits findings file; consumed via `/opsx:address-reviews --from-file`), point readers to `openspec-review-external/SKILL.md`. No bundled sample prompt; no simulation. Quality bar is high per design D-onboard-1 (audience may include external collaborators).
+- [ ] 4.5 Write Section 4 (Quick-reference command table) per orbit-onboard spec `Quick-reference command table section`. Markdown table listing every command currently in `.claude/commands/opsx/` with one-line descriptions. Per address-reviews F7 resolution: do NOT include an origin column (orbit-authored / orbit-modified / upstream-primitive classification lives only in `orbit-conventions`'s `Overlay file disposition` requirement — single source of truth). The table MAY include a brief link/pointer to `Overlay file disposition` for readers who want classification info.
+- [ ] 4.6 Write Section 5 (Try-it nudge) per orbit-onboard spec `Try-it nudge section`. Recommend reader runs `/opsx:explore <name>` on a real project idea they have. Avoid "for practice" framing. Note the section is the designated extension point for any future interactive-tour enhancement.
+- [ ] 4.7 Verify `.claude/commands/opsx/onboard.md` correctly resolves to the new orbit-authored skill body. Most likely no change needed since the command file binds to skill name not skill content. (Per address-reviews F8 suppression: the "feedback" prose word at line 237 is NOT a skill reference and requires no change.)
+- [ ] 4.8 (Per address-reviews F1 resolution) Preserve `/opsx:onboard` non-emission scope-enforcement in the new SKILL.md. Add a brief metadata note or one-line comment in the new SKILL.md body stating `/opsx:onboard` does NOT emit run-summary JSON (per orbit-run-summary-emit `Emit scope` requirement for `/opsx:onboard does not emit`). The new orbit-authored body must not silently lose this scope-enforcement that the current upstream-bodied SKILL.md's `# Orbit additions` section provides.
+
+## 5. Issue closures + validation handoff
+
+- [ ] 5.0 (Per address-reviews F11 resolution) Run `openspec validate lean-overlay-and-add-orbit-onboard --strict`; resolve any validation findings before proceeding to user-validation handoff.
+- [ ] 5.1 Close GH issue [#6](https://github.com/las-sal/openspec-orbit/issues/6) with closing comment referencing this change's archive commit. Note explicitly that #6's original framing ("delete 9 unmodified files to preserve upstream-update flow") was superseded by the pegging strategy (D-arch-1, D-arch-2); the underlying concern (overlay-overwrite risk) is addressed structurally rather than by file deletion.
+- [ ] 5.2 Close GH issue [#23](https://github.com/las-sal/openspec-orbit/issues/23) with closing comment naming the orbit-authored `openspec-onboard` skill location and confirming the 5-section structure shipped per the issue's Option B (orbit-authored skill).
+- [ ] 5.3 (User-validation) User runs `/opsx:onboard` in a fresh Claude session (or as `cat .claude/skills/openspec-onboard/SKILL.md`) and confirms all 5 sections are present, the Setup verification logic works as specified, and the content reads clearly.
+- [ ] 5.4 (User-validation) User verifies the pinned-version statement (`@fission-ai/openspec@1.3.1`) is clearly findable in both CLAUDE.md and README; install instructions match what a fresh-sandbox install would produce.
+- [ ] 5.5 (User-validation) User reads the Canonical-flow walkthrough section cold and confirms readability/quality bar is appropriate for collaborator handoff. If the writing falls short, surface specific findings during `/opsx:review` rather than blocking apply.
+- [ ] 5.6 (Per address-reviews F6 resolution) File upstream issue on `Fission-AI/OpenSpec` describing the non-interactive expanded-profile gap (CLI option request: `openspec config profile --set expanded` or equivalent). Capture the workaround being documented in orbit's README (interactive `openspec config profile` picker, or direct-edit `~/.config/openspec/config.json`). Reference the filed upstream issue in orbit README's known-limitations note (per task 3.3).

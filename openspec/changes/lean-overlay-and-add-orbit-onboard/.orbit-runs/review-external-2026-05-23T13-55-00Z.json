@@ -1,0 +1,15 @@
+{
+  "command": "review-external",
+  "timestamp": "2026-05-23T13:55:00Z",
+  "change": "lean-overlay-and-add-orbit-onboard",
+  "kind": "editorial",
+  "mode": "proposal",
+  "iteration": 1,
+  "step": "T0",
+  "awaiting_findings": true,
+  "prompt_file": "openspec/changes/lean-overlay-and-add-orbit-onboard/.orbit-runs/external-prompt-proposal-2026-05-23T13-55-00Z.md",
+  "recommended_session": "Fresh external session with a different AI from the in-context Claude Opus 4.7 that authored + reviewed iter-1. Codex (GPT-5) is the proven cross-AI second-opinion choice from the just-archived emit change. Alternatives: Gemini, another Claude instance, etc.",
+  "uncommitted_warning": "The entire change directory openspec/changes/lean-overlay-and-add-orbit-onboard/ is untracked at this T0 emit moment. User MUST commit + push before pasting the external invocation snippet — otherwise the external AI cannot see the change being reviewed.",
+  "final_assessment": "External review prompt written for proposal-mode iter-1. Awaiting external AI to return findings markdown file.",
+  "next_recommended": "User commits + pushes the change directory (including the prompt file just written). Then pastes the invocation snippet into the chosen external AI. When findings file is returned + committed, ingest via /opsx:address-reviews --from-file openspec/changes/lean-overlay-and-add-orbit-onboard/.orbit-runs/external-proposal-<TS>.md (timestamp set by external AI on write)."
+}

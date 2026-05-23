@@ -1,0 +1,103 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-23T13:53:10Z",
+  "change": "lean-overlay-and-add-orbit-onboard",
+  "kind": "editorial",
+  "iteration": 1,
+  "source": "from_review_emit_via_bridge",
+  "source_file": "openspec/changes/lean-overlay-and-add-orbit-onboard/.orbit-runs/review-proposal-2026-05-23T13-42-44Z-as-findings.md",
+  "source_note": "In-context proposal-mode review iter-1 findings (just emitted by /opsx:review minutes earlier). 11 findings: 3 CRITICAL, 4 WARNING, 3 SUGGESTION, 1 stale_suppressed. Bridge markdown file generated from review JSON pending direct JSON ingest (openspec-orbit#4).",
+  "executed_by": "in_context",
+  "input_findings_summary": {
+    "count": 11,
+    "by_severity": { "critical": 3, "warning": 4, "suggestion": 3, "stale_suppressed": 1 }
+  },
+  "pushback_verification": "All 11 findings verified against current artifact state at walk-time. F8 was already pushback-suppressed during the review itself (prose 'approval/feedback' not skill ref). F9 was already-resolved (cross-reference verified passing during review).",
+  "resolutions": [
+    {
+      "id": "F3",
+      "classification": "decision_required",
+      "user_choice": "Reorder chunks: 3 → 1 → 2",
+      "action": "Rewrote tasks.md chunking comment and renumbered all chunks. Original chunk 3 (delete feedback skill) is now chunk 1; original chunk 1 (narrative reframe) is now chunk 2; original chunk 2 (pegging + README install) is now chunk 3. Task IDs renumbered accordingly. Chunking comment now explains the reorder rationale (delete-feedback-first so chunks 2-3 work against consistent state)."
+    },
+    {
+      "id": "F1",
+      "classification": "trivial_fix",
+      "action": "Added new task 4.8: Preserve /opsx:onboard non-emission scope-enforcement in the new SKILL.md. Brief metadata note or one-line comment stating /opsx:onboard does NOT emit run-summary JSON per orbit-run-summary-emit `Emit scope` requirement. Prevents silent loss of the scope-enforcement that the current upstream-bodied SKILL.md's `# Orbit additions` section provides."
+    },
+    {
+      "id": "F2",
+      "classification": "trivial_fix",
+      "action": "Expanded task 3.4 (was 2.4) to include README-wide sweep of pre-pegging framings — explicitly names lines 915, 931, 943, 969 of README.md and directs rewriting under post-pegging framing per orbit-conventions `Overlay file disposition`. Replaces the prior narrow 'correct table counts' framing."
+    },
+    {
+      "id": "F4",
+      "classification": "trivial_fix",
+      "action": "Folded into F2 resolution: task 3.4 now focuses on framing reframe (orbit overlay surface terminology) rather than just count correction. Same task addresses both F2 and F4 since they were two aspects of the same issue."
+    },
+    {
+      "id": "F5",
+      "classification": "decision_required",
+      "user_choice": "Split into 4.4a / 4.4b / 4.4c",
+      "action": "Split task 4.4 into parent + 3 sub-tasks. 4.4a covers diagram + phases 1-4 (explore/propose/review-proposal/address-reviews). 4.4b covers phases 5-9 (apply/verify/review-system/address-reviews/archive). 4.4c weaves lens introduction across explore + review phases AND external-review demo into review or address-reviews phase. Quality-bar note preserved on 4.4c (per design D-onboard-1)."
+    },
+    {
+      "id": "F6",
+      "classification": "trivial_fix",
+      "action": "Added new task 5.6: File upstream issue on Fission-AI/OpenSpec for the non-interactive expanded-profile gap (CLI option request). Task captures workaround documentation, links upstream issue back into orbit README's known-limitations note (per task 3.3)."
+    },
+    {
+      "id": "F7",
+      "classification": "decision_required",
+      "user_choice": "Drop origin column from spec",
+      "action": "Edited orbit-onboard spec.md Quick-reference command table requirement: removed `Scenario: Table notes orbit-authored vs orbit-modified vs upstream-required` (origin column requirement). Replaced with `Scenario: Origin information lives in orbit-conventions, not duplicated here` — single source of truth via orbit-conventions `Overlay file disposition`. Updated task 4.5 to reflect: no origin column, optional link to Overlay file disposition for readers."
+    },
+    {
+      "id": "F8",
+      "classification": "stale_suppressed",
+      "action": "Already suppressed during review iter-1. No further action. Logged here for completeness. Original false-signal source: 'feedback' string in onboard.md:237 + SKILL.md:241 — both prose 'approval/feedback', not skill refs.",
+      "stale_evidence": "grep -n 'feedback' on both files confirms prose context only"
+    },
+    {
+      "id": "F9",
+      "classification": "already_resolved",
+      "action": "Cross-reference verification done during review. orbit-onboard spec correctly references orbit-conventions Upstream version pinning + Distribution model with exact name matches. No further action."
+    },
+    {
+      "id": "F10",
+      "classification": "trivial_fix",
+      "action": "Expanded proposal.md Impact bullet for Documentation: now explicitly enumerates README opening + 'What this is' section, install instructions + verification table, troubleshooting section (around L969), and prose referencing pre-pegging upstream/orbit accounting (with specific examples)."
+    },
+    {
+      "id": "F11",
+      "classification": "trivial_fix",
+      "action": "Added new task 5.0: Run openspec validate lean-overlay-and-add-orbit-onboard --strict; resolve any validation findings before proceeding to user-validation handoff. Makes the validation gate explicit instead of relying on /opsx:verify to surface it."
+    }
+  ],
+  "resolution_summary": {
+    "resolved": 9,
+    "stale": 1,
+    "already_resolved": 1,
+    "deferred": 0,
+    "escalated": 0,
+    "by_classification": {
+      "trivial_fix": 6,
+      "decision_required": 3,
+      "stale_suppressed": 1,
+      "already_resolved": 1
+    }
+  },
+  "ripple_flagged_files_aggregate": [
+    "openspec/changes/lean-overlay-and-add-orbit-onboard/tasks.md (modified — chunk reorder + 3 task additions + 1 task expansion + 1 task split into 3 sub-tasks)",
+    "openspec/changes/lean-overlay-and-add-orbit-onboard/specs/orbit-onboard/spec.md (modified — Quick-reference command table requirement scenario replaced)",
+    "openspec/changes/lean-overlay-and-add-orbit-onboard/proposal.md (modified — Impact bullet expanded)"
+  ],
+  "post_resolution_state": {
+    "openspec_validate": "passes (--strict)",
+    "tasks_total": 25,
+    "deltas_total": 11,
+    "deltas_by_capability": { "orbit-conventions": 3, "orbit-onboard": 8 }
+  },
+  "final_assessment": "All 11 review findings addressed (9 resolved, 1 stale-suppressed, 1 already-resolved). Chunk sequencing fixed (F3); 3 new tasks added (F1, F6, F11); 1 task expanded (F2/F4); 1 task split into sub-tasks (F5); 1 spec requirement scenario replaced (F7); 1 proposal bullet expanded (F10). Validates --strict. Tasks: 22 → 25.",
+  "next_recommended": "/opsx:review lean-overlay-and-add-orbit-onboard — proposal iter-2 to verify the resolutions land coherently. Alternative if confident: proceed directly to /opsx:review-external or /opsx:apply."
+}

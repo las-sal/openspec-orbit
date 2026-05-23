@@ -1,0 +1,11 @@
+{
+  "command": "propose",
+  "timestamp": "2026-05-23T13:38:31Z",
+  "change": "lean-overlay-and-add-orbit-onboard",
+  "kind": "workflow",
+  "final_assessment": "Generated proposal/design/tasks/specs for lean-overlay-and-add-orbit-onboard; consumed prior explore.md (11 decisions seeded across pegging strategy + orbit-onboard skill design). Validates --strict.",
+  "next_recommended": "/opsx:review lean-overlay-and-add-orbit-onboard — proposal artifacts ready; review before apply",
+  "artifacts_created": ["proposal", "design", "tasks", "specs/orbit-conventions", "specs/orbit-onboard"],
+  "delta_count": 11,
+  "from": "explore"
+}
