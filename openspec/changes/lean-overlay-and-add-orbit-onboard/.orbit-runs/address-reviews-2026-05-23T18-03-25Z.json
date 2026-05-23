@@ -1,0 +1,81 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-23T18:03:25Z",
+  "change": "lean-overlay-and-add-orbit-onboard",
+  "kind": "editorial",
+  "iteration": 4,
+  "source": "from_review_emit_via_bridge_plus_user_pushback",
+  "source_file": "openspec/changes/lean-overlay-and-add-orbit-onboard/.orbit-runs/review-proposal-2026-05-23T14-54-09Z-as-findings.md",
+  "source_note": "In-context --thorough constraint-probe review iter-3 findings (4: 0 CRITICAL, 2 WARNING, 2 SUGGESTION). PLUS user-initiated pushback at walk-time invalidating EW1's deprecation premise — propagated false 'deprecated upstream' claim about /opsx:sync verified false against current upstream docs. EW1 reversal added to this walk.",
+  "executed_by": "in_context",
+  "input_findings_summary": {
+    "count": 4,
+    "by_severity": { "critical": 0, "warning": 2, "suggestion": 2 }
+  },
+  "user_pushback_at_walk_time": {
+    "trigger": "User read upstream docs at https://github.com/Fission-AI/OpenSpec/blob/main/docs/commands.md and quoted /opsx:sync as 'Optional command. Merge delta specs from a change into main specs. Archive will prompt to sync if needed, so you typically don't need to run this manually.' — NOT deprecated.",
+    "verification": "Verified via openspec --help (no 'sync' CLI command — only 'archive' which auto-syncs) AND inspection of .claude/commands/opsx/sync.md (no deprecation language; frontmatter category Workflow, tags include experimental but not deprecated). Original 'deprecated' claim originated in issue #6's body, propagated through D7 + EW1 + spec language without verification.",
+    "principle_captured": "User stated: 'we want to fully and cleanly support the openspect functionality set at 1.3.1 unless there is a real reason not to. i don't think we need to write requirements around it.' Saved as project memory `orbit-supports-full-openspec-1-3-1`."
+  },
+  "pushback_verification": "All 4 review findings verified at walk-time. TR1 verified — task 3.4 has no 'sandbox' definition. TR2 verified — dependency lives in skill prose only. TR3 verified — Workflow-tool framing scenario lacks negative test. TR4 verified — Try-it nudge requires real project idea. PLUS at walk-time the user's pushback on the propagated 'deprecated upstream' claim about /opsx:sync was verified — EW1 reversal added to this walk.",
+  "resolutions": [
+    {
+      "id": "TR1",
+      "classification": "trivial_fix",
+      "action": "Defined 'fresh sandbox' inline in task 3.4: clean temp directory (e.g., `mktemp -d`) + same Node version as project's package.json engines field (or current LTS if unspecified) + `openspec init --tools claude` from clean state + documented overlay copy + documented prune step + `openspec --version` confirming match. Closes FF4's 'if possible' escape hatch by giving implementing AI concrete steps."
+    },
+    {
+      "id": "TR2",
+      "classification": "accepted_as_is",
+      "action": "Per user 'i don't think we need to write requirements around it'. Under project memory `orbit-supports-full-openspec-1-3-1`, orbit's continued use of the upstream openspec-sync-specs primitive is implicit and doesn't warrant a normative spec requirement. Dependency continues to live in `.claude/skills/openspec-archive-change/SKILL.md:65` prose. Captured rationale in design.md item 9."
+    },
+    {
+      "id": "TR3",
+      "classification": "trivial_fix",
+      "action": "Added negative-test scenario to orbit-onboard Identity statement section: 'Framing MUST NOT use augmentation language' — enumerates forbidden phrases (augments cleanly, overlay on top of, layered on top of, extends upstream, additive to upstream — case-insensitive). Negative test more useful than positive prescription."
+    },
+    {
+      "id": "TR4",
+      "classification": "trivial_fix",
+      "action": "Split Try-it nudge section requirement's Closing recommendation scenario into 2: (a) named-mode for concrete project ideas; (b) bare-mode for orientation-only users (collaborators new to orbit, AI sessions getting cold context, users without concrete ideas yet). Preserves no-demo-change discipline while surfacing bare-mode explore as the no-decision-yet entry point per orbit-explore conventions."
+    },
+    {
+      "id": "EW1-reversal",
+      "classification": "user_pushback_correction",
+      "action": "REVERSED EW1 (from address-reviews iter-2) which was based on propagated false 'deprecated upstream' claim. Actions: (a) Removed task 1.2 (delete sync.md command); (b) Removed sync.md from task 3.6 README rm-step documentation (only feedback prune now); (c) Removed sync.md absence-verification from tasks 5.3a, 5.4a; (d) Updated task 5.5a to confirm sync IS in the Quick-reference table (not excluded); (e) Removed `(currently: sync.md)` reference from orbit-onboard Verification failures distinguish scenario; (f) Removed sync.md from orbit-onboard Verify pruned upstream files are absent scenario; (g) Removed `(e.g., opsx/sync.md)` reference from orbit-onboard Quick-reference All current /opsx:* commands listed scenario; (h) Recategorized opsx/sync.md from 'not shipped' to 'orbit-modified' in orbit-conventions Overlay file disposition Commands follow same 4-category framework scenario; (i) Simplified orbit-conventions Internal-run JSON summary format sync_specs parenthetical — dropped 'retained under pegging strategy' framing, just describes the field; (j) Simplified orbit-run-summary-emit Emit scope /opsx:sync-specs bullet — dropped 'primitive only under pegging strategy ... user-callable command pruned' framing, just describes invocation pattern; (k) Updated design.md item 6 to drop sync.md from rm-step description; (l) Added design.md item 7 documenting the EW1-reversal rationale and lesson learned. Resulting state: /opsx:sync retained as user-callable command; openspec-sync-specs SKILL retained as primitive; orbit's archive still uses it via subagent."
+  },
+  "resolution_summary": {
+    "resolved": 5,
+    "stale": 0,
+    "accepted_as_is": 1,
+    "deferred": 0,
+    "escalated": 0,
+    "by_classification": {
+      "trivial_fix": 3,
+      "accepted_as_is": 1,
+      "user_pushback_correction": 1
+    }
+  },
+  "ripple_flagged_files_aggregate": [
+    "openspec/changes/lean-overlay-and-add-orbit-onboard/tasks.md (5 edits: task 1.1 group renamed + 1.2 removed + 1.3 simplified; task 2.3 grammar fix for 'lines' → 'line'; task 3.4 sandbox defined + sync removed; task 3.6 sync removed; tasks 5.3a/5.4a/5.5a sync removed)",
+    "openspec/changes/lean-overlay-and-add-orbit-onboard/specs/orbit-conventions/spec.md (2 edits: Internal-run JSON summary format sync_specs parenthetical simplified; Overlay file disposition Commands follow same 4-category framework scenario recategorized sync.md from not-shipped to orbit-modified)",
+    "openspec/changes/lean-overlay-and-add-orbit-onboard/specs/orbit-run-summary-emit/spec.md (1 edit: Emit scope /opsx:sync-specs bullet simplified)",
+    "openspec/changes/lean-overlay-and-add-orbit-onboard/specs/orbit-onboard/spec.md (4 edits: Verification failures distinguish scenario sync.md removed; Verify pruned upstream files are absent scenario sync.md removed; Identity statement section TR3 negative-test scenario added; Quick-reference All current /opsx:* commands listed scenario sync.md example removed; Try-it nudge section TR4 bare-mode scenario added)",
+    "openspec/changes/lean-overlay-and-add-orbit-onboard/design.md (3 edits: item 6 rm-step description sync.md removed; item 7 EW1-reversal section added; items 8-11 TR-finding resolution summaries added)",
+    "openspec/changes/lean-overlay-and-add-orbit-onboard/proposal.md (1 edit: Overlay cleanup bullet KEEP /opsx:sync command added)"
+  ],
+  "memory_updates": [
+    "Created project memory `orbit-pegged-to-openspec-1-3-1` capturing the strategic pegging decision (D-arch-1) + sequenced Option 1→2→3/4",
+    "Created feedback memory `orbit-supports-full-openspec-1-3-1` capturing user's principle: 'fully and cleanly support openspec@1.3.1 functionality set unless there's a real reason not to; verify deprecation claims; don't write requirements around what's just implicit'"
+  ],
+  "post_resolution_state": {
+    "openspec_validate": "passes (--strict)",
+    "tasks_total": 28,
+    "tasks_done": 1,
+    "deltas_total": 14,
+    "deltas_by_capability": { "orbit-conventions": "1 RENAMED + 2 MODIFIED + 2 ADDED = 5", "orbit-onboard": "8 ADDED (FF3 + TR3 + TR4 scenarios added to existing requirements; no new requirements)", "orbit-run-summary-emit": "1 MODIFIED" }
+  },
+  "anchor_break_observation_meta": "Iter-4 caught the propagated 'deprecated upstream' false claim — by the user, not by review. 4 prior review cycles all anchored on the false premise: in-context iter-1 didn't question it, external Codex iter-1 didn't question it (Codex only flagged the language stale-spread to other specs, not the underlying claim), fresh-context Claude iter-2 didn't question it, in-context --thorough iter-3 didn't question it. The user catching it by reading upstream docs directly is the kind of pushback discipline that no review mode catches automatically. Lesson: verify deprecation claims against current upstream state, don't trust prior summaries (now captured in project memory).",
+  "final_assessment": "All 4 review findings resolved (3 trivial fixes, 1 accepted-as-is). PLUS major EW1-reversal applied per user pushback on a propagated false 'deprecated upstream' claim about /opsx:sync. Result: /opsx:sync retained, openspec-sync-specs SKILL retained, all spec language simplified to drop deprecation/removal framing. Tasks: 29→28. Deltas unchanged at 14. Validates --strict. Two project memories saved capturing the pegging strategy and the supports-full-openspec-1-3-1 principle.",
+  "next_recommended": "/opsx:apply lean-overlay-and-add-orbit-onboard — 4 review cycles + iter-4 corrections complete; proposal converged; ready for implementation. The cycle ROI has clearly flattened (iter-3 --thorough found 0 CRITICAL; iter-4 corrections were user-pushback driven, not review-driven). Alternative: commit + push iter-4 state, then proceed to apply."
+}

@@ -155,9 +155,23 @@ When #26 lands, it'll have a pinned version to check against (this change provid
 
 5. **MODIFY** (in `orbit-run-summary-emit` capability delta) `Emit scope` — the list of commands NOT emitting JSON previously said `/opsx:sync-specs` was "deprecated upstream; slated for removal by openspec-orbit#6". Replace with "primitive only under pegging strategy; used by orbit's archive flow via subagent; not exposed as a user-callable command (sync.md pruned)".
 
-**Overlay install model implication** (added in address-reviews iter-2 per EC1):
+**Overlay install model implication** (added in address-reviews iter-2 per EC1; refined per iter-4 EW1-reversal):
 
-6. The overlay install mechanism (`cp -r`) does NOT delete files in the user's target project that don't exist in orbit's source. So orbit deleting `.claude/skills/feedback/` and `.claude/commands/opsx/sync.md` from its repo only ensures those files won't be *added* by overlay; it doesn't actively remove pre-existing copies. README install + update + uninstall sections SHALL document explicit `rm` commands users run after the overlay copy to keep user-project state consistent with overlay intent. Future install-script work (#26) will automate this; until then, doc-only enforcement.
+6. The overlay install mechanism (`cp -r`) does NOT delete files in the user's target project that don't exist in orbit's source. So orbit deleting `.claude/skills/feedback/` from its repo only ensures that file won't be *added* by overlay; it doesn't actively remove pre-existing copies. README install + update + uninstall sections SHALL document an explicit `rm -rf .claude/skills/feedback` command users run after the overlay copy to keep user-project state consistent with overlay intent. Future install-script work (#26) will automate this; until then, doc-only enforcement.
+
+**Address-reviews iter-4 EW1-reversal** (significant correction):
+
+7. The EW1 decision in address-reviews iter-2 to delete `.claude/commands/opsx/sync.md` was REVERSED in iter-4. Original framing claimed sync was "deprecated upstream" — propagated from issue #6's body. **Pushback verification against upstream docs (https://github.com/Fission-AI/OpenSpec/blob/main/docs/commands.md) at iter-4 showed `/opsx:sync` is listed as "Optional command" — NOT deprecated.** Under the project memory `orbit-supports-full-openspec-1-3-1` ("default scope: fully and cleanly support the openspec@1.3.1 functionality set unless there's a real reason not to"), there is no real reason to drop sync. Reverted EW1's sync-pruning actions: kept `/opsx:sync` command file; restored sync.md to orbit-modified category in `Overlay file disposition`; simplified spec language in `Internal-run JSON summary format` + `Emit scope` to drop "primitive only" + "deprecation" framing. Lesson: pushback discipline must verify claims against current upstream state before propagating; prior "deprecated" claims that pre-date current upstream docs cannot be trusted.
+
+**Address-reviews iter-3 + iter-4 TR-finding resolutions**:
+
+8. **TR1** (task 3.4 sandbox definition): "fresh sandbox" defined inline in task 3.4 — clean temp directory (e.g., `mktemp -d`) + same Node version as project's package.json engines field (or current LTS) + `openspec init --tools claude` from clean state + documented overlay copy + documented prune step + `openspec --version` confirming match. Resolves FF4's "if possible" escape hatch by giving the implementing AI concrete steps.
+
+9. **TR2** (archive→sync-specs dependency anchoring): ACCEPTED AS-IS per user "we don't need to write requirements around it". The dependency lives in `.claude/skills/openspec-archive-change/SKILL.md:65` prose; under project memory `orbit-supports-full-openspec-1-3-1`, orbit's continued use of the upstream primitive is implicit and doesn't warrant a normative spec requirement. If Option 2 work (#27) later rewrites archive flow, the implementing change is expected to read the existing SKILL.md to understand the invocation pattern.
+
+10. **TR3** (subjective Identity statement framing): added negative-test scenario to orbit-onboard `Identity statement section` requirement — Identity section text MUST NOT contain augmentation language ("augments cleanly", "overlay on top of", "layered on top of", etc.). Negative test more useful than positive prescription.
+
+11. **TR4** (Try-it nudge assumes real idea): orbit-onboard `Try-it nudge section` requirement split into 2 closing-recommendation scenarios — named-mode for concrete ideas, bare-mode for orientation-only users (preserves no-demo-change discipline while surfacing bare-mode explore as the no-decision-yet entry point per orbit-explore conventions).
 
 ## Risks / Trade-offs
 

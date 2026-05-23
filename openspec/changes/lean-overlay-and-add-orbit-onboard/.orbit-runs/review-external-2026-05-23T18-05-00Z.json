@@ -1,0 +1,21 @@
+{
+  "command": "review-external",
+  "timestamp": "2026-05-23T18:05:00Z",
+  "change": "lean-overlay-and-add-orbit-onboard",
+  "kind": "editorial",
+  "mode": "proposal",
+  "iteration": 2,
+  "step": "T0",
+  "awaiting_findings": true,
+  "prompt_file": "openspec/changes/lean-overlay-and-add-orbit-onboard/.orbit-runs/external-prompt-proposal-2026-05-23T18-05-00Z.md",
+  "recommended_session": "Continue with GPT-5 Codex (same model as iter-1). Rationale: (a) Codex already understands the change architecture from iter-1; (b) Codex flagged EW1 originally; the iter-4 reversal of EW1 specifically warrants Codex's validation that the reversal correctly addresses what they'd want to see; (c) cross-AI anchor-break is preserved (still different from in-context Claude). Alternative if Codex is unavailable: any AI different from Claude.",
+  "uncommitted_warning": "Significant uncommitted state at T0 emit moment — 6 modified files (design.md, proposal.md, 3 spec files, tasks.md) + 3 untracked .orbit-runs/ files (address-reviews iter-3 + iter-4 JSONs + iter-3 bridge MD). User MUST commit + push before pasting the external invocation, otherwise Codex cannot see the iter-4 reversal work.",
+  "cycle_context_summary": {
+    "review_cycles_total": 4,
+    "address_reviews_walks": 4,
+    "findings_resolved_cumulative": 29,
+    "major_corrections": "iter-4 EW1-reversal corrected a propagated false 'deprecated upstream' claim about /opsx:sync that 4 prior review cycles anchored on. Triggered by user pushback against upstream docs, not by any review mode."
+  },
+  "final_assessment": "External review prompt iter-2 written for proposal-mode validation of the iter-4 reversal + remaining proposal state. Awaiting external AI findings.",
+  "next_recommended": "User commits + pushes the iter-4 state. Then pastes invocation snippet to Codex (recommended) or alternative external AI. When findings file is returned + committed, ingest via /opsx:address-reviews lean-overlay-and-add-orbit-onboard --from-file openspec/changes/lean-overlay-and-add-orbit-onboard/.orbit-runs/external-proposal-<TS>.md (timestamp set by external AI when they write)."
+}

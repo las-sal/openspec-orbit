@@ -45,7 +45,7 @@ The Setup verification section SHALL check that orbit is correctly installed and
 #### Scenario: Verify pruned upstream files are absent
 
 - **WHEN** the Setup verification section executes
-- **THEN** it confirms absence of upstream files orbit explicitly prunes from the overlay: at minimum `.claude/skills/feedback/` and `.claude/commands/opsx/sync.md` (per orbit-conventions `Overlay file disposition` for the NOT-shipped category); a correct install has these absent after the user runs the documented post-overlay-copy prune step
+- **THEN** it confirms absence of upstream files orbit explicitly prunes from the overlay (currently: `.claude/skills/feedback/`, per orbit-conventions `Overlay file disposition` for the NOT-shipped category); a correct install has the pruned files absent after the user runs the documented post-overlay-copy prune step
 
 #### Scenario: Verify upstream version matches pin
 
@@ -60,7 +60,7 @@ The Setup verification section SHALL check that orbit is correctly installed and
 #### Scenario: Verification failures distinguish overlay-incomplete from prune-step-not-run
 
 - **WHEN** Setup verification finds an inconsistency
-- **THEN** the report distinguishes two failure modes by severity and remedy: (1) "overlay incomplete" — orbit-authored skills or commands ARE MISSING from `.claude/` — surfaced as ERROR with recommendation to re-run overlay install; (2) "prune step not run" — pruned files (`feedback`, `sync.md`) ARE PRESENT in `.claude/` — surfaced as WARNING with recommendation to run the documented `rm` commands per README's install/update sections. These are distinct conditions with distinct remedies; the skill SHALL NOT conflate them in its report
+- **THEN** the report distinguishes two failure modes by severity and remedy: (1) "overlay incomplete" — orbit-authored skills or commands ARE MISSING from `.claude/` — surfaced as ERROR with recommendation to re-run overlay install; (2) "prune step not run" — pruned files (currently: `feedback`) ARE PRESENT in `.claude/` — surfaced as WARNING with recommendation to run the documented `rm` command per README's install/update sections. These are distinct conditions with distinct remedies; the skill SHALL NOT conflate them in its report
 
 ### Requirement: Identity statement section
 
@@ -70,6 +70,11 @@ The Identity statement section SHALL convey what orbit IS, using the post-peggin
 
 - **WHEN** the Identity section is read
 - **THEN** it describes orbit as a workflow tool that owns the `.claude/` surface and uses `@fission-ai/openspec` at its pinned version as a CLI engine; framing avoids "an overlay that augments upstream cleanly" language that implies upstream-update compatibility
+
+#### Scenario: Framing MUST NOT use augmentation language
+
+- **WHEN** the Identity section is reviewed for the post-pegging framing constraint (per address-reviews iter-3 TR3)
+- **THEN** the section text MUST NOT contain augmentation language such as: "augments cleanly", "augments upstream", "overlay on top of", "layered on top of", "extends upstream", "additive to upstream" (case-insensitive). Negative test — the goal is preventing the pre-pegging framing, not enforcing specific new vocabulary
 
 #### Scenario: Layer enumeration
 
@@ -107,7 +112,7 @@ The Quick-reference command table section SHALL list all current `/opsx:*` slash
 #### Scenario: All current /opsx:* commands listed
 
 - **WHEN** the Quick-reference table is read
-- **THEN** every command currently shipped in `.claude/commands/opsx/` appears in the table with a one-line description of its purpose. Pruned commands (per orbit-conventions `Overlay file disposition` not-shipped category, e.g., `opsx/sync.md`) are NOT listed — the table reflects orbit's current user-callable surface only
+- **THEN** every command currently shipped in `.claude/commands/opsx/` appears in the table with a one-line description of its purpose. Pruned commands (per orbit-conventions `Overlay file disposition` not-shipped category) are NOT listed — the table reflects orbit's current user-callable surface only
 
 #### Scenario: Table format is markdown
 
@@ -121,12 +126,17 @@ The Quick-reference command table section SHALL list all current `/opsx:*` slash
 
 ### Requirement: Try-it nudge section
 
-The Try-it nudge section SHALL close the skill body by recommending the reader invoke `/opsx:explore` on a real idea they have, not on a demo or sandbox idea.
+The Try-it nudge section SHALL close the skill body by recommending the reader invoke `/opsx:explore` — named-mode for a concrete idea OR bare-mode for orientation-only thinking — rather than a demo or sandbox change.
 
-#### Scenario: Closing recommendation
+#### Scenario: Closing recommendation (named-mode for concrete ideas)
 
-- **WHEN** the Try-it nudge section is read
-- **THEN** it explicitly recommends running `/opsx:explore <name>` on a real project idea the reader wants to work on; the recommendation framing avoids "for practice" language to discourage demo-change creation
+- **WHEN** the Try-it nudge section is read by someone with a concrete project idea
+- **THEN** it recommends running `/opsx:explore <name>` on that real project idea; the recommendation framing avoids "for practice" language to discourage demo-change creation
+
+#### Scenario: Closing recommendation (bare-mode for orientation)
+
+- **WHEN** the Try-it nudge section is read by an orientation-only user (e.g., collaborator new to orbit, AI session getting cold context, user without a concrete idea yet — per address-reviews iter-3 TR4)
+- **THEN** it recommends running `/opsx:explore` (bare mode) to think out loud without committing to a named change; preserves the no-demo-change discipline while not stranding the orientation-only user (bare-mode explore is per orbit-explore conventions the no-decision-yet entry point that doesn't emit JSON or create artifacts)
 
 #### Scenario: Future-extension hook
 

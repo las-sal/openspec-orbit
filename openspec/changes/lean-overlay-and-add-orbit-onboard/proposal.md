@@ -22,7 +22,8 @@ This change implements the immediate phase of that strategy (Option 1: declare +
 
 **Overlay cleanup**:
 - DELETE `feedback` skill from `.claude/skills/` (truly upstream, no orbit value, no orbit dependency)
-- KEEP `openspec-sync-specs` (still a needed primitive used by orbit's archive flow)
+- KEEP `openspec-sync-specs` SKILL (still a needed primitive used by orbit's archive flow)
+- KEEP `/opsx:sync` command (per address-reviews iter-4 EW1-reversal: upstream lists it as "Optional command", NOT deprecated; under project memory `orbit-supports-full-openspec-1-3-1` we retain optional upstream commands unless real reason to drop)
 
 **Orbit-onboard skill** (closes #23):
 - Replace upstream `openspec-onboard` skill body with 100% orbit-authored content (same directory, same name)

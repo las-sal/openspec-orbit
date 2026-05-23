@@ -14,7 +14,7 @@ The following commands SHALL NOT emit additional JSONs as part of this change:
 
 - `/opsx:bulk-archive` — wrapper; each inner `/opsx:archive` invocation emits separately
 - `/opsx:onboard` — meta walkthrough; no change-state transition
-- `/opsx:sync-specs` — primitive only under pegging strategy (per orbit-conventions `Distribution model — pegged engine + orbit-owned surface`); used by orbit's archive flow via subagent; not exposed as a user-callable command in orbit's overlay (the `.claude/commands/opsx/sync.md` user-callable command is pruned)
+- `/opsx:sync-specs` — agent-driven primitive used by orbit's archive flow via subagent; also available as a user-callable command (`/opsx:sync`) per upstream's optional-command surface. The primitive does not emit additional run-summary JSON; when invoked during `/opsx:archive`, sync results are captured in the archive emit's `sync_specs` field per orbit-conventions `Internal-run JSON summary format`
 
 Existing emit-producing commands (`/opsx:review`, `/opsx:address-reviews`, `/opsx:archive`, inline `/opsx:audit-drift` during archive) continue emitting as today; this change does not modify their emit behavior.
 

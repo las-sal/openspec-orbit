@@ -1,0 +1,76 @@
+{
+  "command": "review",
+  "timestamp": "2026-05-23T14:54:09Z",
+  "change": "lean-overlay-and-add-orbit-onboard",
+  "kind": "editorial",
+  "mode": "proposal",
+  "iteration": 3,
+  "depth": "thorough",
+  "flags": {
+    "fresh": false,
+    "parallel": false,
+    "focus": null,
+    "strict": false,
+    "mark": false
+  },
+  "executor": "in_context",
+  "executor_note": "Proposal-mode --thorough pass after 3 prior review cycles (in-context iter-1, external Codex iter-1, fresh-context Claude iter-2). Applied constraint-probe scrutiny on what 3 prior cycles may have accepted on first reading. Cluster-1 precedent: --thorough at this maturity typically finds 2-3 constraint-probe items.",
+  "passes_run": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+  "findings_summary": {
+    "critical": 0,
+    "warning": 2,
+    "suggestion": 2,
+    "stale_suppressed": 0,
+    "by_dimension": {
+      "completeness": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "correctness": { "critical": 0, "warning": 2, "suggestion": 1 },
+      "coherence": { "critical": 0, "warning": 0, "suggestion": 1 }
+    }
+  },
+  "findings": [
+    {
+      "id": "TR1",
+      "severity": "WARNING",
+      "dimension": "correctness",
+      "title": "Task 3.4 mandates 'fresh-sandbox install' but never defines what 'sandbox' is",
+      "file": "openspec/changes/lean-overlay-and-add-orbit-onboard/tasks.md",
+      "line": 34,
+      "details": "After FF4 stripped the escape hatch, task 3.4 reads 'Mandatory: run a fresh-sandbox install per the documented README sequence'. But 'fresh sandbox' is undefined — temp dir? Docker? fresh git clone? specific Node version? Different interpretations produce different file counts. Implementing AI may default to escalation (defeating FF4 intent) or interpret 'sandbox' loosely (re-running install in dev tree — not actually fresh).",
+      "recommendation": "Define 'fresh sandbox' inline. Minimum: temp directory + same Node version as project's package.json + run openspec init from clean state. One parenthetical sentence in task 3.4."
+    },
+    {
+      "id": "TR2",
+      "severity": "WARNING",
+      "dimension": "correctness",
+      "title": "orbit's archive dependency on openspec-sync-specs primitive not anchored as normative requirement",
+      "file": "openspec/changes/lean-overlay-and-add-orbit-onboard/specs/orbit-conventions/spec.md",
+      "line": "Overlay file disposition, Upstream-required primitive scenario",
+      "details": "Overlay file disposition says 'kept verbatim because orbit depends on it as a callable primitive' but doesn't anchor WHICH orbit code calls it. Implementation evidence (openspec-archive-change/SKILL.md:65,112,123) confirms archive flow invokes openspec-sync-specs via subagent, but only as prose, not normative spec. If Option 2 (#27) work rewrites archive flow without re-reading those SKILL.md invocation specifics, sync-specs could be quietly dropped — making 'Upstream-required primitive' rationale orphaned. Then someone could prune sync-specs as another feedback-class candidate without realizing they broke archive.",
+      "recommendation": "Either (a) add normative requirement to orbit-conventions OR orbit-archive-modifications capturing the dependency ('orbit's archive flow depends on openspec-sync-specs as a callable primitive invoked via subagent; the primitive MUST remain available in the overlay as long as the archive flow uses it'); or (b) cross-reference openspec-archive-change/SKILL.md invocation pattern from the Upstream-required primitive scenario for traceability."
+    },
+    {
+      "id": "TR3",
+      "severity": "SUGGESTION",
+      "dimension": "correctness",
+      "title": "'post-pegging forward-looking framing' prescription is subjective",
+      "file": "openspec/changes/lean-overlay-and-add-orbit-onboard/specs/orbit-onboard/spec.md",
+      "line": "Identity statement section requirement",
+      "details": "Requirement says Identity SHALL convey 'post-pegging forward-looking framing'. The Workflow-tool framing scenario gives one example pattern but the constraint is otherwise loose. Two implementing AIs could produce semantically-different content that both technically satisfy the spec.",
+      "recommendation": "Tighten with negative test: 'framing MUST NOT use augmentation language (e.g., \"augments cleanly\", \"overlay on top of\", \"layered on top of upstream\")'. Negative test more useful than positive — goal is preventing old framing, not enforcing specific new vocabulary."
+    },
+    {
+      "id": "TR4",
+      "severity": "SUGGESTION",
+      "dimension": "coherence",
+      "title": "Try-it nudge assumes user has a real project idea",
+      "file": "openspec/changes/lean-overlay-and-add-orbit-onboard/specs/orbit-onboard/spec.md",
+      "line": "Try-it nudge section requirement",
+      "details": "Nudge prescribes /opsx:explore <name> 'on a real project idea they have', 'for practice' explicitly avoided. Constraint-probe: orientation-only users (collaborators new to orbit, AI sessions getting context cold) have no concrete idea yet. They get a recommendation they can't act on.",
+      "recommendation": "Relax to: 'recommend /opsx:explore <name> when the reader has a real idea, OR /opsx:explore (bare mode) to think out loud if no idea is ready yet'. Preserves no-demo-change discipline; surfaces bare-mode as the no-decision-yet entry point per orbit-explore conventions."
+    }
+  ],
+  "pushback_verification": "All 4 constraint-probe findings verified at review-time. TR1 verified via grep on tasks.md confirming 'sandbox' has no definition. TR2 verified via grep on openspec-archive-change confirming sync-specs invocations exist in SKILL.md (lines 65, 112, 123) but no normative spec anchor for the dependency. TR3 verified via spec inspection — Workflow-tool framing scenario doesn't constrain content. TR4 verified via Try-it nudge spec — 'real project idea they have' wording. 0 stale to suppress.",
+  "anchor_break_observation": "--thorough caught what 3 prior cycles accepted on first reading: TR1 (FF4 just resolved by stripping the escape hatch but didn't notice the new mandatory step itself was under-specified); TR2 (everyone treated 'kept verbatim because orbit depends on it' as self-evident, no one questioned where the dependency lives in code); TR3 (subjective language passed every prior pass because the example scenario read fine); TR4 (no one questioned the assumption that every onboard-invoker has a real idea). All 4 are constraint-probe surface — fits the cluster-1 empirical pattern that --thorough catches different findings than --fresh or external.",
+  "final_assessment": "0 CRITICAL — proposal converging cleanly. 2 WARNING + 2 SUGGESTION represent diminishing-returns territory. TR1 most actionable (task 3.4 mandate is unspecified); TR2 forward-protection for Option 2 work; TR3/TR4 polish.",
+  "next_recommended": "/opsx:address-reviews lean-overlay-and-add-orbit-onboard — walk 4 findings. After resolution, proceed to /opsx:apply lean-overlay-and-add-orbit-onboard — cycle ROI clearly flattened (cluster-1 precedent: 3 cycles + thorough = ready for apply)."
+}
