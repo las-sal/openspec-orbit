@@ -1,0 +1,97 @@
+{
+  "command": "review",
+  "timestamp": "2026-05-24T16:55:15Z",
+  "change": "orbit-onboard-follow-up",
+  "final_assessment": "2 critical issue(s) found. Fix before /opsx:apply.",
+  "next_recommended": "/opsx:address-reviews orbit-onboard-follow-up --from-file openspec/changes/orbit-onboard-follow-up/.orbit-runs/review-proposal-2026-05-24T16-55-15Z.json — 2 CRITICAL + 3 WARNING + 2 SUGGESTION findings; the 2 CRITICALs are: (1) post-change count drift in Setup verification scenario; (2) missing required README-sync task per baseline `Install documentation describes actual install surface` (composes-and-trips against the requirement this same cluster authored to prevent this exact bug pattern)",
+  "kind": "editorial",
+  "mode": "proposal",
+  "iteration": 1,
+  "depth": "full",
+  "flags": {
+    "parallel": false,
+    "focus": null,
+    "strict": false,
+    "fresh": true,
+    "mark": false,
+    "skip_verify": false
+  },
+  "passes_run": ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
+  "passes_skipped": [],
+  "findings_summary": {
+    "critical": 2,
+    "warning": 3,
+    "suggestion": 2,
+    "by_pass": {
+      "1": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "2": { "critical": 1, "warning": 1, "suggestion": 0 },
+      "3": { "critical": 0, "warning": 1, "suggestion": 0 },
+      "4": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "5": { "critical": 0, "warning": 1, "suggestion": 2 },
+      "6": { "critical": 1, "warning": 0, "suggestion": 0 },
+      "7": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "8": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "9": { "critical": 0, "warning": 0, "suggestion": 0 }
+    }
+  },
+  "findings": [
+    {
+      "pass": "2",
+      "severity": "CRITICAL",
+      "file": "specs/orbit-onboard/spec.md",
+      "line": 38,
+      "title": "Layered-✓ scenario carries pre-change counts (10+4) instead of post-change (9+5)",
+      "recommendation": "Update parenthetical at spec.md:38 to '(9 upstream-modified + 5 orbit-authored + 1 upstream-required primitive)' and update design.md:78 to match. tasks.md:22(d) already has the correct post-state number (9). Leave explore.md:61 (historical record) alone."
+    },
+    {
+      "pass": "6",
+      "severity": "CRITICAL",
+      "file": "tasks.md",
+      "line": 1,
+      "title": "Missing required README-sync task for overlay disposition change",
+      "recommendation": "Add a task (chunk 2 or chunk 3) to update README install section reflecting onboard's disposition move: counts (10→9 modified, 4→5 authored skills; 9→8 modified, 4→5 authored commands), enumeration lists at README.md:956, 957, 972, 973, and the `grep -l '^# Orbit additions' ... should return 10` check (now 9). Required by baseline `Install documentation describes actual install surface` requirement at openspec/specs/orbit-conventions/spec.md:728-730 (`Upgrade and overlay-change proposals include README sync` scenario specifically triggers on `modifies overlay file disposition`)."
+    },
+    {
+      "pass": "2",
+      "severity": "WARNING",
+      "file": "specs/orbit-onboard/spec.md",
+      "line": 38,
+      "title": "WHEN parenthetical mixes still-true totals with stale per-category numbers",
+      "recommendation": "Rewrite WHEN parenthetical to decouple from 'just-archived README state' framing and cite post-this-change counts: '(15 skills + 16 commands total — 9 upstream-modified + 5 orbit-authored + 1 upstream-required primitive `openspec-sync-specs` after this change archives)'."
+    },
+    {
+      "pass": "3",
+      "severity": "WARNING",
+      "file": "specs/orbit-onboard/spec.md",
+      "line": 96,
+      "title": "Quick-reference table is the only post-apply doc surface listing onboard as orbit-authored if README is not synced",
+      "recommendation": "Resolves with the Pass 6 CRITICAL fix; once README sync is added, this WARNING dissolves automatically."
+    },
+    {
+      "pass": "5",
+      "severity": "WARNING",
+      "file": "specs/orbit-onboard/spec.md",
+      "line": 44,
+      "title": "Lumped sub-mode enumeration omits 'wrong upstream version'",
+      "recommendation": "At spec.md:44, add 'wrong upstream version' to the parenthetical sub-mode list, OR add a separate scenario specifying that wrong-upstream-version uses a distinct message pointing at README's '### 1. Initialize upstream OpenSpec' section rather than '### 2. Overlay orbit'."
+    },
+    {
+      "pass": "5",
+      "severity": "SUGGESTION",
+      "file": "specs/orbit-onboard/spec.md",
+      "line": 128,
+      "title": "Non-emission metadata-note placement is implementer's choice",
+      "recommendation": "Either accept the deliberate flexibility (cite it as such) or pick one location. The discipline outcome (the assertion exists) is what composes with orbit-run-summary-emit Emit scope; placement is cosmetic."
+    },
+    {
+      "pass": "5",
+      "severity": "SUGGESTION",
+      "file": "specs/orbit-onboard/spec.md",
+      "line": 76,
+      "title": "Per-phase paragraph length unconstrained at spec level",
+      "recommendation": "Consider adding a length-range hint to the scenario (e.g., 'roughly 80-120 words') matching the tasks.md:35 author guidance, or accept that prose-length-spec is over-engineering and rely on user-validation at task 3.2."
+    }
+  ],
+  "stale_suppressed": [],
+  "iteration_note": "First proposal-mode run for this change."
+}

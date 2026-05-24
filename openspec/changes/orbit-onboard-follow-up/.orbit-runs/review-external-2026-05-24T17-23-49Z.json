@@ -1,0 +1,12 @@
+{
+  "command": "review-external",
+  "timestamp": "2026-05-24T17:23:49Z",
+  "change": "orbit-onboard-follow-up",
+  "final_assessment": "External review prompt packaged for orbit-onboard-follow-up (iter 1, mode proposal); awaiting findings from a fresh external AI session (model TBD by user — GPT-5 Codex and fresh Claude are both viable options; prior cluster-2 external used GPT-5 Codex effectively).",
+  "next_recommended": "Commit + push the change directory + spec/design/tasks edits from address-reviews iter-1 (uncommitted state). Then paste openspec/changes/orbit-onboard-follow-up/.orbit-runs/external-prompt-proposal-2026-05-24T17-23-48Z.md into the target AI, save the response as openspec/changes/orbit-onboard-follow-up/.orbit-runs/external-proposal-<TS>.md, then /opsx:address-reviews orbit-onboard-follow-up --from-file <path>",
+  "kind": "editorial",
+  "mode": "proposal",
+  "prompt_path": "openspec/changes/orbit-onboard-follow-up/.orbit-runs/external-prompt-proposal-2026-05-24T17-23-48Z.md",
+  "target": null,
+  "awaiting_findings": true
+}

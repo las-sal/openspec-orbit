@@ -1,0 +1,91 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-24T17:21:58Z",
+  "change": "orbit-onboard-follow-up",
+  "final_assessment": "Resolved all 7 findings from review-proposal iter-1. CRIT 1 (spec.md:38 pre-change counts) + WARN 1 (mixed counts in same line) — fixed by updating to post-state counts (9 upstream-modified + 5 orbit-authored + 1 primitive) in spec.md:38 and design.md:78. CRIT 2 (missing README-sync task per baseline `Install documentation describes actual install surface`) — fixed by adding task 2.4 with detailed per-line edits to README.md L955/956/957/972/973 + Prerequisites + residue sweep; no sandbox verify added (counts derivable from baseline disposition scenarios). WARN 2 (Quick-ref cross-doc regression) — auto-resolves with CRIT 2 fix; not separately edited. WARN 3 (lumped enumeration omits wrong-upstream-version) — fixed by adding wrong-upstream-version to lumped sub-mode list + updating message to point at full `## Installation` section (covering both version-pin and overlay-incomplete remediation paths). SUGG 1 (metadata-note placement) — fixed by citing the flexibility explicitly in scenario text. SUGG 2 (paragraph length) — accepted as-is per user; user-validation at task 3.2 catches actual outcomes.",
+  "next_recommended": "re-run /opsx:review --as proposal orbit-onboard-follow-up to confirm convergence (iter-2 should show CRITICAL count = 0). Then /opsx:apply orbit-onboard-follow-up to start the SKILL body rewrite.",
+  "kind": "editorial",
+  "source": "from-file",
+  "source_path": "openspec/changes/orbit-onboard-follow-up/.orbit-runs/review-proposal-2026-05-24T16-55-15Z.json",
+  "external_reviewer": null,
+  "input_findings_summary": {
+    "critical": 2,
+    "warning": 3,
+    "suggestion": 2
+  },
+  "pushback_verification": "All 7 findings verified against current state via targeted Read + grep. CRIT 1: confirmed pre-change counts at spec.md:38 + design.md:78. CRIT 2: confirmed 0 README-sync tasks in tasks.md (only 1 reference, which is documentation-target prose inside Setup verification text, not an action); confirmed baseline at openspec/specs/orbit-conventions/spec.md:728-730 triggers on `modifies overlay file disposition` — exactly this change. WARN 3: confirmed wrong-upstream-version missing from spec.md:44 enumeration. Others verified similarly. No stale-suppressions.",
+  "resolution_summary": {
+    "resolved": 6,
+    "stale_suppressed": 0,
+    "deferred": 1,
+    "escalated": 0,
+    "auto_resolved_by_dependency": 1
+  },
+  "resolutions": [
+    {
+      "severity": "CRITICAL",
+      "title": "Layered-✓ scenario carries pre-change counts (10+4) instead of post-change (9+5)",
+      "marker_source": "external",
+      "classification": "trivial fix",
+      "decision": "update parenthetical to post-state counts; update design.md to match",
+      "action": "spec.md:38 WHEN parenthetical rewritten to '15 skills + 16 commands total — 9 upstream-modified + 5 orbit-authored + 1 upstream-required primitive `openspec-sync-specs` after this change archives; the per-category breakdown shifts when openspec-onboard moves to Orbit-authored category, but totals stay the same'. design.md:78 Pass row updated to 'post-this-change baseline: 9 upstream-modified + 5 orbit-authored + 1 upstream-required primitive + feedback/ absent'. explore.md (historical record) left as-is.",
+      "ripple_flagged": ["companion WARN 1 resolved by same edit"]
+    },
+    {
+      "severity": "CRITICAL",
+      "title": "Missing required README-sync task for overlay disposition change",
+      "marker_source": "external",
+      "classification": "decision required",
+      "decision": "single task in chunk 2 + no sandbox verify",
+      "action": "Added task 2.4 to tasks.md with explicit per-line edit instructions for README.md: L955 (Step 2 'Adds 4→5 orbit-authored skills+commands'), L956 (Step 2 'Overwrites 10→9 upstream skills' + remove openspec-onboard from list + verify-hint 10→9), L957 (Step 2 'Overwrites 9→8 of matching slash command bodies' + remove onboard.md from list), L972 (post-install table skills row '10+4 → 9+5'), L973 (post-install table commands row '9+4 → 8+5' + remove openspec-onboard from Modified upstream skills enumeration), Prerequisites bullet if applicable, plus a residue grep. No sandbox verify per user decision — post-state counts derivable from baseline `Overlay file disposition` scenarios this change MODIFIES; no new CLI behavior introduced.",
+      "ripple_flagged": ["WARN 2 (Quick-ref table cross-doc regression) auto-resolves once README sync task lands"]
+    },
+    {
+      "severity": "WARNING",
+      "title": "WHEN parenthetical mixes still-true totals with stale per-category numbers",
+      "marker_source": "external",
+      "classification": "trivial fix (companion to CRIT 1)",
+      "decision": "resolved by CRIT 1 fix — same line",
+      "action": "Auto-resolved by CRIT 1's spec.md:38 edit. New WHEN parenthetical decouples totals (15+16, still true) from per-category (now 9+5+1, post-change correct) and cites 'after this change archives' framing.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "WARNING",
+      "title": "Quick-reference table is the only post-apply doc surface listing onboard as orbit-authored if README is not synced",
+      "marker_source": "external",
+      "classification": "auto-resolves with CRIT 2 fix",
+      "decision": "resolved by CRIT 2 task addition",
+      "action": "Auto-resolved by CRIT 2's task 2.4. With README sync in place, the Quick-ref table is no longer the only doc surface reflecting the new disposition — README will too. No separate edit needed.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "WARNING",
+      "title": "Lumped sub-mode enumeration omits 'wrong upstream version'",
+      "marker_source": "external",
+      "classification": "decision required",
+      "decision": "add 'wrong upstream version' to lumped enumeration; update message to point at full `## Installation` section",
+      "action": "spec.md:43-44 scenario updated. WHEN now includes 'wrong upstream version' alongside the 4 overlay-incomplete sub-modes (5 sub-modes total). THEN message now points at the README's `## Installation` section as a whole, explicitly covering both `### 1. Initialize upstream OpenSpec` (version-pin issues) and `### 2. Overlay orbit` (overlay-incomplete issues). User reads install from the top; trade-off cited (slightly broader remediation reading in exchange for one detection branch vs five).",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "Non-emission metadata-note placement is implementer's choice",
+      "marker_source": "external",
+      "classification": "decision required",
+      "decision": "accept flexibility — cite it explicitly",
+      "action": "spec.md:130 (`Brief metadata note in SKILL body asserts non-emission` scenario's THEN) updated to explicitly call out the deliberate flexibility: 'a brief metadata note (one or two lines) placed at the SKILL body's discretion (footer, near-frontmatter, or other natural reading position — flexibility is intentional)'. The discipline outcome (assertion exists) is what composes with orbit-run-summary-emit Emit scope; placement is cosmetic.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "Per-phase paragraph length unconstrained at spec level",
+      "marker_source": "external",
+      "classification": "decision required",
+      "decision": "deferred — accept user-validation as the catch-net",
+      "action": "No spec edit. tasks.md:35 already has author-time guidance ('80-120 words per paragraph — substantive but not encyclopedic'); task 3.2 user-validation reads the result and catches over/under-length. Prose-length specs are over-engineering for a teaching doc.",
+      "ripple_flagged": []
+    }
+  ],
+  "remaining_markers_in_scope": 0,
+  "persisted_escalations": []
+}
