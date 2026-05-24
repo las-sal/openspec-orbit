@@ -32,7 +32,7 @@ This change inherits 80% of the prior design and re-grounds the 20% (primarily S
 - **Emit run-summary JSON on `/opsx:onboard` invocation** — rejected during explore D5c (teaching session, not workflow advancement).
 - **Option 2 work** — dropping the `# Orbit additions` pattern (orbit-modified skills becoming fully orbit-authored). Tracked as [#27](https://github.com/las-sal/openspec-orbit/issues/27); independent of this change.
 - **Global `openspec-*` → `orbit-*` rename** — tracked as [#28](https://github.com/las-sal/openspec-orbit/issues/28); independent. The new orbit-authored SKILL stays at `openspec-onboard` to match sibling convention (per inherited prior D8).
-- **`fast-forward.md` / `ff.md` consolidation** — this change acknowledges the divergence in baseline `Overlay file disposition` but does not resolve it (consolidating would touch multiple files + the fast-forward workflow surface; out of scope for the orbit-onboard rewrite).
+- **No follow-on rename of `openspec-ff-change` SKILL** — this change drops `fast-forward.md` from orbit's command overlay (verbatim duplicate of upstream's `ff.md`) but does NOT rename the `openspec-ff-change` SKILL. Renaming the SKILL would touch the skill RENAME baseline op + multiple files + change the workflow surface; it stays out of scope.
 
 ## Decisions
 
@@ -120,7 +120,9 @@ This change inherits 80% of the prior design and re-grounds the 20% (primarily S
 1. **`Orbit-modified` scenario** — current list of 9 orbit-modified upstream skills stays at 9. `openspec-onboard` no longer in this category after this change archives (moves to `Orbit-authored`).
 2. **`Orbit-authored` scenario** — current list expands by 1: `openspec-onboard` is added (alongside the existing 4: `openspec-review`, `openspec-review-external`, `openspec-audit-drift`, `openspec-address-reviews`).
 3. **`Upstream-required primitive` scenario** — gets `openspec-sync-specs` named explicitly as the concrete example (replaces or supplements the current abstract phrasing).
-4. **Commands-follow-same-framework scenario** — gets the `ff.md` (upstream-installed, untouched by overlay) / `fast-forward.md` (orbit-shipped, parallel to ff.md) naming-divergence acknowledged inline, with a note that consolidation is out of scope for now.
+4. **Commands-follow-same-framework scenario** — clarified to reference the new `Verbatim upstream files not in orbit's overlay` scenario (orbit does NOT ship verbatim duplicates of upstream-installed files; the immediate concrete case is removing orbit's `fast-forward.md`, which was byte-identical to upstream's `ff.md`).
+
+5. **NEW `Verbatim upstream files not in orbit's overlay` scenario** — codifies the principle (per user direction during external-review iter-1 walk): orbit's overlay ships ONLY files orbit authors or modifies. The fast-forward.md / ff.md case is the immediate trigger; the principle generalizes to any future verbatim duplicate orbit might inadvertently ship.
 
 **Why bundle** (per explore D5b):
 - All 4 modifications touch the same baseline requirement. One MODIFIED block edits all scenarios at once.

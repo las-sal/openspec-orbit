@@ -1,0 +1,70 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-24T18:28:24Z",
+  "change": "orbit-onboard-follow-up",
+  "final_assessment": "Resolved all 5 findings from external proposal-mode review iter-1 (GPT-5 Codex). CRIT 1 (task 2.4 violates baseline sandbox-verify SHALL) — added task 2.5 invoking fresh-sandbox verification per baseline `README-modifying changes pair with sandbox verification` scenario. CRIT 2 (task 1.2 only checks skills, spec promises skill OR command) — expanded task 1.2 to add command-presence checks (orbit-authored commands + sync.md + 15-file count). WARN 1 (task 2.4 missed sites + grep too narrow) — extended task 2.4 to cover L985 (Partial adoption), L994 (Working alongside), L999 (Common gotchas), L1036/L1040/L1048 (Uninstalling); broadened residue grep to catch both numeric and spelled-out forms. WARN 2 (fast-forward.md disposition inconsistent) — RESOLVED VIA UPGRADE: user pushed back with sharper principle ('orbit ships ONLY files it modifies or authors; verbatim duplicates do NOT belong'); fast-forward.md is byte-identical to upstream's ff.md and now gets DROPPED from orbit's overlay (task 2.3a added); spec.md:35 + spec.md:39 updated; new `Verbatim upstream files not in orbit's overlay` scenario codifies the principle in baseline. SUGG 1 (Quick-ref 15-vs-16) — RESOLVED VIA WARN-2-FIX: post-this-change command surface is 15 (orbit drops fast-forward.md; user has upstream's ff); Quick-ref enumerates 15 commands including `ff`. The dogfood lesson: external-review caught not just the surface findings but a deeper baseline-discipline violation (CRIT 1 trips the very requirement we authored last cycle).",
+  "next_recommended": "re-run /opsx:review --as proposal orbit-onboard-follow-up --fresh to confirm convergence (iter-2 should show all CRITICALs cleared). Then /opsx:apply orbit-onboard-follow-up to start the SKILL body rewrite + fast-forward.md drop + README sync + sandbox verify.",
+  "kind": "editorial",
+  "source": "from-file",
+  "source_path": "openspec/changes/orbit-onboard-follow-up/.orbit-runs/external-proposal-2026-05-24T17-30-38Z.md",
+  "external_reviewer": "GPT-5 Codex",
+  "input_findings_summary": {
+    "critical": 2,
+    "warning": 2,
+    "suggestion": 1
+  },
+  "pushback_verification": "All 5 findings verified against current state via targeted Read + grep. CRIT 1: confirmed baseline `README-modifying changes pair with sandbox verification` is unconditional at orbit-conventions:722-725; task 2.4 (from iter-1 address-reviews) explicitly said 'no sandbox verify' — clear baseline violation. CRIT 2: confirmed spec.md:27 hard-stop says 'skill OR command'; task 1.2:22 only enumerated skill checks. WARN 1: confirmed L985/L994/L999/L1036/L1040/L1048 carry stale counts in current README. WARN 2: investigation revealed fast-forward.md is byte-identical to upstream's ff.md modulo whitespace (NOT orbit-authored as both the reviewer's framing and my spec echoed). SUGG 1: confirmed 15-vs-16 ambiguity; resolved by WARN 2 fix. No stale-suppressions.",
+  "resolution_summary": {
+    "resolved": 5,
+    "stale_suppressed": 0,
+    "deferred": 0,
+    "escalated": 0,
+    "principle_upgrade": 1
+  },
+  "resolutions": [
+    {
+      "severity": "CRITICAL",
+      "title": "Task 2.4 violates baseline `README-modifying changes pair with sandbox verification` SHALL",
+      "marker_source": "external",
+      "classification": "decision required",
+      "decision": "add lightweight sandbox-verify task 2.5",
+      "action": "Added task 2.5 to chunk 2. Sandbox sequence: mktemp -d + init --tools claude + cp -r overlay from main + rm -rf feedback + assert post-state (15 skills + 15 commands including ff; NO fast-forward.md per the drop) + run uninstall sequence + verify residue grep is clean. Verification failures escalate via @review(escalated): markers. Restores compliance with the unconditional baseline SHALL. Removed the 'no sandbox verify needed' language from task 2.4."
+    },
+    {
+      "severity": "CRITICAL",
+      "title": "Setup verification omits required command checks (skill-only)",
+      "marker_source": "external",
+      "classification": "decision required",
+      "decision": "expand task 1.2 to check command files",
+      "action": "Task 1.2 implementation block extended with command checks (f/g/h): presence of orbit-authored commands (review.md, review-external.md, audit-drift.md, address-reviews.md, onboard.md) + presence of sync.md + total command-file count = 15 post-this-change. Matches spec.md:27 hard-stop scenario's 'missing any required orbit-shipped skill or command' promise."
+    },
+    {
+      "severity": "WARNING",
+      "title": "Task 2.4 misses stale count sites + uses too-narrow residue grep",
+      "marker_source": "external",
+      "classification": "trivial fix (extend)",
+      "decision": "extend per reviewer's site list + broaden grep",
+      "action": "Task 2.4 expanded to cover L985 (Partial adoption — 'All 10 upstream skills' + 'four new orbit-authored'), L994 (Working alongside — 'any of the 10 orbit-modified' + enumeration), L999 (Common gotchas — 'All 10 orbit-modified'), L1036/L1040/L1048 (Uninstalling — '4 orbit-authored' commands and skills + '10 orbit-modified'). Residue grep broadened to catch both numeric (10, 4) AND spelled-out (ten, four) forms via case-insensitive regex with word boundaries."
+    },
+    {
+      "severity": "WARNING",
+      "title": "fast-forward.md disposition internally inconsistent across 3 sources",
+      "marker_source": "external",
+      "classification": "decision required + principle upgrade",
+      "decision": "drop fast-forward.md from orbit's overlay; codify 'no verbatim upstream copies' principle in baseline",
+      "action": "User pushback during walk surfaced a sharper principle: orbit ships ONLY files it modifies or authors; verbatim upstream copies do NOT belong in orbit's overlay. Investigation confirmed fast-forward.md is byte-identical to upstream's ff.md modulo trailing whitespace — pure verbatim duplicate. Actions: (1) Added task 2.3a to physically delete .claude/commands/opsx/fast-forward.md; (2) Removed fast-forward.md from spec.md:35 Commands-follow-same-framework enumerations; (3) Replaced spec.md:39 naming-divergence scenario with new `Verbatim upstream files not in orbit's overlay` scenario codifying the principle; (4) Updated design.md D-conventions-1 item 4 to reference the new principle + item 5 to describe the new scenario; (5) Updated design.md Non-Goals to clarify out-of-scope (no `openspec-ff-change` SKILL rename here); (6) Spec.md:38 layered-checks WHEN: 16 commands → 15 commands (the drop); (7) Spec.md:96 Quick-ref: 'fast-forward' → 'ff' in the 15-command enumeration. Per pegging, NO future-proofing language in the principle (user explicit: 'we are pegged to 1.3.1; openspec is set in stone').",
+      "ripple_flagged": ["task 2.4 README sync updated for 15-not-16 commands; spec.md:38 + spec.md:96 updated"]
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "Quick-reference 15-vs-16 ambiguity (omits upstream ff.md)",
+      "marker_source": "external",
+      "classification": "auto-resolves via WARN 2 (fast-forward.md drop)",
+      "decision": "resolved by WARN 2 fix — Quick-ref now lists 15 commands including `ff`",
+      "action": "Auto-resolved. Spec.md:96 enumeration updated: removed `fast-forward`, added `ff`. The post-this-change command surface is exactly 15 (14 from orbit's overlay + 1 untouched upstream ff). Quick-ref framing rewritten to: 'every slash command in the user's post-install .claude/commands/opsx/ (15 files: 14 from orbit's overlay + 1 from upstream init untouched)'.",
+      "ripple_flagged": []
+    }
+  ],
+  "remaining_markers_in_scope": 0,
+  "persisted_escalations": []
+}

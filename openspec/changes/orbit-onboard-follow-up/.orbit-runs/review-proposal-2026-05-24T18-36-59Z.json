@@ -1,0 +1,78 @@
+{
+  "command": "review",
+  "timestamp": "2026-05-24T18:36:59Z",
+  "change": "orbit-onboard-follow-up",
+  "final_assessment": "All checks passed. Ready to apply.",
+  "next_recommended": "/opsx:apply orbit-onboard-follow-up — start the SKILL body rewrite (chunk 1), then mirror-to-command + fast-forward.md drop + README sync (chunk 2 incl. task 2.5 sandbox verify), then validation + user-validation handoff (chunk 3). 3 SUGGESTION-level prose nits noted in findings; non-blocking, apply at editorial discretion.",
+  "kind": "editorial",
+  "mode": "proposal",
+  "iteration": 2,
+  "depth": "full",
+  "flags": {
+    "parallel": false,
+    "focus": null,
+    "strict": false,
+    "fresh": true,
+    "mark": false,
+    "skip_verify": false
+  },
+  "passes_run": ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
+  "passes_skipped": [],
+  "findings_summary": {
+    "critical": 0,
+    "warning": 0,
+    "suggestion": 3,
+    "by_pass": {
+      "1": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "2": { "critical": 0, "warning": 0, "suggestion": 1 },
+      "3": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "4": { "critical": 0, "warning": 0, "suggestion": 1 },
+      "5": { "critical": 0, "warning": 0, "suggestion": 1 },
+      "6": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "7": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "8": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "9": { "critical": 0, "warning": 0, "suggestion": 0 }
+    }
+  },
+  "findings": [
+    {
+      "pass": "2",
+      "severity": "SUGGESTION",
+      "file": "tasks.md",
+      "line": 97,
+      "title": "Sandbox-assertion grouping label diverges from spec.md:38 grouping",
+      "recommendation": "Rephrase task 2.5:97 inner grouping to match spec.md:38 — '15 skills (9 orbit-modified + 5 orbit-authored including openspec-onboard + 1 upstream-required primitive openspec-sync-specs)'. Cosmetic; arithmetic already correct."
+    },
+    {
+      "pass": "5",
+      "severity": "SUGGESTION",
+      "file": "specs/orbit-onboard/spec.md",
+      "line": 39,
+      "title": "Layered-✓ prose says 'four categories' but output enumerates 5 ✓ lines",
+      "recommendation": "Adjust spec.md:39 to either drop one ✓ from the THEN enumeration or change 'mirroring the four ... categories' to 'mirroring the four ... categories plus the CLI version pin check'. Aligns prose count with output count."
+    },
+    {
+      "pass": "4",
+      "severity": "SUGGESTION",
+      "file": "specs/orbit-conventions/spec.md",
+      "line": 30,
+      "title": "Per-skill-disposition-is-documented scenario doesn't cross-reference verbatim-duplicate sub-case",
+      "recommendation": "Optional: add a clause like 'and consult Verbatim upstream files not in orbit's overlay for the byte-identical case' to line 30. Low value; skip unless a future audit-drift run flags it."
+    }
+  ],
+  "stale_suppressed": [
+    { "pass": "2", "title": "Layered-✓ scenario carries pre-change counts (10+4) instead of post-change (9+5)", "evidence": "spec.md:38 + design.md:78 now carry post-state counts per address-reviews-2026-05-24T17-21-58Z.json resolution" },
+    { "pass": "6", "title": "Missing required README-sync task for overlay disposition change", "evidence": "task 2.4 + 2.5 present at tasks.md:72-101 with explicit per-line edits + sandbox sequence" },
+    { "pass": "2", "title": "WHEN parenthetical mixes still-true totals with stale per-category numbers", "evidence": "auto-resolved by spec.md:38 rewrite" },
+    { "pass": "3", "title": "Quick-reference table is the only post-apply doc surface listing onboard as orbit-authored if README is not synced", "evidence": "auto-resolved by task 2.4 README sync" },
+    { "pass": "5", "title": "Lumped sub-mode enumeration omits 'wrong upstream version'", "evidence": "spec.md:43-44 WHEN now includes 'OR wrong upstream version'; THEN points to full ## Installation section" },
+    { "pass": "5", "title": "Non-emission metadata-note placement is implementer's choice", "evidence": "spec.md:128-129 now explicitly cites 'flexibility is intentional'" },
+    { "pass": "5", "title": "Per-phase paragraph length unconstrained at spec level", "evidence": "user-declined per address-reviews iter-1; task 3.2 user-validation is the catch-net" },
+    { "pass": "1", "title": "[external CRIT] README sync task contradicts required sandbox verification", "evidence": "task 2.5 added at tasks.md:94-101 invoking the unconditional baseline `README-modifying changes pair with sandbox verification` scenario" },
+    { "pass": "6", "title": "[external CRIT] Setup verification omits required command checks (skill-only)", "evidence": "task 1.2 implementation block extended at tasks.md:23 with command checks (f/g/h)" },
+    { "pass": "7", "title": "[external WARN] README sync task misses stale count sites + too-narrow residue grep", "evidence": "task 2.4 expanded to cover L985/L994/L999/L1036/L1040/L1048; residue grep broadened at tasks.md:91" },
+    { "pass": "4", "title": "[external WARN] fast-forward.md command disposition is internally inconsistent", "evidence": "RESOLVED VIA PRINCIPLE UPGRADE: fast-forward.md dropped from orbit's overlay (task 2.3a); new `Verbatim upstream files not in orbit's overlay` scenario at orbit-conventions delta spec.md:37-40 codifies the principle; spec.md:35 + spec.md:38 + spec.md:96 reflect 15-not-16 commands" },
+    { "pass": "5", "title": "[external SUGG] Clarify whether quick-reference excludes upstream ff.md", "evidence": "auto-resolved by principle upgrade; spec.md:96 enumerates 15 commands including `ff`" }
+  ],
+  "iteration_note": "0 findings repeat from iter-1 internal (all 7 stale-suppressed); 0 findings repeat from external iter-1 (all 5 stale-suppressed, including 1 via principle upgrade). 3 new SUGGESTION-level findings this run, all cosmetic. Convergence confirmed."
+}

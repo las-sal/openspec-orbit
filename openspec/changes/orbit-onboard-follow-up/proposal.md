@@ -21,7 +21,7 @@ This change replaces both the `.claude/skills/openspec-onboard/SKILL.md` body an
 **Update `orbit-conventions` baseline `Overlay file disposition` requirement** (3 drift items bundled per explore D5b):
 - Move `openspec-onboard` from `Orbit-modified` category to `Orbit-authored` category in the disposition scenarios
 - Name `openspec-sync-specs` explicitly as the concrete example in the `Upstream-required primitive` scenario
-- Acknowledge the `ff.md` (upstream-installed, untouched) / `fast-forward.md` (orbit-added) command naming divergence in the disposition scenarios
+- Drop `.claude/commands/opsx/fast-forward.md` from orbit's overlay (verbatim duplicate of upstream's `ff.md` modulo whitespace) and codify the principle as a new `Verbatim upstream files not in orbit's overlay` scenario in the modified requirement
 
 **Preserve `/opsx:onboard` non-emission semantics** (per explore D5c): the new orbit-authored SKILL asserts in a brief metadata note that `/opsx:onboard` does NOT emit run-summary JSON (composes with the existing `orbit-run-summary-emit` `Emit scope` baseline requirement that already lists onboard as a non-emit command).
 
@@ -31,7 +31,7 @@ This change replaces both the `.claude/skills/openspec-onboard/SKILL.md` body an
 - `orbit-onboard`: defines the orbit-authored onboarding skill — 5-section reference-leaning hybrid walkthrough (Setup verification / Identity / Canonical-flow / Quick-reference / Try-it nudge). Slash-command surface `/opsx:onboard`. Bundled setup verification with hard-stop / warn-and-continue / pass-with-layered-checks semantics. Non-emission of run-summary JSON. Command-body duplication discipline.
 
 ### Modified Capabilities
-- `orbit-conventions`: MODIFIES the `Overlay file disposition` requirement's `Orbit-modified` + `Upstream-required primitive` + Commands-follow-same-framework scenarios to reflect openspec-onboard moving to Orbit-authored, explicit naming of `openspec-sync-specs`, and the `ff.md`/`fast-forward.md` naming divergence.
+- `orbit-conventions`: MODIFIES the `Overlay file disposition` requirement — updates `Orbit-modified` + `Upstream-required primitive` + Commands-follow-same-framework scenarios to reflect openspec-onboard moving to Orbit-authored and explicit naming of `openspec-sync-specs`; ADDS a new `Verbatim upstream files not in orbit's overlay` scenario codifying that orbit ships ONLY files it authors or modifies (the immediate trigger is dropping `.claude/commands/opsx/fast-forward.md` from orbit's overlay because it was byte-identical to upstream's `ff.md`).
 
 ## Impact
 

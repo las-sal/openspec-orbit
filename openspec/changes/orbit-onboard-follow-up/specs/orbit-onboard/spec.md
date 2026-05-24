@@ -35,7 +35,7 @@ Section 1 of the SKILL body SHALL perform setup verification before any walkthro
 
 #### Scenario: Pass with layered ✓ checks
 
-- **WHEN** the user's `.claude/` state matches the documented post-install surface (15 skills + 16 commands total — 9 upstream-modified + 5 orbit-authored + 1 upstream-required primitive `openspec-sync-specs` after this change archives; the per-category breakdown shifts when openspec-onboard moves to Orbit-authored category, but totals stay the same)
+- **WHEN** the user's `.claude/` state matches the documented post-install surface (15 skills + 15 commands total — 9 upstream-modified + 5 orbit-authored + 1 upstream-required primitive `openspec-sync-specs` skills; 9 orbit-modified + 5 orbit-authored + 1 upstream-untouched (`ff.md`) commands — after this change archives. Command total drops from 16 to 15 because orbit's verbatim-duplicate `fast-forward.md` is removed from the overlay per `orbit-conventions` `Verbatim upstream files not in orbit's overlay`; upstream's `ff.md` is what users have for the fast-forward workflow)
 - **THEN** Section 1 emits a layered ✓ output mirroring the four `orbit-conventions` `Overlay file disposition` categories: ✓ openspec CLI version match; ✓ N upstream-modified skills present (where N matches the disposition baseline); ✓ M orbit-authored skills present (where M matches baseline); ✓ openspec-sync-specs upstream-required primitive present; ✓ feedback/ absent (prune-step verified). Then proceeds to Sections 2-5.
 
 #### Scenario: Lumped messaging for overlay-incomplete sub-modes
@@ -93,7 +93,7 @@ Section 4 of the SKILL body SHALL list every `/opsx:*` command in orbit's overla
 #### Scenario: Complete enumeration
 
 - **WHEN** the Quick-reference section is read
-- **THEN** the table lists every slash command currently in `.claude/commands/opsx/` (per the verified-at-install-time state — `address-reviews`, `apply`, `archive`, `audit-drift`, `bulk-archive`, `continue`, `explore`, `fast-forward`, `new`, `onboard`, `propose`, `review`, `review-external`, `sync`, `verify`); each row has the command name and a one-line description of what it does
+- **THEN** the table lists every slash command in the user's post-install `.claude/commands/opsx/` (15 files: 14 from orbit's overlay + 1 from upstream init untouched). Enumeration: `address-reviews`, `apply`, `archive`, `audit-drift`, `bulk-archive`, `continue`, `explore`, `ff` (upstream-installed, untouched by overlay — orbit's previous `fast-forward.md` was removed per the verbatim-duplicates principle), `new`, `onboard`, `propose`, `review`, `review-external`, `sync`, `verify`; each row has the command name and a one-line description
 
 #### Scenario: Table does NOT include a disposition column
 
