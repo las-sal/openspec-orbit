@@ -1,0 +1,28 @@
+{
+  "command": "archive",
+  "timestamp": "2026-05-24T13:49:26Z",
+  "change": "lean-overlay-and-add-orbit-onboard",
+  "final_assessment": "Archived lean-overlay-and-add-orbit-onboard to openspec/changes/archive/2026-05-24-lean-overlay-and-add-orbit-onboard/. Scope cut mid-implementation to chunks 1+2 (pegging declaration + narrative reframe + feedback skill deletion + stale-prose sweep); orbit-onboard work (originally chunks 3-5) deferred to a follow-up change. orbit-conventions deltas synced to baseline: RENAMED 'Distribution model — overlay, not CLI fork' to 'Distribution model — pegged engine + orbit-owned surface', MODIFIED its body, and ADDED 'Upstream version pinning' + 'Overlay file disposition' requirements.",
+  "next_recommended": "Change archived to openspec/changes/archive/2026-05-24-lean-overlay-and-add-orbit-onboard/. Close GH #6 with reference to commits b94ea45 + 7f9100e + the archive commit. Then run /opsx:explore for the orbit-onboard re-scope work — the install-surface findings are captured in project memory (openspec_1_3_1_actual_install_surface) so the new explore enters with accurate v1.3.1 facts. #23 stays open until that follow-up lands.",
+  "kind": "lifecycle",
+  "archive_path": "openspec/changes/archive/2026-05-24-lean-overlay-and-add-orbit-onboard/",
+  "audit": {
+    "ran": true,
+    "skipped_via_flag": false,
+    "failure_reason": null,
+    "findings_summary": { "critical": 0, "warning": 0, "suggestion": 0 },
+    "summary_path": "openspec/changes/archive/2026-05-24-lean-overlay-and-add-orbit-onboard/.orbit-runs/audit-drift-2026-05-24T13-45-13Z.json"
+  },
+  "unresolved_markers": {
+    "found_at_archive_time": 0,
+    "user_action": "no_markers_found"
+  },
+  "user_decision": "proceeded_with_no_critical",
+  "sync_specs": {
+    "ran": true,
+    "skipped_reason": null,
+    "capabilities_updated": ["orbit-conventions"],
+    "counts": { "added": 2, "modified": 1, "removed": 0, "renamed": 1 }
+  },
+  "warnings": []
+}
