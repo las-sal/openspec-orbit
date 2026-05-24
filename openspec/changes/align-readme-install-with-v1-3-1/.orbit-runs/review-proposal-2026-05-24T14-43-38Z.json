@@ -1,0 +1,97 @@
+{
+  "command": "review",
+  "timestamp": "2026-05-24T14:43:38Z",
+  "change": "align-readme-install-with-v1-3-1",
+  "final_assessment": "No critical issues. 2 warning(s) to consider. Ready to apply (with noted improvements).",
+  "next_recommended": "/opsx:address-reviews align-readme-install-with-v1-3-1 --from-file openspec/changes/align-readme-install-with-v1-3-1/.orbit-runs/review-proposal-2026-05-24T14-43-38Z.json — resolve 2 warnings + 5 suggestions before /opsx:apply, OR proceed to /opsx:apply if accepting the findings as-is",
+  "kind": "editorial",
+  "mode": "proposal",
+  "iteration": 1,
+  "depth": "full",
+  "flags": {
+    "parallel": false,
+    "focus": null,
+    "strict": false,
+    "fresh": false,
+    "mark": false,
+    "skip_verify": false
+  },
+  "passes_run": ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
+  "passes_skipped": [],
+  "findings_summary": {
+    "critical": 0,
+    "warning": 2,
+    "suggestion": 5,
+    "by_pass": {
+      "1": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "2": { "critical": 0, "warning": 2, "suggestion": 0 },
+      "3": { "critical": 0, "warning": 0, "suggestion": 1 },
+      "4": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "5": { "critical": 0, "warning": 0, "suggestion": 1 },
+      "6": { "critical": 0, "warning": 0, "suggestion": 1 },
+      "7": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "8": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "9": { "critical": 0, "warning": 0, "suggestion": 2 }
+    }
+  },
+  "findings": [
+    {
+      "pass": "2",
+      "severity": "WARNING",
+      "file": "design.md",
+      "line": 165,
+      "title": "Design D-conventions-1 enumerates 3 scenarios; spec.md has 5",
+      "recommendation": "Update design D-conventions-1's scenario enumeration to acknowledge all 5 (the 2 unforeshadowed are `README-modifying changes pair with sandbox verification` and `User-facing behavior warnings are accurate, not pessimistic`), or remove the 2 unforeshadowed scenarios from spec. Updating design is preferred — both unforeshadowed scenarios are load-bearing (codify what this change is doing and the D7 finding)."
+    },
+    {
+      "pass": "2",
+      "severity": "WARNING",
+      "file": "proposal.md",
+      "line": 25,
+      "title": "Proposal capability bullet undersells spec scenario count",
+      "recommendation": "Expand the `### Modified Capabilities` bullet to acknowledge all 5 scenarios (or shorten to 'Scenarios codify the README-matches-install-surface rule' without enumeration so the spec is the authoritative list)."
+    },
+    {
+      "pass": "9",
+      "severity": "SUGGESTION",
+      "file": "tasks.md",
+      "line": 34,
+      "title": "Task 1.3 prose lists `archive-change` twice",
+      "recommendation": "Pick one form. Either drop `archive-change` from the emit-change list (with parenthetical 'emit-change extended archive-change's existing additions'), or list the 7 emit-added skills as the delta from the original 3."
+    },
+    {
+      "pass": "9",
+      "severity": "SUGGESTION",
+      "file": "tasks.md",
+      "line": 34,
+      "title": "Tasks use `~10` for orbit-modified skill count; actual is exactly 10",
+      "recommendation": "Replace `~10` with exact `10` in tasks 1.3, 1.5, 1.6. Grep verified: 10 files in .claude/skills/ have `# Orbit additions` sections (apply-change, archive-change, bulk-archive-change, continue-change, explore, ff-change, new-change, onboard, propose, verify-change)."
+    },
+    {
+      "pass": "6",
+      "severity": "SUGGESTION",
+      "file": "specs/orbit-conventions/spec.md",
+      "line": 5,
+      "title": "Requirement doesn't explicitly mandate intra-install-section self-consistency",
+      "recommendation": "Optional — add a 6th scenario 'Install section is internally consistent: counts, file lists, and CLI invocations referenced in different subsections match each other.' Or leave implicit; existing scenarios are sufficient for the immediate change."
+    },
+    {
+      "pass": "5",
+      "severity": "SUGGESTION",
+      "file": "specs/orbit-conventions/spec.md",
+      "line": 23,
+      "title": "Scenario 3 references 'the documented CLI sequence' without enumeration",
+      "recommendation": "Optional — replace 'the documented CLI sequence end-to-end' with 'the install, update, and uninstall CLI sequences end-to-end' for explicitness."
+    },
+    {
+      "pass": "3",
+      "severity": "SUGGESTION",
+      "file": "openspec/specs/orbit-conventions/spec.md",
+      "line": 655,
+      "title": "Baseline `Overlay file disposition` lists 9 orbit-modified skills; actual is 10 (openspec-onboard included)",
+      "recommendation": "Do NOT fix in this change — out of scope. Surface to the orbit-onboard follow-up's explore: the follow-up moves openspec-onboard from `Orbit-modified` to `Orbit-authored` category, so the disposition list updates there anyway. Pre-existing baseline drift; NOT caused by this change."
+    }
+  ],
+  "stale_suppressed": [],
+  "iteration_note": null
+}

@@ -1,0 +1,19 @@
+{
+  "command": "apply",
+  "timestamp": "2026-05-24T15:12:40Z",
+  "change": "align-readme-install-with-v1-3-1",
+  "kind": "workflow",
+  "chunk": "1 of 3",
+  "chunk_name": "README install-section rewrite (L898-L1020)",
+  "chunk_complete": true,
+  "tasks_completed": 10,
+  "tasks_remaining": 6,
+  "user_validation_remaining": 1,
+  "tasks_completed_this_session": 10,
+  "tasks_completed_this_chunk": ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "1.10"],
+  "files_changed": [
+    "README.md (L898-L1020 region: added `### Pegging strategy` subsection; rewrote `### 1. Initialize upstream OpenSpec` to use `init --tools claude` + correct counts; rewrote `### 2. Overlay orbit` to enumerate 10 orbit-modified skills + add `rm -rf .claude/skills/feedback` prune step; rewrote `### What you should see after install` table for 14 not 15 total + drop feedback row; rewrote `### Partial adoption` + `### Working alongside customizations` to reference 10 modified skills not 3; updated `### Common gotchas` step-1 bullet + `@latest` → `@1.3.1`; added prune step to `### Updating orbit`; rewrote `### Uninstalling` with sandbox-verified `init --force --tools claude` scope statement per D7; corrected Prerequisites bullet L907 `modifies three` → `modifies 10`)"
+  ],
+  "final_assessment": "Chunk 1 complete. README install section L898-L1020 now describes v1.3.1's actual install surface: 10 upstream skills + 10 commands installed by `init --tools claude` (not 11+feedback); 10 orbit-modified skills enumerated (not 3); `rm -rf .claude/skills/feedback` documented in install + update + uninstall sections; `init --force --tools claude` scope accurately described per propose-time D7 sandbox verification; new `### Pegging strategy` subsection added as anchor target for 5 forward-references (was 3 dead anchors pre-change, plus 2 new forward-refs added in this chunk). Residue greps clean: all 6 stale-pattern probes return 0 hits.",
+  "next_recommended": "/opsx:apply align-readme-install-with-v1-3-1 — next chunk: Apply-time sandbox verification + memory cleanup (tasks 2.1-2.3, per D-verification-2 + D-verification-3)"
+}

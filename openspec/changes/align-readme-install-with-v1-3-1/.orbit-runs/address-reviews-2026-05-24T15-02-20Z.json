@@ -1,0 +1,91 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-24T15:02:20Z",
+  "change": "align-readme-install-with-v1-3-1",
+  "final_assessment": "Resolved 6 of 7 findings from review-proposal iter-1. Findings 1+2 (design/proposal undersell scenario count) fixed by expanding both artifacts to enumerate all 5 scenarios. Finding 3 (tasks 1.3 archive-change twice) fixed by reframing as delta-from-3 with exact origin breakdown verified via git pickaxe. Finding 4 (`~10` → `10`) folded into Finding 3 and applied across tasks 1.3/1.4/1.5/1.6 (4 occurrences total). Findings 5+6 (optional spec clarifications) declined per user decision — spec stays at 5 scenarios. Finding 7 (baseline drift in Overlay file disposition) classified as out-of-scope and surfaced to `[[readme-install-section-staleness]]` memory for the orbit-onboard follow-up to fix in passing.",
+  "next_recommended": "re-run /opsx:review --as proposal align-readme-install-with-v1-3-1 to confirm convergence (warnings should clear; out-of-scope SUGGESTION may persist as informational only). Then /opsx:apply align-readme-install-with-v1-3-1 to start implementing.",
+  "kind": "editorial",
+  "source": "from-file",
+  "source_path": "openspec/changes/align-readme-install-with-v1-3-1/.orbit-runs/review-proposal-2026-05-24T14-43-38Z.json",
+  "external_reviewer": null,
+  "input_findings_summary": {
+    "critical": 0,
+    "warning": 2,
+    "suggestion": 5
+  },
+  "pushback_verification": "All 7 findings verified against current state; 0 stale-suppressed. Pushback also caught a misframing in my own task 1.3 draft (verified via git pickaxe that originally-modified skills were 3, not 4 — user's 'base 4' mental model conflated upstream's core profile with orbit's bootstrap modifications).",
+  "resolution_summary": {
+    "resolved": 4,
+    "stale_suppressed": 0,
+    "deferred": 2,
+    "escalated": 0,
+    "out_of_scope": 1
+  },
+  "resolutions": [
+    {
+      "severity": "WARNING",
+      "title": "Design D-conventions-1 enumerates 3 scenarios; spec has 5",
+      "marker_source": "external",
+      "classification": "decision required",
+      "decision": "expand design to acknowledge all 5",
+      "action": "Edited design.md D-conventions-1: updated summary line + scenario enumeration from 3 to 5. Added scenarios 3 (sandbox verification mandate, codifies what THIS change demonstrates) and 5 (warning accuracy, codifies D7 finding).",
+      "ripple_flagged": ["proposal.md (paired Finding 2 fix)"]
+    },
+    {
+      "severity": "WARNING",
+      "title": "Proposal capability bullet undersells spec scenario count",
+      "marker_source": "external",
+      "classification": "decision required",
+      "decision": "expand proposal to acknowledge all 5",
+      "action": "Edited proposal.md L28 Modified Capabilities bullet: replaced 3-item scenario summary with 5-item summary matching the spec's full scenario set.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "Task 1.3 prose lists `archive-change` twice",
+      "marker_source": "external",
+      "classification": "decision required",
+      "decision": "reframe entirely as delta-from-3 with exact count (also folds Finding 4)",
+      "action": "Edited tasks.md task 1.3: replaced ambiguous emit-change enumeration with delta-from-3 framing including git-verified origin breakdown (3 bootstrap originals + 6 emit-added + onboard added by emit). Exact count `10` replaces `~10`. Added note that orbit-onboard follow-up will move onboard to orbit-authored category.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "Tasks use `~10` for orbit-modified skill count; actual is exactly 10",
+      "marker_source": "external",
+      "classification": "trivial fix",
+      "decision": "replace `~10` with exact `10` across all occurrences",
+      "action": "Edited tasks.md: replaced `~10` with `10` in 3 additional locations (tasks 1.4, 1.5, 1.6). Combined with Finding 3 fix, all 4 occurrences are now exact. Verified residue: `grep '~10' tasks.md` returns 0 hits.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "Requirement doesn't explicitly mandate intra-install-section self-consistency",
+      "marker_source": "external",
+      "classification": "decision required",
+      "decision": "decline — existing 5 scenarios cover the intent implicitly via scenario 1's 'counts matching exactly' phrasing",
+      "action": "No edit. Spec stays at 5 scenarios.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "Scenario 3 references 'documented CLI sequence' without enumeration",
+      "marker_source": "external",
+      "classification": "decision required",
+      "decision": "decline — current phrasing is clear in context; explicit enumeration adds verbosity without proportional clarity",
+      "action": "No edit. Spec stays at 5 scenarios.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "Baseline Overlay file disposition lists 9 orbit-modified skills; actual is 10",
+      "marker_source": "external",
+      "classification": "out of scope (pre-existing baseline drift, NOT caused by this change)",
+      "decision": "surface to orbit-onboard follow-up via project memory",
+      "action": "Appended new section 'Baseline drift the orbit-onboard follow-up should fix in passing' to `[[readme-install-section-staleness]]` memory. The follow-up moves openspec-onboard from Orbit-modified to Orbit-authored category, naturally re-touching the disposition list — drift closes there.",
+      "ripple_flagged": []
+    }
+  ],
+  "remaining_markers_in_scope": 0,
+  "persisted_escalations": []
+}

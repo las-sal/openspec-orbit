@@ -1,0 +1,12 @@
+{
+  "command": "review-external",
+  "timestamp": "2026-05-24T15:26:40Z",
+  "change": "align-readme-install-with-v1-3-1",
+  "final_assessment": "External review prompt packaged for align-readme-install-with-v1-3-1 (iter 1, mode system); awaiting findings from a fresh external AI session (model TBD by user).",
+  "next_recommended": "Commit + push the change directory + README.md edits first (uncommitted state). Then paste openspec/changes/align-readme-install-with-v1-3-1/.orbit-runs/external-prompt-system-2026-05-24T15-26-39Z.md into the target AI, save the response as openspec/changes/align-readme-install-with-v1-3-1/.orbit-runs/external-system-<TS>.md, then /opsx:address-reviews align-readme-install-with-v1-3-1 --from-file <path>",
+  "kind": "editorial",
+  "mode": "system",
+  "prompt_path": "openspec/changes/align-readme-install-with-v1-3-1/.orbit-runs/external-prompt-system-2026-05-24T15-26-39Z.md",
+  "target": null,
+  "awaiting_findings": true
+}

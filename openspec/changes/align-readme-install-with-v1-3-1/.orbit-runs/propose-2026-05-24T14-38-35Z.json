@@ -1,0 +1,11 @@
+{
+  "command": "propose",
+  "timestamp": "2026-05-24T14:38:35Z",
+  "change": "align-readme-install-with-v1-3-1",
+  "final_assessment": "Generated proposal/design/tasks/specs for align-readme-install-with-v1-3-1; consumed prior explore.md (7 decisions seeded — D1-D7). Q1/Q2/Q4 resolved during propose-time via inline sandbox + local check (became D5/D6/D7); Q3 resolved via propose-time prompt (moved to Considered & out). Single ADDED requirement to orbit-conventions codifies README-matches-install-surface rule.",
+  "next_recommended": "/opsx:review align-readme-install-with-v1-3-1 — proposal artifacts ready; review before apply",
+  "kind": "workflow",
+  "artifacts_created": ["proposal", "design", "tasks", "specs/orbit-conventions"],
+  "delta_count": 1,
+  "from": "explore"
+}

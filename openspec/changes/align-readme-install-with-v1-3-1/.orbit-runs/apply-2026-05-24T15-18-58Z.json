@@ -1,0 +1,20 @@
+{
+  "command": "apply",
+  "timestamp": "2026-05-24T15:18:58Z",
+  "change": "align-readme-install-with-v1-3-1",
+  "kind": "workflow",
+  "chunk": "2 of 3",
+  "chunk_name": "Apply-time sandbox verification + memory update",
+  "chunk_complete": true,
+  "tasks_completed": 13,
+  "tasks_remaining": 3,
+  "user_validation_remaining": 1,
+  "tasks_completed_this_session": 13,
+  "tasks_completed_this_chunk": ["2.1", "2.2", "2.3"],
+  "files_changed": [
+    "README.md (corrected counts post-sandbox: 14→15 skills + 14→16 commands; added `openspec-sync-specs` row in `### What you should see`; added `ff.md`/`fast-forward.md` naming-divergence row; added `sync.md` + `fast-forward.md` to `### 2. Overlay orbit` bullets with rationale)",
+    "/Users/sal/.claude/projects/-Users-sal-code-openspec-orbit/memory/readme_install_section_staleness.md (trimmed — README install-section staleness CLOSED; preserved skill-body portion; added 3 baseline-drift items for orbit-onboard follow-up: Orbit-modified scenario count fix, sync-specs explicit naming, ff.md/fast-forward.md naming divergence)"
+  ],
+  "final_assessment": "Chunk 2 complete. Sandbox verification on fresh `mktemp -d` initially surfaced a premise problem — README claimed 14 skills + 14 commands but reality was 15 + 16 (missing `openspec-sync-specs` + `sync.md` + `fast-forward.md` accounting + the `ff.md`/`fast-forward.md` naming divergence). Task 2.2 escalation triggered, user directed inline fix rather than formal @review(escalated): walk. Inline fix applied to `### 2. Overlay orbit` + `### What you should see after install`. Sandbox re-run confirms all 8 verification checks pass (skills=15, commands=16, orbit-modified=10, feedback absent, sync-specs present, sync.md present, ff.md retained, fast-forward.md added). `init --force --tools claude` uninstall flow also verified end-to-end: explore/SKILL.md md5 reverted from orbit-overlaid `14653646e36431a0130840a0789cf19c` to upstream-pristine `d160105373f4fe54bfbe1790b343c51b`; user-created `.claude/custom/test.md` + `openspec/changes/test-user-change/` preserved intact. Memory trimmed per D-verification-3; new baseline-drift items surfaced (ff.md/fast-forward.md + sync-specs explicit naming) added for orbit-onboard follow-up to clean up.",
+  "next_recommended": "/opsx:apply align-readme-install-with-v1-3-1 — next chunk: Validation + user-validation handoff (tasks 3.1-3.3)"
+}
