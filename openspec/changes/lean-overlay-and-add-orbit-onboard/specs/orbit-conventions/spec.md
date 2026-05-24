@@ -68,7 +68,7 @@ The system SHALL classify every file orbit ships in `.claude/` into one of four 
 
 #### Scenario: Orbit-authored — full ownership
 
-- **WHEN** orbit ships a file with no upstream-derived content (e.g., `openspec-review`, `openspec-audit-drift`, `openspec-review-external`, `openspec-address-reviews`, the orbit-authored `openspec-onboard`)
+- **WHEN** orbit ships a file with no upstream-derived content (e.g., `openspec-review`, `openspec-audit-drift`, `openspec-review-external`, `openspec-address-reviews`)
 - **THEN** the file is fully owned by orbit; orbit's contributors edit it freely; the file MAY use the `openspec-*` directory naming convention for consistency with siblings even when the body is 100% orbit-authored
 
 #### Scenario: Orbit-modified — upstream body with `# Orbit additions`
@@ -84,7 +84,7 @@ The system SHALL classify every file orbit ships in `.claude/` into one of four 
 #### Scenario: Not shipped — pruned from overlay
 
 - **WHEN** an upstream skill is truly unmodified, not used by orbit, and provides no orbit-mission value (e.g., `feedback`, which sends user feedback to Fission-AI and has no role in orbit's pegged workflow)
-- **THEN** orbit does NOT ship the file in its overlay; the skill is simply absent from orbit's `.claude/skills/` directory. NOTE: because the overlay install model is `cp -r` (which does not delete target-only files), absence-in-overlay is necessary but not sufficient to ensure absence-in-user-project. The README install/update sections SHALL document explicit `rm` commands for pruned files so user-project state matches overlay intent. See orbit-onboard `Setup verification section` for the verify-absence scenarios users invoke to check.
+- **THEN** orbit does NOT ship the file in its overlay; the skill is simply absent from orbit's `.claude/skills/` directory. NOTE: because the overlay install model is `cp -r` (which does not delete target-only files), absence-in-overlay is necessary but not sufficient to ensure absence-in-user-project. The README install/update sections SHALL document explicit `rm` commands for pruned files so user-project state matches overlay intent.
 
 #### Scenario: Per-skill disposition is documented
 
