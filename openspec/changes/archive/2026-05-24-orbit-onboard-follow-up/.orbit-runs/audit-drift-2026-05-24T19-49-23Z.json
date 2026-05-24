@@ -1,0 +1,43 @@
+{
+  "command": "audit-drift",
+  "timestamp": "2026-05-24T19:49:23Z",
+  "change": "orbit-onboard-follow-up",
+  "final_assessment": "No drift detected. Ready to archive.",
+  "next_recommended": null,
+  "kind": "editorial",
+  "context": "pre-archive",
+  "caller": "openspec-archive-change",
+  "depth": "full",
+  "flags": {
+    "parallel": false,
+    "focus": null,
+    "since": null,
+    "strict": false
+  },
+  "categories_run": ["1", "3", "4"],
+  "categories_skipped": ["2"],
+  "findings_summary": {
+    "critical": 0,
+    "warning": 0,
+    "suggestion": 0,
+    "by_category": {
+      "1": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "2": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "3": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "4": { "critical": 0, "warning": 0, "suggestion": 0 }
+    }
+  },
+  "findings": [],
+  "stale_suppressed": [
+    {
+      "category": "4",
+      "title": "orbit-onboard new capability requirements not yet in baseline",
+      "evidence": "Expected pre-sync state — this change ADDs the orbit-onboard capability with 10 requirements; sync-specs will create the new baseline spec at openspec/specs/orbit-onboard/spec.md during archive Step 4. Not drift."
+    },
+    {
+      "category": "4",
+      "title": "orbit-conventions MODIFIED Overlay file disposition not yet in baseline",
+      "evidence": "Expected pre-sync state — modified scenarios add openspec-onboard to Orbit-authored category and add the new Verbatim upstream files not in orbit's overlay scenario. sync-specs will apply at archive Step 4."
+    }
+  ]
+}

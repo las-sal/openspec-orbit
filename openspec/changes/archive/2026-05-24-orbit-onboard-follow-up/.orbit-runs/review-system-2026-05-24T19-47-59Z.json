@@ -1,0 +1,38 @@
+{
+  "command": "review",
+  "timestamp": "2026-05-24T19:47:59Z",
+  "change": "orbit-onboard-follow-up",
+  "final_assessment": "All checks passed. Ready to archive.",
+  "next_recommended": "/opsx:archive orbit-onboard-follow-up — closes cluster-2. Pre-archive audit-drift sweep runs automatically; sync-specs propagates the orbit-conventions modified deltas + new orbit-onboard capability to baseline.",
+  "kind": "editorial",
+  "mode": "system",
+  "iteration": 1,
+  "depth": "full",
+  "flags": {
+    "parallel": false,
+    "focus": null,
+    "strict": false,
+    "fresh": false,
+    "mark": false,
+    "skip_verify": false
+  },
+  "passes_run": ["0", "1", "2", "3", "6"],
+  "passes_skipped": ["4", "5"],
+  "findings_summary": {
+    "critical": 0,
+    "warning": 0,
+    "suggestion": 0,
+    "by_pass": {
+      "0": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "1": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "2": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "3": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "4": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "5": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "6": { "critical": 0, "warning": 0, "suggestion": 0 }
+    }
+  },
+  "findings": [],
+  "stale_suppressed": [],
+  "iteration_note": "First system-mode run for this change. Apply phase produced 18/18 tasks complete + sandbox-verified end-to-end. All proposal-mode iterations (internal iter-1 + external iter-1 + internal iter-2 fresh) had already converged before apply started; system-mode runs against an already-clean state."
+}

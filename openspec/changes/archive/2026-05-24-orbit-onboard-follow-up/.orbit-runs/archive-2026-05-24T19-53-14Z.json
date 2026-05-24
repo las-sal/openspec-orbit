@@ -1,0 +1,28 @@
+{
+  "command": "archive",
+  "timestamp": "2026-05-24T19:53:14Z",
+  "change": "orbit-onboard-follow-up",
+  "final_assessment": "Archived orbit-onboard-follow-up to openspec/changes/archive/2026-05-24-orbit-onboard-follow-up/. Final cluster-2 deliverable: replaces upstream-bodied openspec-onboard with 100% orbit-authored 5-section reference-leaning hybrid SKILL body (198 lines from 562 upstream-bodied); mirrors body to .claude/commands/opsx/onboard.md; drops .claude/commands/opsx/fast-forward.md as a verbatim duplicate of upstream's ff.md; syncs README install section across 15 sites to match post-this-change overlay state (15 skills + 15 commands). sync-specs applied: orbit-conventions Overlay file disposition MODIFIED with new `Verbatim upstream files not in orbit's overlay` scenario + Orbit-authored adds openspec-onboard + Upstream-required-primitive names openspec-sync-specs concretely; new orbit-onboard capability spec created with 10 ADDED requirements + 28 scenarios. Closes #23; completes the v0.1.0 cluster-2 wind-down sequence.",
+  "next_recommended": "Cluster-2 wind-down complete. Three changes archived in sequence on 2026-05-24: lean-overlay-and-add-orbit-onboard (pegging declaration + cut to chunks 1+2), align-readme-install-with-v1-3-1 (README install rewrite + `Install documentation describes actual install surface` baseline), orbit-onboard-follow-up (orbit-authored onboard skill body + verbatim-duplicates principle). Close GH #23 with reference to commits af33191 (propose) → 04bcb1f (external review + principle upgrade) → 6b9fdaf (apply chunks 1+2) → c783627 (apply chunk 3) → this archive commit. Remaining cluster-2 issues: #26 (install-script enforcement, doc-only pin is current sufficient), #27 (Option 2 — drop `# Orbit additions` pattern, future cycle), #28 (global rename `openspec-*` → `orbit-*`, future cycle), #29 (cross-command body deduplication, filed during this change's explore).",
+  "kind": "lifecycle",
+  "archive_path": "openspec/changes/archive/2026-05-24-orbit-onboard-follow-up/",
+  "audit": {
+    "ran": true,
+    "skipped_via_flag": false,
+    "failure_reason": null,
+    "findings_summary": { "critical": 0, "warning": 0, "suggestion": 0 },
+    "summary_path": "openspec/changes/archive/2026-05-24-orbit-onboard-follow-up/.orbit-runs/audit-drift-2026-05-24T19-49-23Z.json"
+  },
+  "unresolved_markers": {
+    "found_at_archive_time": 0,
+    "user_action": "no_markers_found"
+  },
+  "user_decision": "proceeded_with_no_critical",
+  "sync_specs": {
+    "ran": true,
+    "skipped_reason": null,
+    "capabilities_updated": ["orbit-conventions", "orbit-onboard"],
+    "counts": { "added": 10, "modified": 1, "removed": 0, "renamed": 0 }
+  },
+  "warnings": []
+}
