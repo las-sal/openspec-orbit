@@ -1,549 +1,194 @@
 ---
 name: "OPSX: Onboard"
-description: Guided onboarding - walk through a complete OpenSpec workflow cycle with narration
+description: Orbit workflow reference walkthrough — setup verification, identity statement, 9-phase canonical-flow walkthrough, quick-reference table, try-it nudge. Reference-leaning hybrid for AI cold-load + future-self + collaborators.
 category: Workflow
-tags: [workflow, onboarding, tutorial, learning]
----
-Guide the user through their first complete OpenSpec workflow cycle. This is a teaching experience—you'll do real work in their codebase while explaining each step.
-
+tags: [workflow, onboarding, reference, orbit]
 ---
 
-## Preflight
+> **Note on `/opsx:onboard` emit semantics**: this command does NOT emit a run-summary JSON when invoked (composes with `orbit-run-summary-emit` `Emit scope`, which lists `/opsx:onboard` as a non-emit command). `/opsx:onboard` is a single-pass reference read — no workflow state advances, no artifacts produced in user project. Future orbit-additions or refactors MUST preserve this non-emission discipline.
 
-Before starting, check if the OpenSpec CLI is installed:
+This skill is the orbit-authored onboarding read for the `/opsx:onboard` slash command. Single-pass; renders Sections 1-5 sequentially. Section 1 (Setup verification) gates the rest — on hard-stop, Sections 2-5 do not render.
 
-```bash
-# Unix/macOS
-openspec --version 2>&1 || echo "CLI_NOT_INSTALLED"
-# Windows (PowerShell)
-# if (Get-Command openspec -ErrorAction SilentlyContinue) { openspec --version } else { echo "CLI_NOT_INSTALLED" }
-```
-
-**If CLI not installed:**
-> OpenSpec CLI is not installed. Install it first, then come back to `/opsx:onboard`.
-
-Stop here if not installed.
+This SKILL.md body and `.claude/commands/opsx/onboard.md` are duplicates by current convention (only frontmatter differs); when revising one, update the other in the same edit. Cross-command body deduplication is tracked for systematic cleanup as [openspec-orbit#29](https://github.com/las-sal/openspec-orbit/issues/29).
 
 ---
 
-## Phase 1: Welcome
+## Section 1: Setup verification
 
-Display:
+Run this section first. It checks that the user's project has orbit's overlay applied against the pinned upstream version. The check has three outcomes:
+
+- **Pass** → emit a layered ✓ output describing what's present, then proceed to Section 2.
+- **Warn-continue** → the prune step (`rm -rf .claude/skills/feedback`) was not run; emit `⚠` with remediation and proceed to Section 2.
+- **Hard-stop** → orbit's overlay is incomplete OR the upstream version doesn't match the pin; emit the lumped remediation message and STOP. Do not render Sections 2-5.
+
+### Skill checks (in order)
+
+a. **Upstream version pin match**: run `openspec --version`. Expected: `1.3.1` (per `orbit-conventions` `Upstream version pinning`). Mismatch → hard-stop.
+
+b. **Orbit-authored skill presence**: each of these MUST exist:
+   - `.claude/skills/openspec-review/SKILL.md`
+   - `.claude/skills/openspec-audit-drift/SKILL.md`
+   - `.claude/skills/openspec-address-reviews/SKILL.md`
+   - `.claude/skills/openspec-review-external/SKILL.md`
+   - `.claude/skills/openspec-onboard/SKILL.md` (this file)
+
+   Any missing → hard-stop.
+
+c. **Upstream-required primitive presence**: `.claude/skills/openspec-sync-specs/` MUST exist (orbit's archive flow uses it as a callable primitive). Missing → hard-stop.
+
+d. **Orbit-modified skill count**: `grep -l "^# Orbit additions" .claude/skills/openspec-*/SKILL.md | wc -l` MUST equal `9` (post-this-change baseline — the 10 originally-modified skills minus `openspec-onboard`, which is now orbit-authored). Mismatch → hard-stop.
+
+e. **Pruned-skill absence**: `.claude/skills/feedback/` MUST NOT exist. Present → warn-continue (NOT hard-stop) with remediation `rm -rf .claude/skills/feedback`.
+
+### Command checks (in order)
+
+f. **Orbit-authored command presence**: each of these MUST exist:
+   - `.claude/commands/opsx/review.md`
+   - `.claude/commands/opsx/review-external.md`
+   - `.claude/commands/opsx/audit-drift.md`
+   - `.claude/commands/opsx/address-reviews.md`
+   - `.claude/commands/opsx/onboard.md`
+
+   Any missing → hard-stop.
+
+g. **Orbit-shipped sync command presence**: `.claude/commands/opsx/sync.md` MUST exist (orbit ships sync.md alongside the openspec-sync-specs primitive). Missing → hard-stop.
+
+h. **Total command count**: `ls .claude/commands/opsx/ | wc -l` MUST equal `15` (post-this-change baseline — 14 from orbit's overlay + 1 upstream-untouched `ff.md`). Mismatch (≠ 15) → hard-stop.
+
+### Layered ✓ output on pass
 
 ```
-## Welcome to OpenSpec!
-
-I'll walk you through a complete change cycle—from idea to implementation—using a real task in your codebase. Along the way, you'll learn the workflow by doing it.
-
-**What we'll do:**
-1. Pick a small, real task in your codebase
-2. Explore the problem briefly
-3. Create a change (the container for our work)
-4. Build the artifacts: proposal → specs → design → tasks
-5. Implement the tasks
-6. Archive the completed change
-
-**Time:** ~15-20 minutes
-
-Let's start by finding something to work on.
+✓ openspec CLI @ 1.3.1 (pin match)
+✓ 9 upstream-modified skills present (`# Orbit additions` count = 9)
+✓ 5 orbit-authored skills present (openspec-review, openspec-review-external,
+   openspec-audit-drift, openspec-address-reviews, openspec-onboard)
+✓ 1 upstream-required primitive present (openspec-sync-specs)
+✓ feedback/ absent (prune step verified)
+✓ 15 commands present (14 orbit-shipped + 1 upstream-untouched ff.md)
+→ Proceeding to canonical-flow walkthrough.
 ```
+
+The 5 ✓ skill/feedback lines mirror the four `orbit-conventions` `Overlay file disposition` categories (orbit-authored / orbit-modified / upstream-required primitive / not-shipped). The version-pin and command-count lines are additional checks beyond the category framework.
+
+### Hard-stop output (lumped per `Lumped messaging for overlay-incomplete sub-modes`)
+
+When any hard-stop check (a, b, c, d, f, g, h) fails, emit ONE message regardless of which sub-mode triggered:
+
+```
+✗ Setup verification failed.
+
+Your orbit installation is incomplete or running against the wrong upstream
+version. See the README's `## Installation` section as a whole — both
+`### 1. Initialize upstream OpenSpec` (for version-pin issues) and
+`### 2. Overlay orbit` (for overlay-incomplete issues).
+
+After fixing the install, re-run /opsx:onboard to verify.
+```
+
+This lumping is intentional: remediation requires re-reading install steps from the top regardless of which check failed; distinguishing sub-modes would multiply prose without changing the user's action.
+
+### Warn-and-continue output
+
+When check (e) fails but all hard-stop checks pass:
+
+```
+⚠ feedback/ skill present in .claude/skills/feedback/ — orbit no longer
+ships this skill. Run `rm -rf .claude/skills/feedback` to align with the
+current overlay disposition. (Documented in README install + update +
+uninstall sections.)
+
+Continuing to canonical-flow walkthrough.
+```
+
+### Gotcha not detected by verification
+
+Setup verification reads files on disk; it cannot detect a stale AI client cache. If your AI client cached an older `.claude/` snapshot before you ran the install, verification passes but the client may still see the old surface. Remediation: restart your AI client after install.
 
 ---
 
-## Phase 2: Task Selection
+## Section 2: Identity statement
 
-### Codebase Analysis
+orbit is a workflow tool that owns the `.claude/` surface (skills, commands, supporting docs) and uses `@fission-ai/openspec@1.3.1` as a pinned CLI engine. The upstream CLI binary is unchanged and version-pegged; orbit's contribution lives in markdown content under `.claude/`. orbit is its own thing — it shares concepts with upstream OpenSpec but ships an opinionated workflow tool with distinct disciplines, not a delta on top of upstream's defaults.
 
-Scan the codebase for small improvement opportunities. Look for:
+What makes orbit distinctive vs running upstream alone:
 
-1. **TODO/FIXME comments** - Search for `TODO`, `FIXME`, `HACK`, `XXX` in code files
-2. **Missing error handling** - `catch` blocks that swallow errors, risky operations without try-catch
-3. **Functions without tests** - Cross-reference `src/` with test directories
-4. **Type issues** - `any` types in TypeScript files (`: any`, `as any`)
-5. **Debug artifacts** - `console.log`, `console.debug`, `debugger` statements in non-debug code
-6. **Missing validation** - User input handlers without validation
+- **Editorial review** — `/opsx:review` runs a 9-pass editorial pass over the artifacts (proposal mode) or a 7-pass pass over the post-apply product state (system mode, which wraps upstream's `verify-change` as Pass 0). `/opsx:review-external` packages a self-contained prompt for a different AI (codex / fresh Claude / GPT) to do a second-opinion pass; the external AI commits findings back to the repo. `/opsx:address-reviews` walks each finding through a structured pushback → classify → fix → ripple-flag → remove lifecycle (works on both inline `@review:` markers and external-review findings files).
 
-Also check recent git activity:
-```bash
-# Unix/macOS
-git log --oneline -10 2>/dev/null || echo "No git history"
-# Windows (PowerShell)
-# git log --oneline -10 2>$null; if ($LASTEXITCODE -ne 0) { echo "No git history" }
-```
+- **Drift audit** — `/opsx:audit-drift` scans for drift between captured knowledge (specs, lenses, governing docs) and reality across four categories: vocabulary residue (FROM names of renamed requirements still appearing), lens staleness (perspectives or critical-paths referencing nonexistent capabilities), cross-doc consistency (CLAUDE.md / project.md disagreement with current specs), archive coherence (ADDED requirements missing from baseline, RENAMED FROM names lingering). Standalone for "something feels off" checks; auto-invoked as system-mode review Pass 6 and as a pre-archive sweep.
 
-### Present Suggestions
+- **Capture (lenses)** — `openspec/lenses/perspectives.md` records named callers worth simulating from during review; `openspec/lenses/critical-paths.md` records flows worth walking end-to-end. Lenses grow organically through `/opsx:explore` capture triggers; system-mode review Passes 4-5 consult them.
 
-From your analysis, present 3-4 specific suggestions:
+- **JSON run-summary emission** — every editorial and lifecycle command emits a JSON run-summary at command completion (or per chunk for `/opsx:apply`). Summaries persist to `openspec/changes/<name>/.orbit-runs/` (per-change) or `openspec/.orbit-runs/` (project-wide). The schema follows a universal spine with per-command extensions. (Note: `/opsx:onboard` is one of the few commands that does NOT emit — it's a reference read, not a workflow advancement.)
 
-```
-## Task Suggestions
-
-Based on scanning your codebase, here are some good starter tasks:
-
-**1. [Most promising task]**
-   Location: `src/path/to/file.ts:42`
-   Scope: ~1-2 files, ~20-30 lines
-   Why it's good: [brief reason]
-
-**2. [Second task]**
-   Location: `src/another/file.ts`
-   Scope: ~1 file, ~15 lines
-   Why it's good: [brief reason]
-
-**3. [Third task]**
-   Location: [location]
-   Scope: [estimate]
-   Why it's good: [brief reason]
-
-**4. Something else?**
-   Tell me what you'd like to work on.
-
-Which task interests you? (Pick a number or describe your own)
-```
-
-**If nothing found:** Fall back to asking what the user wants to build:
-> I didn't find obvious quick wins in your codebase. What's something small you've been meaning to add or fix?
-
-### Scope Guardrail
-
-If the user picks or describes something too large (major feature, multi-day work):
-
-```
-That's a valuable task, but it's probably larger than ideal for your first OpenSpec run-through.
-
-For learning the workflow, smaller is better—it lets you see the full cycle without getting stuck in implementation details.
-
-**Options:**
-1. **Slice it smaller** - What's the smallest useful piece of [their task]? Maybe just [specific slice]?
-2. **Pick something else** - One of the other suggestions, or a different small task?
-3. **Do it anyway** - If you really want to tackle this, we can. Just know it'll take longer.
-
-What would you prefer?
-```
-
-Let the user override if they insist—this is a soft guardrail.
+- **Three execution disciplines** codified in `orbit-conventions`:
+  - **Read-before-reference** (authoring-time): when generating code, specs, or docs that name a specific construct, read the actual definition first. Don't infer the shape from common patterns or training-data conventions.
+  - **Change completeness** (modification-time): substantive modifications to a change-in-flight must apply fully across ALL affected artifacts before being declared done. Known residue MUST NOT be left for a downstream review to catch.
+  - **Pushback** (review-time): verify each flagged issue against current state before acting. Stale findings get reported with evidence and suppressed.
 
 ---
 
-## Phase 3: Explore Demo
+## Section 3: Canonical-flow walkthrough
 
-Once a task is selected, briefly demonstrate explore mode:
-
-```
-Before we create a change, let me quickly show you **explore mode**—it's how you think through problems before committing to a direction.
-```
-
-Spend 1-2 minutes investigating the relevant code:
-- Read the file(s) involved
-- Draw a quick ASCII diagram if it helps
-- Note any considerations
+Orbit's canonical flow has 9 phases. Each maps to a `/opsx:*` slash command. The flow is:
 
 ```
-## Quick Exploration
-
-[Your brief analysis—what you found, any considerations]
-
-┌─────────────────────────────────────────┐
-│   [Optional: ASCII diagram if helpful]  │
-└─────────────────────────────────────────┘
-
-Explore mode (`/opsx:explore`) is for this kind of thinking—investigating before implementing. You can use it anytime you need to think through a problem.
-
-Now let's create a change to hold our work.
+   explore ─→ propose ─→ review ─→ address-reviews ─→ apply ─→ verify ─→
+   review --as system ─→ address-reviews ─→ archive
 ```
 
-**PAUSE** - Wait for user acknowledgment before proceeding.
+**Phase 1 — explore (`/opsx:explore [<name>]`)**: Thinking-mode entry. The user explores an idea, problem, or comparison; orbit acts as thinking partner. In named mode (`/opsx:explore <name>`), decisions auto-capture to `openspec/explore/<name>/explore.md` in a 5-section convention (Premise / Decisions / Open questions / Considered & out / References). In bare mode (no name), the explore stays in conversation until 2+ substantive decisions emerge, then prompts to crystallize a name. Capture triggers also offer to save **lenses** — `perspectives.md` records named callers worth validating from during review (e.g., "API client", "Claude Desktop using MCP"); `critical-paths.md` records flows worth walking end-to-end (e.g., "First-time user adds their first device"). Lenses grow organically; system-mode review Passes 4-5 consult them.
+
+**Phase 2 — propose (`/opsx:propose <name>`)**: Generates the change artifacts (proposal, design, specs, tasks) from the explore.md (consume mode) or from a prompted description (standalone mode). Consume mode treats `explore.md` as authoritative seed: Premise → proposal motivation; Decisions → spec deltas + design + tasks; Considered & out → design's "Alternatives considered"; References → contextual reads. Open questions become per-question prompts during propose with three resolution paths (resolve now → Decision; defer → `@review:` marker in artifacts; abandon → moves to Considered & out). After artifact generation, the staging directory at `openspec/explore/<name>/` moves to `openspec/changes/<name>/` (the historical `explore.md` persists alongside the new artifacts). Emits a T0 run summary to `openspec/changes/<name>/.orbit-runs/propose-<TS>.json`.
+
+**Phase 3 — review (proposal mode, `/opsx:review <name> --as proposal`)**: Editorial pre-apply pass over the artifacts. 9 passes: Structure & Delta Integrity (validate runs clean, deltas use ADDED/MODIFIED/REMOVED/RENAMED correctly) / Internal Coherence (proposal aligns with design aligns with specs aligns with tasks) / Cross-Doc Coherence (CLAUDE.md and project.md remain accurate after this change) / Archive Consistency (ADDED don't contradict baseline, RENAMED FROM names exist) / Codegen Readiness (no implicit requirements, no ambiguity) / Gap Hunt (could a fresh AI implement this from these specs alone?) / Drift Hunt (old vocabulary lingering) / Inline Review Marker Residue (`@review:` markers must be 0) / Pre-Handoff Sweep. Findings roll into a 3-dimension scorecard (Completeness / Correctness / Coherence) with CRITICAL / WARNING / SUGGESTION severities. The final-assessment line uses stock phrasings ("All checks passed. Ready to apply." vs "X critical issue(s) found. Fix before /opsx:apply."). Run summary persists to `openspec/changes/<name>/.orbit-runs/review-proposal-<TS>.json`.
+
+**Phase 4 — address-reviews (`/opsx:address-reviews <name>` or `--from-file <path>`)**: Walks each finding (or each `@review:` marker) through a structured lifecycle: pushback → classify → fix → ripple-flag → remove-marker. Pushback verifies against current state (a finding cited at file:line might already be resolved; stale findings get suppressed with evidence). Classification routes to one of four outcomes: stale (already resolved; just remove marker), trivial fix (apply directly), decision required (surface 2-4 options via `AskUserQuestion`), unresolvable (file as task or convert to `@todo:` / `@review(escalated):`). Marker removal is invariant on resolution (unless `--keep-resolved-markers` is set). Emits a resolution-log run summary. **Cross-AI loop**: `/opsx:review-external <name>` packages a self-contained prompt at `openspec/changes/<name>/.orbit-runs/external-prompt-<as>-<TS>.md` — paste into a different AI session, the external AI commits findings back to a sibling file, then `/opsx:address-reviews <name> --from-file <findings-path>` ingests and walks each. See `.claude/skills/openspec-review-external/SKILL.md` for the full external-review loop (recommended-session logic, output format, iteration tracking).
+
+**Phase 5 — apply (`/opsx:apply <name>`)**: Implements tasks from `tasks.md` chunk by chunk. Chunks are natural pause points — at each chunk's end, the SKILL emits a run summary to `.orbit-runs/apply-<TS>.json` describing what was changed, what's done, what remains, and the next recommended action. The user can interrupt between chunks. Apply pauses if a task surfaces a premise problem (e.g., implementation reveals a design issue) and prompts for direction — `@review(escalated):` markers, artifact updates, or scope cuts are all valid responses.
+
+**Phase 6 — verify (`/opsx:verify <name>`)**: Runs upstream's `openspec-verify-change` skill — structural correctness check confirming tasks are complete, spec coverage holds, and design adherence is intact. orbit composes this as the structural gate before system-mode review.
+
+**Phase 7 — review (system mode, `/opsx:review <name> --as system`)**: Post-apply review of the whole product state. Pass 0 wraps `openspec-verify-change` (delegated structural check). Passes 1-6: Baseline Compliance (does this change break archived `openspec/specs/` requirements?) / Cohesion (callers/dependents outside the tasks list — signature drift, ripple effects) / Surface Walk (every CLI/MCP/HTTP/public-function surface in `openspec/specs/` still coherent?) / Perspective Reviews (for each named perspective in `openspec/lenses/perspectives.md`, simulate the caller's POV) / Critical-Path Scan (for each flow in `openspec/lenses/critical-paths.md`, walk end-to-end) / Drift / Residue (invokes `/opsx:audit-drift` as a library function). Run summary persists to `.orbit-runs/review-system-<TS>.json`.
+
+**Phase 8 — address-reviews (system-mode findings)**: Same `/opsx:address-reviews` lifecycle as Phase 4, applied to system-mode review's findings. The cross-AI external loop also works here (`/opsx:review-external --as system`).
+
+**Phase 9 — archive (`/opsx:archive <name>`)**: Moves the change to `openspec/changes/archive/<YYYY-MM-DD>-<name>/` and runs sync-specs (invokes the `openspec-sync-specs` upstream-required primitive) to propagate spec deltas (ADDED/MODIFIED/REMOVED/RENAMED) into baseline at `openspec/specs/`. Pre-archive sweeps: unresolved `@review:` marker check (prompts to address or convert to `@todo:`); audit-drift sweep (runs `/opsx:audit-drift --context pre-archive`). The per-change `.orbit-runs/` directory travels with the change into the archive, preserving the full audit trail. Run summary emits to `.orbit-runs/archive-<TS>.json` inside the archived location.
 
 ---
 
-## Phase 4: Create the Change
+## Section 4: Quick-reference command table
 
-**EXPLAIN:**
-```
-## Creating a Change
+Every slash command in your post-install `.claude/commands/opsx/` (15 files: 14 from orbit's overlay + 1 from upstream init untouched). One-line descriptions; orbit-modified commands carry orbit-specific behavior on top of upstream's body, orbit-authored commands are 100% orbit.
 
-A "change" in OpenSpec is a container for all the thinking and planning around a piece of work. It lives in `openspec/changes/<name>/` and holds your artifacts—proposal, specs, design, tasks.
+| Command | One-line description |
+|---------|---------------------|
+| `/opsx:address-reviews [<scope>] [--from-file <path>]` | Walk inline `@review:` markers or external-review findings through pushback → classify → fix → ripple → remove. Resolves rather than scans. |
+| `/opsx:apply <name>` | Implement tasks from `tasks.md` chunk-by-chunk with end-of-chunk run-summary emits. Pauses on premise problems. |
+| `/opsx:archive <name>` | Move change to `openspec/changes/archive/`, run sync-specs to propagate deltas to baseline. Pre-archive `@review:` marker check + audit-drift sweep. |
+| `/opsx:audit-drift [<change-name>]` | Scan for drift between captured knowledge and reality (4 categories: vocabulary, lens, cross-doc, archive). Standalone or library-call. |
+| `/opsx:bulk-archive` | Archive multiple completed changes at once. |
+| `/opsx:continue <name>` | Create the next artifact in the change's workflow. |
+| `/opsx:explore [<name>]` | Thinking-mode entry. Named: auto-captures decisions to `explore.md`. Bare: stays in chat until crystallization. |
+| `/opsx:ff` | (upstream-installed, untouched by orbit's overlay) Fast-forward through artifact creation in one go. |
+| `/opsx:new <name>` | Start a new change using the experimental artifact workflow. |
+| `/opsx:onboard` | Run this skill (the reference walkthrough you're reading now). |
+| `/opsx:propose <name>` | Generate proposal + design + specs + tasks artifacts in one step. Consume mode reads `openspec/explore/<name>/explore.md` if present. |
+| `/opsx:review <name> [--as proposal\|system] [--fresh]` | Editorial review: 9 passes proposal-mode (pre-apply) or 7 passes system-mode (post-apply, wraps `verify-change` as Pass 0). |
+| `/opsx:review-external <name> [--as proposal\|system]` | Package a self-contained prompt for a different AI to do a second-opinion review. Commits prompt to repo; external AI commits findings back. |
+| `/opsx:sync <name>` | Sync delta specs from a change to main specs without archiving. |
+| `/opsx:verify <name>` | Run upstream's structural verify-change (tasks done, spec coverage, design adherence). Composed as Pass 0 of system-mode review. |
 
-Let me create one for our task.
-```
-
-**DO:** Create the change with a derived kebab-case name:
-```bash
-openspec new change "<derived-name>"
-```
-
-**SHOW:**
-```
-Created: `openspec/changes/<name>/`
-
-The folder structure:
-```
-openspec/changes/<name>/
-├── proposal.md    ← Why we're doing this (empty, we'll fill it)
-├── design.md      ← How we'll build it (empty)
-├── specs/         ← Detailed requirements (empty)
-└── tasks.md       ← Implementation checklist (empty)
-```
-
-Now let's fill in the first artifact—the proposal.
-```
+For categorization (which commands are orbit-authored vs orbit-modified vs upstream-untouched), see `orbit-conventions` baseline `Overlay file disposition` requirement. This table documents the user-invocable surface; the disposition framework documents how orbit ships each file.
 
 ---
 
-## Phase 5: Proposal
+## Section 5: Try-it nudge
 
-**EXPLAIN:**
-```
-## The Proposal
+Two paths from here, depending on what you have:
 
-The proposal captures **why** we're making this change and **what** it involves at a high level. It's the "elevator pitch" for the work.
+- **If you have a concrete project idea** — run `/opsx:explore <your-change-name>`. Replace `<your-change-name>` with a kebab-case name describing what you want to build or change (e.g., `add-user-auth`, `migrate-postgres-to-sqlite`, `redesign-archive-flow`). Named-mode explore starts a thinking partnership: orbit asks clarifying questions, surfaces threads, captures decisions to `openspec/explore/<name>/explore.md` as they emerge. When decisions stabilize, `/opsx:propose <your-change-name>` generates proposal + design + specs + tasks from the explore.md.
 
-I'll draft one based on our task.
-```
+- **If you're orienting and don't have a concrete idea yet** — run `/opsx:explore` (no name). Bare-mode explore stays in thinking-mode without committing to a change. Orbit acts as thinking partner; if 2+ substantive decisions emerge during the conversation, orbit prompts you to crystallize a name. Useful for investigating a vague concern, comparing approaches, or just orienting yourself to the codebase.
 
-**DO:** Draft the proposal content (don't save yet):
+When you've gathered findings worth acting on, see `/opsx:address-reviews` to walk them. When you want a project-wide drift check, see `/opsx:audit-drift`. When you want a cross-AI second opinion, see `/opsx:review-external`.
 
-```
-Here's a draft proposal:
-
----
-
-## Why
-
-[1-2 sentences explaining the problem/opportunity]
-
-## What Changes
-
-[Bullet points of what will be different]
-
-## Capabilities
-
-### New Capabilities
-- `<capability-name>`: [brief description]
-
-### Modified Capabilities
-<!-- If modifying existing behavior -->
-
-## Impact
-
-- `src/path/to/file.ts`: [what changes]
-- [other files if applicable]
-
----
-
-Does this capture the intent? I can adjust before we save it.
-```
-
-**PAUSE** - Wait for user approval/feedback.
-
-After approval, save the proposal:
-```bash
-openspec instructions proposal --change "<name>" --json
-```
-Then write the content to `openspec/changes/<name>/proposal.md`.
-
-```
-Proposal saved. This is your "why" document—you can always come back and refine it as understanding evolves.
-
-Next up: specs.
-```
-
----
-
-## Phase 6: Specs
-
-**EXPLAIN:**
-```
-## Specs
-
-Specs define **what** we're building in precise, testable terms. They use a requirement/scenario format that makes expected behavior crystal clear.
-
-For a small task like this, we might only need one spec file.
-```
-
-**DO:** Create the spec file:
-```bash
-# Unix/macOS
-mkdir -p openspec/changes/<name>/specs/<capability-name>
-# Windows (PowerShell)
-# New-Item -ItemType Directory -Force -Path "openspec/changes/<name>/specs/<capability-name>"
-```
-
-Draft the spec content:
-
-```
-Here's the spec:
-
----
-
-## ADDED Requirements
-
-### Requirement: <Name>
-
-<Description of what the system should do>
-
-#### Scenario: <Scenario name>
-
-- **WHEN** <trigger condition>
-- **THEN** <expected outcome>
-- **AND** <additional outcome if needed>
-
----
-
-This format—WHEN/THEN/AND—makes requirements testable. You can literally read them as test cases.
-```
-
-Save to `openspec/changes/<name>/specs/<capability>/spec.md`.
-
----
-
-## Phase 7: Design
-
-**EXPLAIN:**
-```
-## Design
-
-The design captures **how** we'll build it—technical decisions, tradeoffs, approach.
-
-For small changes, this might be brief. That's fine—not every change needs deep design discussion.
-```
-
-**DO:** Draft design.md:
-
-```
-Here's the design:
-
----
-
-## Context
-
-[Brief context about the current state]
-
-## Goals / Non-Goals
-
-**Goals:**
-- [What we're trying to achieve]
-
-**Non-Goals:**
-- [What's explicitly out of scope]
-
-## Decisions
-
-### Decision 1: [Key decision]
-
-[Explanation of approach and rationale]
-
----
-
-For a small task, this captures the key decisions without over-engineering.
-```
-
-Save to `openspec/changes/<name>/design.md`.
-
----
-
-## Phase 8: Tasks
-
-**EXPLAIN:**
-```
-## Tasks
-
-Finally, we break the work into implementation tasks—checkboxes that drive the apply phase.
-
-These should be small, clear, and in logical order.
-```
-
-**DO:** Generate tasks based on specs and design:
-
-```
-Here are the implementation tasks:
-
----
-
-## 1. [Category or file]
-
-- [ ] 1.1 [Specific task]
-- [ ] 1.2 [Specific task]
-
-## 2. Verify
-
-- [ ] 2.1 [Verification step]
-
----
-
-Each checkbox becomes a unit of work in the apply phase. Ready to implement?
-```
-
-**PAUSE** - Wait for user to confirm they're ready to implement.
-
-Save to `openspec/changes/<name>/tasks.md`.
-
----
-
-## Phase 9: Apply (Implementation)
-
-**EXPLAIN:**
-```
-## Implementation
-
-Now we implement each task, checking them off as we go. I'll announce each one and occasionally note how the specs/design informed the approach.
-```
-
-**DO:** For each task:
-
-1. Announce: "Working on task N: [description]"
-2. Implement the change in the codebase
-3. Reference specs/design naturally: "The spec says X, so I'm doing Y"
-4. Mark complete in tasks.md: `- [ ]` → `- [x]`
-5. Brief status: "✓ Task N complete"
-
-Keep narration light—don't over-explain every line of code.
-
-After all tasks:
-
-```
-## Implementation Complete
-
-All tasks done:
-- [x] Task 1
-- [x] Task 2
-- [x] ...
-
-The change is implemented! One more step—let's archive it.
-```
-
----
-
-## Phase 10: Archive
-
-**EXPLAIN:**
-```
-## Archiving
-
-When a change is complete, we archive it. This moves it from `openspec/changes/` to `openspec/changes/archive/YYYY-MM-DD-<name>/`.
-
-Archived changes become your project's decision history—you can always find them later to understand why something was built a certain way.
-```
-
-**DO:**
-```bash
-openspec archive "<name>"
-```
-
-**SHOW:**
-```
-Archived to: `openspec/changes/archive/YYYY-MM-DD-<name>/`
-
-The change is now part of your project's history. The code is in your codebase, the decision record is preserved.
-```
-
----
-
-## Phase 11: Recap & Next Steps
-
-```
-## Congratulations!
-
-You just completed a full OpenSpec cycle:
-
-1. **Explore** - Thought through the problem
-2. **New** - Created a change container
-3. **Proposal** - Captured WHY
-4. **Specs** - Defined WHAT in detail
-5. **Design** - Decided HOW
-6. **Tasks** - Broke it into steps
-7. **Apply** - Implemented the work
-8. **Archive** - Preserved the record
-
-This same rhythm works for any size change—a small fix or a major feature.
-
----
-
-## Command Reference
-
-**Core workflow:**
-
- | Command           | What it does                               |
- |-------------------|--------------------------------------------|
- | `/opsx:propose` | Create a change and generate all artifacts |
- | `/opsx:explore` | Think through problems before/during work  |
- | `/opsx:apply`   | Implement tasks from a change              |
- | `/opsx:archive` | Archive a completed change                 |
-
-**Additional commands:**
-
- | Command            | What it does                                             |
- |--------------------|----------------------------------------------------------|
- | `/opsx:new`      | Start a new change, step through artifacts one at a time |
- | `/opsx:continue` | Continue working on an existing change                   |
- | `/opsx:ff`       | Fast-forward: create all artifacts at once               |
- | `/opsx:verify`   | Verify implementation matches artifacts                  |
-
----
-
-## What's Next?
-
-Try `/opsx:propose` on something you actually want to build. You've got the rhythm now!
-```
-
----
-
-## Graceful Exit Handling
-
-### User wants to stop mid-way
-
-If the user says they need to stop, want to pause, or seem disengaged:
-
-```
-No problem! Your change is saved at `openspec/changes/<name>/`.
-
-To pick up where we left off later:
-- `/opsx:continue <name>` - Resume artifact creation
-- `/opsx:apply <name>` - Jump to implementation (if tasks exist)
-
-The work won't be lost. Come back whenever you're ready.
-```
-
-Exit gracefully without pressure.
-
-### User just wants command reference
-
-If the user says they just want to see the commands or skip the tutorial:
-
-```
-## OpenSpec Quick Reference
-
-**Core workflow:**
-
- | Command                  | What it does                               |
- |--------------------------|--------------------------------------------|
- | `/opsx:propose <name>` | Create a change and generate all artifacts |
- | `/opsx:explore`        | Think through problems (no code changes)   |
- | `/opsx:apply <name>`   | Implement tasks                            |
- | `/opsx:archive <name>` | Archive when done                          |
-
-**Additional commands:**
-
- | Command                   | What it does                        |
- |---------------------------|-------------------------------------|
- | `/opsx:new <name>`      | Start a new change, step by step    |
- | `/opsx:continue <name>` | Continue an existing change         |
- | `/opsx:ff <name>`       | Fast-forward: all artifacts at once |
- | `/opsx:verify <name>`   | Verify implementation               |
-
-Try `/opsx:propose` to start your first change.
-```
-
-Exit gracefully.
-
----
-
-## Guardrails
-
-- **Follow the EXPLAIN → DO → SHOW → PAUSE pattern** at key transitions (after explore, after proposal draft, after tasks, after archive)
-- **Keep narration light** during implementation—teach without lecturing
-- **Don't skip phases** even if the change is small—the goal is teaching the workflow
-- **Pause for acknowledgment** at marked points, but don't over-pause
-- **Handle exits gracefully**—never pressure the user to continue
-- **Use real codebase tasks**—don't simulate or use fake examples
-- **Adjust scope gently**—guide toward smaller tasks but respect user choice

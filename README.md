@@ -43,7 +43,7 @@ A workflow tool that owns the `.claude/` surface (skills, commands, supporting d
 
 orbit is a workflow tool with its own `.claude/` surface. It uses `@fission-ai/openspec` at a specific pinned version (currently `1.3.1`) as a CLI engine — the upstream CLI binary is unchanged. orbit is NOT a fork, NOT an automatic-update overlay, and NOT a thin augmentation; it's an opinionated tool that shares concepts with upstream OpenSpec but ships its own surface.
 
-orbit's `.claude/` surface adds four new opsx commands and modifies several upstream skills to bake in disciplines that have been working ad-hoc across real projects:
+orbit's `.claude/` surface adds five new opsx commands and modifies several upstream skills to bake in disciplines that have been working ad-hoc across real projects:
 
 - **Editorial review passes** that complement upstream's structural `verify-change`
 - **A drift audit** that catches gaps a pure delta-sync doesn't (the lesson: delta-driven sync is necessary but not sufficient)
@@ -826,7 +826,7 @@ Unresolvable markers have three options (per-marker user choice):
 .claude/
 ├── commands/opsx/                ← slash command bodies (orbit ships overrides + new)
 │   ├── explore.md  propose.md  apply.md  archive.md  verify.md
-│   ├── new.md  continue.md  fast-forward.md  sync.md  onboard.md  bulk-archive.md
+│   ├── new.md  continue.md  sync.md  onboard.md  bulk-archive.md
 │   └── review.md  review-external.md  audit-drift.md  address-reviews.md   ← orbit (new)
 └── skills/                        ← skill definitions
     ├── openspec-explore/         ← upstream + orbit additions (capture types, three modes)
@@ -904,7 +904,7 @@ See [Pegging strategy](#pegging-strategy) below for the rationale and upgrade di
 ### Prerequisites
 
 - **Claude Code** (or a compatible client that loads `.claude/skills/` + `.claude/commands/`). Orbit's commands are markdown prompts; they need an AI client that understands the `.claude/` convention.
-- **`@fission-ai/openspec@1.3.1`** (pinned) — orbit modifies 10 upstream skills with `# Orbit additions` sections (see step 2) and depends on the `openspec` CLI being available (`openspec list`, `openspec status`, `openspec validate`, etc.). Pin to v1.3.1 exactly; see [Pegging strategy](#pegging-strategy).
+- **`@fission-ai/openspec@1.3.1`** (pinned) — orbit modifies 9 upstream skills with `# Orbit additions` sections (see step 2) and depends on the `openspec` CLI being available (`openspec list`, `openspec status`, `openspec validate`, etc.). Pin to v1.3.1 exactly; see [Pegging strategy](#pegging-strategy).
 - **Git** — for cloning orbit, and recommended for the `/opsx:review-external` workflow (the prompt file gets committed and pulled by the external AI from your remote).
 - An empty or non-conflicting `.claude/` directory in your project — see ["Working alongside existing .claude/ customizations"](#working-alongside-existing-claude-customizations) below.
 
@@ -952,11 +952,11 @@ rm -rf .claude/skills/feedback
 
 This:
 
-- **Adds 4 orbit-authored skills + 4 orbit-authored commands**: `openspec-review`, `openspec-review-external`, `openspec-audit-drift`, `openspec-address-reviews` (each with a `references/` subdirectory for schemas and templates) + matching `review.md`, `review-external.md`, `audit-drift.md`, `address-reviews.md` command files.
-- **Overwrites 10 upstream skill files** with orbit's modified versions. Each gets an `# Orbit additions` section appended at the bottom of its SKILL.md; upstream content is preserved verbatim above the additions. The 10: `openspec-explore`, `openspec-propose`, `openspec-archive-change`, `openspec-apply-change`, `openspec-verify-change`, `openspec-continue-change`, `openspec-ff-change`, `openspec-new-change`, `openspec-bulk-archive-change`, `openspec-onboard`. Verify the authoritative list at install time with `grep -l "^# Orbit additions" .claude/skills/openspec-*/SKILL.md` (should return 10 files).
-- **Overwrites 9 of the matching slash command bodies** in `.claude/commands/opsx/`: `apply.md`, `archive.md`, `bulk-archive.md`, `continue.md`, `explore.md`, `new.md`, `onboard.md`, `propose.md`, `verify.md`. Same overlay pattern — orbit's additions sit alongside upstream's content. (The 10th — upstream's `ff.md` — is left untouched; see the `fast-forward.md` note below.)
+- **Adds 5 orbit-authored skills + 5 orbit-authored commands**: `openspec-review`, `openspec-review-external`, `openspec-audit-drift`, `openspec-address-reviews`, `openspec-onboard` (each with a `references/` subdirectory where applicable for schemas and templates) + matching `review.md`, `review-external.md`, `audit-drift.md`, `address-reviews.md`, `onboard.md` command files. (`openspec-onboard` was upstream-bodied with `# Orbit additions` prior to the `orbit-onboard-follow-up` change; it is now 100% orbit-authored.)
+- **Overwrites 9 upstream skill files** with orbit's modified versions. Each gets an `# Orbit additions` section appended at the bottom of its SKILL.md; upstream content is preserved verbatim above the additions. The 9: `openspec-explore`, `openspec-propose`, `openspec-archive-change`, `openspec-apply-change`, `openspec-verify-change`, `openspec-continue-change`, `openspec-ff-change`, `openspec-new-change`, `openspec-bulk-archive-change`. Verify the authoritative list at install time with `grep -l "^# Orbit additions" .claude/skills/openspec-*/SKILL.md` (should return 9 files).
+- **Overwrites 8 of the matching slash command bodies** in `.claude/commands/opsx/`: `apply.md`, `archive.md`, `bulk-archive.md`, `continue.md`, `explore.md`, `new.md`, `propose.md`, `verify.md`. Same overlay pattern — orbit's additions sit alongside upstream's content. (Upstream's `ff.md` is left untouched. Orbit no longer ships its own `fast-forward.md` — users run the fast-forward workflow via upstream's `ff.md` per `orbit-conventions` `Verbatim upstream files not in orbit's overlay`.)
 - **Adds 1 upstream-required primitive skill**: `openspec-sync-specs`. Upstream `init --tools claude` doesn't materialize this skill, but orbit's archive flow invokes it as a callable primitive. Orbit ships its own copy so the archive flow has the skill body to load.
-- **Adds 2 additional orbit-shipped commands**: `sync.md` (slash-command surface for `openspec-sync-specs`) and `fast-forward.md` (orbit's rewrite of the fast-forward workflow under a different filename). The `fast-forward.md` / `ff.md` naming divergence means upstream's `ff.md` and orbit's `fast-forward.md` coexist after overlay — this is a known overlay-disposition oddity tracked for cleanup in a future change.
+- **Adds 1 additional orbit-shipped command**: `sync.md` (slash-command surface for `openspec-sync-specs`).
 - **Prunes `feedback/`** from your project. The `feedback` skill is not installed by `openspec init --tools claude` at v1.3.1, but if you ran an earlier version of orbit's overlay, it may exist in your project from that time. The `rm -rf` above removes it; subsequent re-overlays won't re-add it (orbit no longer ships it).
 
 The overlay copy is **idempotent** — re-running it picks up newer orbit versions without breaking anything, as long as you keep upstream pinned at orbit's required version (see [Pegging strategy](#pegging-strategy)). Upgrading upstream beyond the pinned version is a separate, deliberate event that may require a coordinated orbit version-upgrade change.
@@ -969,10 +969,9 @@ Copy the snippet from this README's [Cross-cutting disciplines](#cross-cutting-d
 
 | Surface | What's there |
 |---|---|
-| `.claude/skills/openspec-*/` | **15 directories total**: 10 upstream (modified by orbit's overlay) + 4 orbit-authored (`openspec-review`, `openspec-review-external`, `openspec-audit-drift`, `openspec-address-reviews`) + 1 upstream-required primitive (`openspec-sync-specs`, used by orbit's archive flow even though upstream init doesn't materialize it). No `feedback/` (pruned in step 2). |
-| `.claude/commands/opsx/` | **16 command files**: 9 upstream commands modified by orbit (`apply.md`, `archive.md`, `bulk-archive.md`, `continue.md`, `explore.md`, `new.md`, `onboard.md`, `propose.md`, `verify.md`) + 1 upstream command untouched by overlay (`ff.md` — see naming-divergence note below) + 4 orbit-authored (`review.md`, `review-external.md`, `audit-drift.md`, `address-reviews.md`) + 2 additional orbit commands (`sync.md`, `fast-forward.md`). |
-| Modified upstream skills | 10 skills have an `# Orbit additions` section appended at the bottom of their SKILL.md: `openspec-explore`, `openspec-propose`, `openspec-archive-change`, `openspec-apply-change`, `openspec-verify-change`, `openspec-continue-change`, `openspec-ff-change`, `openspec-new-change`, `openspec-bulk-archive-change`, `openspec-onboard`. Upstream content is preserved verbatim above the additions. Frontmatter (incl. `metadata.author: openspec`) is preserved. |
-| Naming divergence: `ff.md` vs `fast-forward.md` | Upstream ships `ff.md` (the fast-forward workflow); orbit ships `fast-forward.md` (orbit's rewrite of the same workflow). Both files coexist after overlay because `cp -r` doesn't rename or remove files. This is a known overlay-disposition oddity — for now, both files are present; orbit's `fast-forward.md` is the canonical orbit-shipping. Tracked for resolution in a future overlay-cleanup change. |
+| `.claude/skills/openspec-*/` | **15 directories total**: 9 upstream (modified by orbit's overlay) + 5 orbit-authored (`openspec-review`, `openspec-review-external`, `openspec-audit-drift`, `openspec-address-reviews`, `openspec-onboard`) + 1 upstream-required primitive (`openspec-sync-specs`, used by orbit's archive flow even though upstream init doesn't materialize it). No `feedback/` (pruned in step 2). |
+| `.claude/commands/opsx/` | **15 command files**: 8 upstream commands modified by orbit (`apply.md`, `archive.md`, `bulk-archive.md`, `continue.md`, `explore.md`, `new.md`, `propose.md`, `verify.md`) + 1 upstream command untouched by overlay (`ff.md` — orbit no longer ships its own copy per `Verbatim upstream files not in orbit's overlay`) + 5 orbit-authored (`review.md`, `review-external.md`, `audit-drift.md`, `address-reviews.md`, `onboard.md`) + 1 additional orbit-shipped command (`sync.md`). |
+| Modified upstream skills | 9 skills have an `# Orbit additions` section appended at the bottom of their SKILL.md: `openspec-explore`, `openspec-propose`, `openspec-archive-change`, `openspec-apply-change`, `openspec-verify-change`, `openspec-continue-change`, `openspec-ff-change`, `openspec-new-change`, `openspec-bulk-archive-change`. Upstream content is preserved verbatim above the additions. Frontmatter (incl. `metadata.author: openspec`) is preserved. |
 | `openspec/lenses/` | Doesn't exist yet — orbit's lens layer (perspectives + critical paths) is empty by default. Files are created on first `/opsx:explore` capture. System-mode review's Pass 4/5 gracefully skip when lenses are absent. |
 | `openspec/.orbit-runs/` | Doesn't exist yet — created on first standalone-context audit-drift run. Per-change `.orbit-runs/` directories under `openspec/changes/<name>/` are created on first review/audit/address-reviews invocation against that change. |
 
@@ -982,7 +981,7 @@ In your AI client, after restart, the available slash commands should include `/
 
 Orbit is designed to gracefully degrade. You can:
 
-- Install only the four new orbit-authored commands and skip the upstream-skill modifications (copy only files under `.claude/commands/opsx/review*.md`, `audit-drift.md`, `address-reviews.md`, plus the four new SKILL.md directories). All 10 upstream skills then behave unmodified — you lose orbit's additions to explore/propose/apply/archive/etc., but the new commands work standalone.
+- Install only the five new orbit-authored commands and skip the upstream-skill modifications (copy only files under `.claude/commands/opsx/review*.md`, `audit-drift.md`, `address-reviews.md`, `onboard.md`, plus the five new SKILL.md directories). All 9 modified upstream skills then behave unmodified — you lose orbit's additions to explore/propose/apply/archive/etc., but the new commands work standalone.
 - Or install only the modified upstream skills and skip the new commands. Less common, but useful if you want orbit's capture affordances in explore + the run-summary JSON emissions across the workflow without the editorial review machinery.
 - Each new orbit command is independent of the others — adopting `/opsx:address-reviews` doesn't require `/opsx:review` to be present.
 
@@ -991,12 +990,12 @@ Orbit is designed to gracefully degrade. You can:
 If your project already has custom slash commands or skills in `.claude/`:
 
 - **Different namespace, no conflict**: orbit's slash commands all live under `.claude/commands/opsx/` and its skills under `.claude/skills/openspec-*/`. Custom commands in other paths (e.g., `.claude/commands/mycompany/`) coexist fine.
-- **Custom modifications to any of the 10 orbit-modified upstream skills**: orbit's overlay overwrites all 10 (`openspec-explore`, `openspec-propose`, `openspec-archive-change`, `openspec-apply-change`, `openspec-verify-change`, `openspec-continue-change`, `openspec-ff-change`, `openspec-new-change`, `openspec-bulk-archive-change`, `openspec-onboard`). If you've previously modified any of these yourself, `cp -r` will clobber your changes. Diff-merge your customizations into orbit's version manually (orbit's additions sit in a clearly-labeled `# Orbit additions` block at the bottom — most user customizations live above that, but verify case-by-case).
+- **Custom modifications to any of the 9 orbit-modified upstream skills**: orbit's overlay overwrites all 9 (`openspec-explore`, `openspec-propose`, `openspec-archive-change`, `openspec-apply-change`, `openspec-verify-change`, `openspec-continue-change`, `openspec-ff-change`, `openspec-new-change`, `openspec-bulk-archive-change`). If you've previously modified any of these yourself, `cp -r` will clobber your changes. Diff-merge your customizations into orbit's version manually (orbit's additions sit in a clearly-labeled `# Orbit additions` block at the bottom — most user customizations live above that, but verify case-by-case). Note: `openspec-onboard` is now 100% orbit-authored (not modified upstream); customizations to it would be clobbered wholesale rather than additively.
 - **Existing `CLAUDE.md`**: orbit doesn't touch `CLAUDE.md` — step 3 is "copy this snippet in," which you do manually wherever it fits.
 
 ### Common gotchas
 
-- **Skipped step 1.** Running orbit's overlay before `openspec init --tools claude` produces a `.claude/skills/openspec-*/` tree that doesn't have the upstream skills orbit modifies. All 10 orbit-modified skills end up containing only orbit's additions without the upstream behavior above. Re-run upstream init first, then re-overlay orbit (and prune `feedback/` per step 2).
+- **Skipped step 1.** Running orbit's overlay before `openspec init --tools claude` produces a `.claude/skills/openspec-*/` tree that doesn't have the upstream skills orbit modifies. All 9 orbit-modified skills end up containing only orbit's additions without the upstream behavior above. Re-run upstream init first, then re-overlay orbit (and prune `feedback/` per step 2).
 - **Stale AI client cache.** Some AI clients cache the `.claude/` directory at startup. After install, restart your client so the new skills/commands are discovered.
 - **`/opsx:review-external` without git.** The cross-AI handoff workflow assumes the external AI can pull your repo. Without git, you can still use orbit — the SKILL falls back to outputting the prompt as raw markdown for manual save/share. But the loop is designed around the file-based handoff; expect more friction on chat-only setups.
 - **`openspec` CLI not on PATH.** Orbit's commands shell out to `openspec list`, `openspec status`, `openspec instructions`, etc. If the `openspec` binary isn't on PATH, those calls fail. The `npx @fission-ai/openspec@1.3.1 <subcommand>` form works but adds latency to every invocation. (Pin to `@1.3.1` explicitly, not `@latest` — running a newer version against orbit's overlay is undefined per [Pegging strategy](#pegging-strategy).)
@@ -1033,19 +1032,21 @@ Long-term: package as a proper Claude Code plugin (Phase 2 — currently tracked
 If you want to remove orbit and revert to upstream `@fission-ai/openspec@1.3.1` only:
 
 ```bash
-# Remove orbit-only commands (4 orbit-authored + 2 additional that upstream init
-# doesn't install: sync.md, fast-forward.md).
-rm .claude/commands/opsx/{review,review-external,audit-drift,address-reviews,sync,fast-forward}.md
+# Remove orbit-only commands (5 orbit-authored + 1 additional that upstream init
+# doesn't install: sync.md).
+rm .claude/commands/opsx/{review,review-external,audit-drift,address-reviews,onboard,sync}.md
 
-# Remove orbit-only skill directories (4 orbit-authored + 1 upstream-required
+# Remove orbit-only skill directories (5 orbit-authored + 1 upstream-required
 # primitive `openspec-sync-specs` that upstream init doesn't materialize).
-rm -rf .claude/skills/openspec-{review,review-external,audit-drift,address-reviews,sync-specs}
+rm -rf .claude/skills/openspec-{review,review-external,audit-drift,address-reviews,onboard,sync-specs}
 
 # Remove the orbit-historical `feedback/` skill, if present (was never installed
 # by upstream init at v1.3.1, but may exist if you ran orbit's earlier overlay).
 rm -rf .claude/skills/feedback
 
-# Restore upstream-pristine state for the 10 orbit-modified skills.
+# Restore upstream-pristine state for the 9 orbit-modified skills (and re-install
+# upstream's `openspec-onboard` skill that orbit's overlay had replaced with its
+# own orbit-authored version).
 # `init --force` re-runs init, overwriting the `# Orbit additions`-bearing
 # skill bodies back to their upstream-pristine forms.
 npx @fission-ai/openspec@1.3.1 init --force --tools claude
@@ -1057,7 +1058,7 @@ npx @fission-ai/openspec@1.3.1 init --force --tools claude
 - ✅ Overwrites upstream-installed commands (`.claude/commands/opsx/*`) back to their pristine v1.3.1 state.
 - ✅ Preserves user-created files outside upstream paths — e.g., `.claude/custom/*`, custom non-upstream skills in `.claude/skills/<your-name>/`, custom command paths like `.claude/commands/mycompany/`.
 - ✅ Preserves all `openspec/` content — `openspec/changes/`, `openspec/specs/`, `openspec/changes/archive/`, `openspec/lenses/`, `openspec/.orbit-runs/` are untouched.
-- ❌ **Does NOT delete orbit-shipped target-only files** that upstream `init --tools claude` doesn't install. Specifically: `.claude/skills/openspec-sync-specs/`, `.claude/commands/opsx/sync.md`, `.claude/commands/opsx/fast-forward.md`. These must be removed by the explicit `rm` lines above; running `init --force` alone leaves them in place (11 skills + 12 commands instead of upstream's 10 + 10). The full uninstall sequence above handles this; running only the `init --force` step does not.
+- ❌ **Does NOT delete orbit-shipped target-only files** that upstream `init --tools claude` doesn't install. Specifically: `.claude/skills/openspec-sync-specs/`, `.claude/commands/opsx/sync.md`. These must be removed by the explicit `rm` lines above; running `init --force` alone leaves them in place (11 skills + 11 commands instead of upstream's 10 + 10). The full uninstall sequence above handles this; running only the `init --force` step does not.
 
 A safer-still pattern: keep upstream's pristine skill files in version control before applying orbit, so revert is just `git checkout .claude/`. This avoids relying on `init --force` re-downloading the upstream files (works for offline reverts, version-tagged reverts, and lets you diff orbit's modifications against the pristine baseline). Use this as a complement, not a replacement.
 

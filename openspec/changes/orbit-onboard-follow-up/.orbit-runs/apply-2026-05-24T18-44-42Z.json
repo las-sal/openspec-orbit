@@ -1,0 +1,19 @@
+{
+  "command": "apply",
+  "timestamp": "2026-05-24T18:44:42Z",
+  "change": "orbit-onboard-follow-up",
+  "kind": "workflow",
+  "chunk": "1 of 3",
+  "chunk_name": "Write the new orbit-authored SKILL.md body",
+  "chunk_complete": true,
+  "tasks_completed": 8,
+  "tasks_remaining": 10,
+  "user_validation_remaining": 3,
+  "tasks_completed_this_session": 8,
+  "tasks_completed_this_chunk": ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8"],
+  "files_changed": [
+    ".claude/skills/openspec-onboard/SKILL.md (full rewrite: 562 lines upstream-bodied → 198 lines 100% orbit-authored; 5-section reference-leaning hybrid: Setup verification / Identity statement / Canonical-flow walkthrough (9 phases) / Quick-reference table (15 commands) / Try-it nudge (named + bare modes); non-emission metadata note at top; frontmatter updated: description rewritten, metadata.author: openspec → orbit, version: 1.0 → 0.1.0)"
+  ],
+  "final_assessment": "Chunk 1 complete. Full SKILL body rewritten as orbit-authored content. 5 sections in correct order. Sanity sweep clean: 0 augmentation-language hits (negative test passes per orbit-onboard spec `Identity section MUST NOT contain augmentation language`); section count = 5; body length 198 lines (concise but spec-complete — all 10 spec requirements have coverage). Section 1 (Setup verification) implements full failure-mode taxonomy: 5 skill checks + 3 command checks per spec requirements; layered ✓ output on pass; lumped hard-stop message; warn-and-continue for feedback-prune-skipped; gotcha note about stale AI client cache. Section 2 (Identity) uses pegged-engine framing + enumerates 5 orbit-distinctive layers (editorial review / drift audit / capture / JSON emission / 3 execution disciplines). Section 3 (Canonical-flow) has 9-phase ASCII diagram + 1 paragraph per phase; lenses introduced in explore-phase (Phase 1) + re-referenced in review-phase (Phase 7); external-review demoed abstractly in Phase 4. Section 4 (Quick-reference) lists 15 commands including upstream-untouched `/opsx:ff` (post-this-change overlay state). Section 5 (Try-it nudge) covers both named-mode and bare-mode audiences without 'for practice' framing.",
+  "next_recommended": "/opsx:apply orbit-onboard-follow-up — next chunk: Mirror SKILL.md body to .claude/commands/opsx/onboard.md + delete .claude/commands/opsx/fast-forward.md + README sync (task 2.4) + apply-time sandbox verification (task 2.5)"
+}
