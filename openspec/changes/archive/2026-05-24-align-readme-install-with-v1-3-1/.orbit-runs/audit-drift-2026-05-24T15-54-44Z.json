@@ -1,0 +1,38 @@
+{
+  "command": "audit-drift",
+  "timestamp": "2026-05-24T15:54:44Z",
+  "change": "align-readme-install-with-v1-3-1",
+  "final_assessment": "No drift detected. Ready to archive.",
+  "next_recommended": null,
+  "kind": "editorial",
+  "context": "pre-archive",
+  "caller": "openspec-archive-change",
+  "depth": "full",
+  "flags": {
+    "parallel": false,
+    "focus": null,
+    "since": null,
+    "strict": false
+  },
+  "categories_run": ["1", "3", "4"],
+  "categories_skipped": ["2"],
+  "findings_summary": {
+    "critical": 0,
+    "warning": 0,
+    "suggestion": 0,
+    "by_category": {
+      "1": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "2": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "3": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "4": { "critical": 0, "warning": 0, "suggestion": 0 }
+    }
+  },
+  "findings": [],
+  "stale_suppressed": [
+    {
+      "category": "4",
+      "title": "Bootstrap archive's `Distribution model — overlay, not CLI fork` requirement missing from baseline",
+      "evidence": "This is the FROM-term of the lean-overlay archive's RENAMED operation (FROM: `Distribution model — overlay, not CLI fork` → TO: `Distribution model — pegged engine + orbit-owned surface`). Baseline correctly has the TO-term at line 602 and 0 hits for the FROM-term. Expected post-rename state, not drift."
+    }
+  ]
+}

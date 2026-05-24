@@ -1,0 +1,45 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-24T15:50:58Z",
+  "change": "align-readme-install-with-v1-3-1",
+  "final_assessment": "Resolved both external-review findings from GPT-5 Codex's system-mode iter-1. CRITICAL (uninstall leaves orbit-only files behind) fixed by extending the uninstall block's `rm` lines to cover orbit-shipped target-only files (`openspec-sync-specs`, `sync.md`, `fast-forward.md`) and adding a ❌ bullet to the `init --force` scope statement clarifying that those files survive `init --force` and need explicit removal. Sandbox re-verification confirms the new sequence produces clean 10 skills + 10 commands (fresh upstream-only state). WARNING (`## Orbit additions` should be `# Orbit additions`) fixed by replace-all of the wrong heading-level form across all 7 README sites (4 originally flagged + 3 additional discovered by grep including the scope-statement bullet).",
+  "next_recommended": "re-run /opsx:review --as system align-readme-install-with-v1-3-1 to confirm convergence (or skip if confident; both fixes were sandbox-verified). Then mark tasks 3.2 + 3.3 done after user-validation handoff, emit apply chunk-3 summary, then /opsx:archive align-readme-install-with-v1-3-1.",
+  "kind": "editorial",
+  "source": "from-file",
+  "source_path": "openspec/changes/align-readme-install-with-v1-3-1/.orbit-runs/external-system-2026-05-24T15-41-53Z.md",
+  "external_reviewer": "GPT-5 Codex",
+  "input_findings_summary": {
+    "critical": 1,
+    "warning": 1,
+    "suggestion": 0
+  },
+  "pushback_verification": "Both findings verified against current state. Finding 1: grep of `### Uninstalling` section confirmed sync-specs/sync.md/fast-forward.md missing from rm list. Finding 2: `grep -l '^# Orbit additions' .claude/skills/openspec-*/SKILL.md` returns 10; `grep -l '^## Orbit additions' ...` returns 0; README had 4 sites using `## Orbit additions` prose form (plus 3 more discovered during replace-all). Neither finding is stale.",
+  "resolution_summary": {
+    "resolved": 2,
+    "stale_suppressed": 0,
+    "deferred": 0,
+    "escalated": 0
+  },
+  "resolutions": [
+    {
+      "severity": "CRITICAL",
+      "title": "Uninstall leaves orbit-only files behind",
+      "marker_source": "external",
+      "classification": "trivial fix (intent unambiguous: 'upstream-only' means upstream-only state)",
+      "decision": "extend rm lines to cover orbit-shipped target-only files + add ❌ bullet to scope statement",
+      "action": "README.md uninstall block (L1035-1051) updated: rm command for orbit-only commands now includes sync + fast-forward (6 names instead of 4); rm -rf for orbit-only skill directories now includes sync-specs (5 names instead of 4). Added new ❌ bullet to 'What init --force actually does' scope statement explicitly calling out that init --force alone leaves orbit-shipped target-only files (`openspec-sync-specs`, `sync.md`, `fast-forward.md`) in place, producing 11 skills + 12 commands; full uninstall sequence's explicit rm lines handle this. Sandbox re-verification: new sequence produces clean 10 skills + 10 commands (fresh upstream-only state, matches `openspec init --tools claude` baseline).",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "WARNING",
+      "title": "Orbit additions heading level documented incorrectly (`##` vs actual `#`)",
+      "marker_source": "external",
+      "classification": "trivial fix (one-form replacement, no design implication)",
+      "decision": "fix README prose to match actual heading level (single hash). Don't modify actual skill files — that's out of scope for this doc-only change and the actual headings are correct.",
+      "action": "replace-all of `\\`## Orbit additions\\`` → `\\`# Orbit additions\\`` across README.md. 7 sites updated: L907 (Prerequisites), L956 (Overlay orbit step — prose only, the grep example was already correct), L974 (post-install table), L994 (Working alongside customizations), L1049 (uninstall code comment), L1056 (scope statement bullet). Verified: 0 `## Orbit additions` remaining in README; 10 SKILL.md files still have `^# Orbit additions` (unchanged — actual heading was correct).",
+      "ripple_flagged": []
+    }
+  ],
+  "remaining_markers_in_scope": 0,
+  "persisted_escalations": []
+}

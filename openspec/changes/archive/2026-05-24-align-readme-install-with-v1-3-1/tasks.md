@@ -69,11 +69,11 @@ carry forward.
 ## 3. Validation + user-validation handoff
 
 - [x] 3.1 Run `openspec validate align-readme-install-with-v1-3-1 --strict`; resolve any validation findings.
-- [ ] 3.2 (User-validation) User reads the rewritten README L898-L1020 cold and confirms:
+- [x] 3.2 (User-validation) User reads the rewritten README L898-L1020 cold and confirms:
   - (a) Pegging strategy subsection content is clear and the anchor works from all 3 forward-reference sites (L54, L902, L937)
   - (b) Install steps are executable and correct (CLI commands work, counts match, prune step is in place)
   - (c) Update + Uninstall sections include the `rm -rf .claude/skills/feedback` step
   - (d) `init --force` warning prose matches the verified scope (no understating, no overstating)
   - (e) The rewritten section reads cleanly as a single contiguous narrative — no abrupt tone shifts where chunks 1 sub-tasks were stitched together
   - Surface specific findings via `/opsx:review` (or inline `@review:` markers) rather than blocking apply.
-- [ ] 3.3 If user-validation surfaces no blocking findings, the change is ready for `/opsx:archive`.
+- [x] 3.3 If user-validation surfaces no blocking findings, the change is ready for `/opsx:archive`.

@@ -1,0 +1,28 @@
+{
+  "command": "archive",
+  "timestamp": "2026-05-24T15:56:32Z",
+  "change": "align-readme-install-with-v1-3-1",
+  "final_assessment": "Archived align-readme-install-with-v1-3-1 to openspec/changes/archive/2026-05-24-align-readme-install-with-v1-3-1/. Doc-only change rewriting README.md L898-L1040 to match v1.3.1's actual install surface (sandbox-verified end-to-end via the documented CLI sequence + uninstall flow). One ADDED requirement synced to baseline: `Install documentation describes actual install surface` (5 scenarios codifying the README-matches-install-surface rule, at orbit-conventions line 708). Both external-review findings from GPT-5 Codex's iter-1 system review were resolved before archive (CRITICAL: uninstall now removes orbit-shipped target-only files; WARNING: README prose uses `# Orbit additions` matching actual heading level).",
+  "next_recommended": "Change archived. The orbit-onboard follow-up (closes #23) is the next change in the cluster-2 wind-down sequence — re-explore via /opsx:explore with the [[readme-install-section-staleness]] memory loaded (memory now records remaining skill-body work + 3 baseline-drift items the follow-up should fix in passing). Or /opsx:audit-drift project-wide for a clean state check.",
+  "kind": "lifecycle",
+  "archive_path": "openspec/changes/archive/2026-05-24-align-readme-install-with-v1-3-1/",
+  "audit": {
+    "ran": true,
+    "skipped_via_flag": false,
+    "failure_reason": null,
+    "findings_summary": { "critical": 0, "warning": 0, "suggestion": 0 },
+    "summary_path": "openspec/changes/archive/2026-05-24-align-readme-install-with-v1-3-1/.orbit-runs/audit-drift-2026-05-24T15-54-44Z.json"
+  },
+  "unresolved_markers": {
+    "found_at_archive_time": 0,
+    "user_action": "no_markers_found"
+  },
+  "user_decision": "proceeded_with_no_critical",
+  "sync_specs": {
+    "ran": true,
+    "skipped_reason": null,
+    "capabilities_updated": ["orbit-conventions"],
+    "counts": { "added": 1, "modified": 0, "removed": 0, "renamed": 0 }
+  },
+  "warnings": []
+}
