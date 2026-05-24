@@ -112,7 +112,7 @@ Setup verification reads files on disk; it cannot detect a stale AI client cache
 
 ## Section 2: Identity statement
 
-orbit is a workflow tool that owns the `.claude/` surface (skills, commands, supporting docs) and uses `@fission-ai/openspec@1.3.1` as a pinned CLI engine. The upstream CLI binary is unchanged and version-pegged; orbit's contribution lives in markdown content under `.claude/`. orbit is its own thing — it shares concepts with upstream OpenSpec but ships an opinionated workflow tool with distinct disciplines, not a delta on top of upstream's defaults.
+Orbit is a workflow tool that owns the `.claude/` surface (skills, commands, supporting docs) and uses `@fission-ai/openspec@1.3.1` as a pinned CLI engine. The upstream CLI binary is unchanged and version-pegged; orbit's contribution lives in markdown content under `.claude/`. Orbit is its own thing — it shares concepts with upstream OpenSpec but ships an opinionated workflow tool with distinct disciplines, not a delta on top of upstream's defaults.
 
 What makes orbit distinctive vs running upstream alone:
 
@@ -173,7 +173,7 @@ Every slash command in your post-install `.claude/commands/opsx/` (15 files: 14 
 | `/opsx:bulk-archive` | Archive multiple completed changes at once. |
 | `/opsx:continue <name>` | Create the next artifact in the change's workflow. |
 | `/opsx:explore [<name>]` | Thinking-mode entry. Named: auto-captures decisions to `explore.md`. Bare: stays in chat until crystallization. |
-| `/opsx:ff` | (upstream-installed, untouched by orbit's overlay) Fast-forward through artifact creation in one go. |
+| `/opsx:ff` | Fast-forward through artifact creation in one go. |
 | `/opsx:new <name>` | Start a new change using the experimental artifact workflow. |
 | `/opsx:onboard` | Run this skill (the reference walkthrough you're reading now). |
 | `/opsx:propose <name>` | Generate proposal + design + specs + tasks artifacts in one step. Consume mode reads `openspec/explore/<name>/explore.md` if present. |

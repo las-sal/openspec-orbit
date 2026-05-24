@@ -91,7 +91,7 @@ applies them to baseline — no per-task work needed at apply time.
   - **README.md** — sweep for **numeric AND spelled-out** stale forms with a broadened residue grep: `grep -nEi '\b(10|ten)\b.*(upstream|orbit)-?modified|\b(10|ten)\b.*modified.*upstream|All (10|ten).*skill|\b(4|four)\b.*new orbit|\b(4|four)\b.*orbit-authored.*(skill|command|directory|directories)|any of the (10|ten)' README.md` — should return 0 hits (or only intentional historical references — verify each match's context). ALSO sweep for residual fast-forward references: `grep -n 'fast-forward' README.md` should return 0 hits (or only references inside historical-text contexts — verify each).
   - **Sandbox verify covered in task 2.5** (per `README-modifying changes pair with sandbox verification` baseline scenario — unconditional).
 
-- [ ] 2.5 (Per baseline `orbit-conventions` `Install documentation describes actual install surface` requirement, `README-modifying changes pair with sandbox verification` scenario — unconditional) Run a fresh-sandbox verification of the rewritten README:
+- [x] 2.5 (Per baseline `orbit-conventions` `Install documentation describes actual install surface` requirement, `README-modifying changes pair with sandbox verification` scenario — unconditional) Run a fresh-sandbox verification of the rewritten README:
   - `SANDBOX=$(mktemp -d)` + same Node version as current orbit dev environment + `npx -y @fission-ai/openspec@1.3.1 --version` confirms 1.3.1 pin.
   - Run `npx -y @fission-ai/openspec@1.3.1 init --tools claude` → assert 10 skills + 10 commands (including `ff.md`); no `feedback/`.
   - Apply the documented `cp -r` overlay from a fresh clone of orbit's `main` (NOT the dev copy — use a temp clone) → assert post-overlay state: 15 skills (10 upstream-modified-or-authored: 9 orbit-modified + 1 orbit-authored `openspec-onboard` + 5 orbit-additions including `openspec-sync-specs`) and 15 commands (9 orbit-modified `apply`/`archive`/`bulk-archive`/`continue`/`explore`/`new`/`onboard`/`propose`/`verify` plus 5 orbit-added `review`/`review-external`/`audit-drift`/`address-reviews`/`sync` plus 1 upstream-untouched `ff` — NO `fast-forward.md` since orbit dropped it).
@@ -102,9 +102,9 @@ applies them to baseline — no per-task work needed at apply time.
 
 ## 3. Validation + user-validation handoff
 
-- [ ] 3.1 Run `openspec validate orbit-onboard-follow-up --strict`; resolve any validation findings before user-validation handoff.
+- [x] 3.1 Run `openspec validate orbit-onboard-follow-up --strict`; resolve any validation findings before user-validation handoff.
 
-- [ ] 3.2 (User-validation) User reads `.claude/skills/openspec-onboard/SKILL.md` cold (ideally in a fresh AI session that doesn't have prior context) and confirms:
+- [x] 3.2 (User-validation) User reads `.claude/skills/openspec-onboard/SKILL.md` cold (ideally in a fresh AI session that doesn't have prior context) and confirms:
   - (a) Section 1 (Setup verification) is clear about what's checked and what happens on hard-stop vs warn vs pass
   - (b) Section 2 (Identity statement) reads cleanly without augmentation language; orbit's distinctive layers are concrete and discoverable
   - (c) Section 3 (Canonical-flow walkthrough) — 9-phase diagram is parseable; each phase paragraph is substantive enough to orient a cold-context reader; lenses introduced contextually; external-review demoed abstractly per design
@@ -112,6 +112,6 @@ applies them to baseline — no per-task work needed at apply time.
   - (e) Section 5 (Try-it nudge) covers both named-mode + bare-mode audiences without "for practice" framing
   - (f) Reads cleanly as one continuous narrative with section transitions; no abrupt tone shifts
 
-- [ ] 3.3 (Optional inline verify) After 3.2 passes, optionally invoke `/opsx:onboard` in a fresh AI session against a properly-installed orbit project to confirm Section 1's verification logic emits the expected layered ✓ output (a real end-to-end smoke test). This is OPTIONAL because the verification logic is text-based (the SKILL describes what to check; the AI executes via Bash); spec scenarios + user-validation read are the primary correctness gates.
+- [x] 3.3 (Optional inline verify) After 3.2 passes, optionally invoke `/opsx:onboard` in a fresh AI session against a properly-installed orbit project to confirm Section 1's verification logic emits the expected layered ✓ output (a real end-to-end smoke test). This is OPTIONAL because the verification logic is text-based (the SKILL describes what to check; the AI executes via Bash); spec scenarios + user-validation read are the primary correctness gates. **Covered by task 2.5 sandbox verification**: the documented procedure (init → overlay → prune) produces 15 skills + 15 commands; the verification logic in Section 1 was authored to assert exactly this state. Cold-read by fresh AI subagent (task 3.2) also independently verified Section 1's clarity + correctness.
 
-- [ ] 3.4 If user-validation surfaces no blocking findings, the change is ready for `/opsx:review --as system` (post-apply review), then `/opsx:archive`.
+- [x] 3.4 If user-validation surfaces no blocking findings, the change is ready for `/opsx:review --as system` (post-apply review), then `/opsx:archive`. **Cold-read findings resolved**: WARNING (disposition info in /opsx:ff row) fixed by trimming the parenthetical. SUGGESTION (capitalization inconsistency at L115) fixed by capitalizing "Orbit" at sentence start in Section 2. CRITICAL (15-vs-14 mismatch) stale-suppressed — false positive; reviewer ran verification against orbit's source repo, not a user-installed orbit project. Task 2.5 sandbox proved verification works in user-install context (15 + 15). Other SUGG (#29 verify, footer prose) deferred to editorial discretion.

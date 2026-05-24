@@ -1,0 +1,20 @@
+{
+  "command": "apply",
+  "timestamp": "2026-05-24T19:22:56Z",
+  "change": "orbit-onboard-follow-up",
+  "kind": "workflow",
+  "chunk": "3 of 3",
+  "chunk_name": "Validation + user-validation handoff",
+  "chunk_complete": true,
+  "tasks_completed": 18,
+  "tasks_remaining": 0,
+  "user_validation_remaining": 0,
+  "tasks_completed_this_session": 18,
+  "tasks_completed_this_chunk": ["3.1", "3.2", "3.3", "3.4"],
+  "files_changed": [
+    ".claude/skills/openspec-onboard/SKILL.md (post-cold-read fixes: L115 'orbit' → 'Orbit' at Section 2 sentence start for capitalization consistency; L176 /opsx:ff row trimmed parenthetical disposition info per spec scenario `Table does NOT include a disposition column`)",
+    ".claude/commands/opsx/onboard.md (re-mirrored to SKILL.md body verbatim post-fixes; diff confirmed empty)"
+  ],
+  "final_assessment": "Apply phase complete. All 18 tasks done. Chunk 3 closed user-validation handoff: openspec validate --strict passes; cold-read by fresh AI subagent surfaced 1 CRITICAL (stale-suppressed as false positive — reviewer ran verification against orbit source repo, not user-install context; sandbox in task 2.5 proved verification works for the targeted user-install state), 1 WARNING (applied — disposition info trimmed from /opsx:ff row), 1 SUGGESTION (applied — Orbit/orbit capitalization aligned at Section 2 sentence start), 2 SUGGESTIONS deferred (#29 issue verify — already filed earlier this session; footer prose nit — editorial discretion). Implementation summary: 562-line upstream-bodied openspec-onboard SKILL replaced with 198-line 100% orbit-authored 5-section reference-leaning hybrid; opsx/onboard.md mirrored; opsx/fast-forward.md dropped from overlay per new `Verbatim upstream files not in orbit's overlay` baseline scenario; README install section synced across 15 sites with broadened residue grep returning 0 hits; full apply-time sandbox verification confirms documented install → overlay → uninstall procedure produces correct user-facing state at every step.",
+  "next_recommended": "/opsx:review --as system orbit-onboard-follow-up — post-apply review (Pass 0 verify-change + 6 system-wide passes including audit-drift Pass 6 + Baseline Compliance + Cohesion + Surface Walk). Then /opsx:archive orbit-onboard-follow-up to close cluster-2."
+}

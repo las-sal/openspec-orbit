@@ -1,0 +1,21 @@
+{
+  "command": "apply",
+  "timestamp": "2026-05-24T19:13:06Z",
+  "change": "orbit-onboard-follow-up",
+  "kind": "workflow",
+  "chunk": "2 of 3",
+  "chunk_name": "Mirror SKILL.md to onboard.md + drop fast-forward.md + README sync + sandbox verify",
+  "chunk_complete": true,
+  "tasks_completed": 14,
+  "tasks_remaining": 4,
+  "user_validation_remaining": 3,
+  "tasks_completed_this_session": 14,
+  "tasks_completed_this_chunk": ["2.1", "2.2", "2.3", "2.3a", "2.4", "2.5"],
+  "files_changed": [
+    ".claude/commands/opsx/onboard.md (548 lines upstream-bodied → 194 lines orbit-authored; body byte-identical to SKILL.md per duplicate-pattern discipline)",
+    ".claude/commands/opsx/fast-forward.md (DELETED — verbatim duplicate of upstream's ff.md per orbit-conventions `Verbatim upstream files not in orbit's overlay`)",
+    "README.md (15 edits across L46, L829, L907, L955-L957, L959, L972-L975, L984, L993, L998, L1037-1041, L1047, L1059 — counts adjusted to post-this-change overlay state, fast-forward references removed except intentional `Verbatim upstream files not in orbit's overlay` cross-reference)"
+  ],
+  "final_assessment": "Chunk 2 complete. Commands mirror discipline applied (diff of SKILL.md body vs onboard.md body returns empty). fast-forward.md dropped from orbit's overlay per the new verbatim-duplicates principle. README sync covers 15 sites: counts (9 modified skills, 5 orbit-authored skills, 8 modified commands, 5 orbit-authored commands, 15+15 total), enumerations updated (onboard.md added to orbit-authored, removed from orbit-modified; fast-forward.md removed everywhere), uninstall sequence updated (rm list now includes onboard.md, drops fast-forward.md). Broadened residue grep: 0 hits. fast-forward grep: only intentional cross-reference. Apply-time sandbox verification (post-push) confirms documented procedure end-to-end: init produces 10+10, overlay produces 15+15 (NO fast-forward.md, orbit-onboard is now orbit-authored with no `# Orbit additions`), uninstall produces clean upstream 10+10, custom files preserved, explore SKILL.md md5 reverts from orbit-overlaid 14653646e36431a0130840a0789cf19c to upstream-pristine d160105373f4fe54bfbe1790b343c51b.",
+  "next_recommended": "/opsx:apply orbit-onboard-follow-up — final chunk: openspec validate --strict + user-validation handoff (3.2 read cold, 3.3 optional inline verify, 3.4 archive readiness check)"
+}
