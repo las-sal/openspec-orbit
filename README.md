@@ -496,7 +496,7 @@ orbit offers three review modes; the choice materially affects review-finding co
 
 | Change size | Suggested proposal-mode cycle | Suggested system-mode cycle |
 |---|---|---|
-| Small (docs-only, single-file, low-stakes) | In-context once | In-context once; accept default proceed-to-archive |
+| Small (docs-only, single-file, low-stakes) | In-context once | In-context once; proceed directly only if accepting the noted in-context-only risk |
 | Medium (multi-file, one capability) | In-context iter-1, optionally `--fresh` iter-2 | External once before archive |
 | Substantial (multi-capability, breaking changes, security-sensitive) | In-context + `--fresh` + external | External; address-reviews; re-external if artifacts changed |
 | High-stakes (production rollout, customer-visible APIs) | All three modes across iterations | External + `--fresh` cross-check |

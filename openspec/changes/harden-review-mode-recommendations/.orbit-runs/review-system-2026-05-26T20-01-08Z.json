@@ -1,0 +1,83 @@
+{
+  "command": "review",
+  "timestamp": "2026-05-26T20:01:08Z",
+  "change": "harden-review-mode-recommendations",
+  "final_assessment": "All checks passed. External system review findings resolved via /opsx:address-reviews. Ready to archive.",
+  "next_recommended": "/opsx:archive harden-review-mode-recommendations — convergence confirmed via Path B (State 3). External GPT-5 Codex review's 2 WARNINGs walked to deferred==0/escalated==0 via address-reviews-2026-05-26T19-54-33Z.json; this fresh internal pass surfaces 0 CRITICAL / 0 WARNING / 1 SUGGESTION (forward-looking schema-doc gap, out of scope here). Commit the in-flight design.md + README.md edits + the new address-reviews JSON before archive.",
+  "kind": "editorial",
+  "mode": "system",
+  "iteration": 2,
+  "depth": "full",
+  "flags": {
+    "parallel": false,
+    "focus": null,
+    "strict": false,
+    "fresh": true,
+    "mark": false,
+    "skip_verify": false
+  },
+  "passes_run": ["0", "1", "2", "3", "6"],
+  "passes_skipped": ["4", "5"],
+  "skip_reasons": {
+    "4": "no perspectives defined (openspec/lenses/ absent)",
+    "5": "no critical paths defined (openspec/lenses/ absent)"
+  },
+  "convergence_state": 3,
+  "convergence_state_label": "Path B convergence: external findings resolved via address-reviews",
+  "convergence_inputs": {
+    "external_system_md_present": true,
+    "external_system_md_path": "openspec/changes/harden-review-mode-recommendations/.orbit-runs/external-system-2026-05-26T19-50-42Z.md",
+    "external_system_md_token": "2026-05-26T19-50-42Z",
+    "external_path_a_clean": false,
+    "external_findings_counts": { "critical": 0, "warning": 2, "suggestion": 0 },
+    "address_reviews_for_external_present": true,
+    "address_reviews_path": "openspec/changes/harden-review-mode-recommendations/.orbit-runs/address-reviews-2026-05-26T19-54-33Z.json",
+    "address_reviews_token": "2026-05-26T19-54-33Z",
+    "address_reviews_deferred": 0,
+    "address_reviews_escalated": 0,
+    "latest_apply_token": "2026-05-26T14-38-22Z",
+    "stale_apply_after_external": false,
+    "convergence_walk": [
+      "1. Presence: external-system-2026-05-26T19-50-42Z.md exists → not State 1",
+      "2. Stale: latest apply token 14-38-22Z < external token 19-50-42Z → not State 5",
+      "3. Path A: external has 2 WARNING entries (### titles present) → not State 2",
+      "4. Path B: address-reviews-2026-05-26T19-54-33Z.json source_path matches; deferred=0 + escalated=0 → State 3",
+      "5. Per-external scoping confirmed: no apply-*.json later than address-reviews token"
+    ]
+  },
+  "findings_summary": {
+    "critical": 0,
+    "warning": 0,
+    "suggestion": 1,
+    "by_pass": {
+      "0": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "1": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "2": { "critical": 0, "warning": 0, "suggestion": 1 },
+      "3": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "6": { "critical": 0, "warning": 0, "suggestion": 0 }
+    }
+  },
+  "findings": [
+    {
+      "pass": "2",
+      "severity": "SUGGESTION",
+      "file": ".claude/skills/openspec-review/references/run-summary-schema.md",
+      "line": 22,
+      "title": "Schema reference does not document new convergence fields emitted by iteration-aware logic",
+      "recommendation": "Out of scope for this change (recommendation prose + decision framework only). Track as a follow-up: future change touching the run-summary contract should add convergence_state / convergence_state_label / convergence_inputs (plus skip_reasons and dogfood_note) to references/run-summary-schema.md so downstream consumers can rely on the fields being normative."
+    }
+  ],
+  "stale_suppressed": [
+    {
+      "pass": "external-system iter-1",
+      "title": "Design state machine still documents pre-resolution Path A/Path B rules",
+      "evidence": "design.md L47-96 now reads 'post-iter-2 + iter-3 final model' with sentinel-variant reference at L58-60, per-external scoping at L62-63/L73-74/L91-92, repo-relative normalization at L68-70. Resolution recorded in address-reviews-2026-05-26T19-54-33Z.json resolutions[0]."
+    },
+    {
+      "pass": "external-system iter-1",
+      "title": "README small-change guidance contradicts the system-mode default flip",
+      "evidence": "README L499 cell now reads 'In-context once; proceed directly only if accepting the noted in-context-only risk' (Codex's suggested phrasing adopted verbatim). Resolution recorded in address-reviews-2026-05-26T19-54-33Z.json resolutions[1]."
+    }
+  ],
+  "iteration_note": "Second system-mode run for this change (prior: review-system-2026-05-26T14-44-15Z.json State 1; 1 external-system review since). Convergence confirmed via Path B: GPT-5 Codex external returned 2 WARNINGs, walked to deferred==0/escalated==0 via address-reviews. This pass surfaces 0 CRITICAL / 0 WARNING / 1 SUGGESTION (forward-looking schema-doc gap, out of scope). 0 prior findings re-appear (the 14-44-15Z run had 0 findings)."
+}

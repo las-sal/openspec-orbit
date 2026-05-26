@@ -44,37 +44,52 @@ This change lands the framework + flips the system-mode default to reflect what 
 
 **Decision**: The recommendation distinguishes 5 convergence states for the system-mode no-CRITICAL case, with two paths to "converged" (Path A: external content is clean; Path B: external findings resolved via address-reviews). The full state machine is codified in the spec scenarios at `specs/orbit-review/spec.md`.
 
-**Concrete logic**:
+**Concrete logic** (post-iter-2 + iter-3 final model — the spec scenarios at `specs/orbit-review/spec.md` are normative; this block summarizes the same model in pseudocode):
 ```
-Inputs: .orbit-runs/*.json + *.md filename `<TS>` tokens + (for Path A) external markdown content + (for Path B) address-reviews JSON resolution_summary fields.
+Inputs: .orbit-runs/*.json + *.md filename `<TS>` tokens + (for Path A) external markdown content + (for Path B) address-reviews JSON resolution_summary fields + source_path field.
 
 State 1 — no prior external:
   WHEN no external-system-*.md exists
   → recommend /opsx:review-external (or /opsx:review --fresh)
 
 State 2 — external clean (Path A convergence):
-  WHEN external-system-*.md exists AND its content has zero findings (each ## CRITICAL / ## WARNING / ## SUGGESTION section contains only "None.", no ### entries)
-       AND no later apply-*.json or address-reviews-*.json exists
+  WHEN external-system-*.md exists AND its content has zero findings (each
+       ## CRITICAL / ## WARNING / ## SUGGESTION section contains only the
+       empty-severity sentinel — `None.` or an accepted equivalent
+       `None`/`none.`/`(none)` per
+       openspec-address-reviews/references/external-findings-format.md —
+       with zero `### <title>` entries beneath)
+       AND no later apply-*.json exists (per-external scoping: unrelated
+       address-reviews-*.json files for OTHER inputs do NOT disqualify)
   → recommend /opsx:archive (converged via clean content)
 
 State 3 — external resolved (Path B convergence):
   WHEN external-system-*.md exists with findings AND
-       a later address-reviews-*.json (with source_path referencing this external) shows
+       a later address-reviews-*.json whose `source_path` field
+       (canonicalized to repo-relative form before exact comparison;
+       absolute paths accepted only after the same normalization)
+       references this external file shows
        resolution_summary.deferred == 0 AND resolution_summary.escalated == 0
-       AND no later apply-*.json exists
+       AND no later apply-*.json exists (per-external scoping: address-reviews
+       for OTHER inputs do NOT affect this external's convergence)
   → recommend /opsx:archive (converged via resolution)
 
 State 4 — external present with unresolved findings:
-  WHEN external-system-*.md has findings AND
-       (no address-reviews-*.json references it OR the most recent does has deferred>0 or escalated>0)
+  WHEN external-system-*.md has `### <title>` entries under at least one
+       severity AND no Path B resolution applies (no matching
+       address-reviews-*.json OR most recent matching one has
+       deferred > 0 OR escalated > 0; matching uses the same repo-relative
+       source_path normalization as Path B)
   → recommend /opsx:address-reviews --from-file <external-path>
 
 State 5 — external stale relative to artifact changes:
   WHEN external-system-*.md exists AND
-       a later apply-*.json filename token is newer than the external's filename token
-       (i.e., artifacts changed after external was run)
+       a later apply-*.json filename token is newer than the external's
+       filename token (i.e., artifacts changed after external was run)
   → recommend re-running /opsx:review-external (or /opsx:review --fresh)
-  → takes precedence over States 2-4 per the precedence-rules scenario
+  → takes precedence over States 2-4 per the precedence-rules scenario.
+  Per-external scoping: only apply-*.json triggers stale — unrelated
+  address-reviews-*.json files do NOT.
 
 Comparison uses filename `<TS>` token, not mtime (per orbit-conventions
 `Internal-run JSON summary format`); immutable across git operations.

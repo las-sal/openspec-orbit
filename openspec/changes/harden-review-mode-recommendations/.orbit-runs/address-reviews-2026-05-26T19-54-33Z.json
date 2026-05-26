@@ -1,0 +1,45 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-26T19:54:33Z",
+  "change": "harden-review-mode-recommendations",
+  "final_assessment": "Resolved both findings from external system-mode review iter-1 (GPT-5 Codex). WARN 1 (design.md D-logic-1 'Concrete logic' code block describes pre-iter-2 model — exact-None.-only parser + any-later-address-reviews disqualifies-Path-A + unspecified source_path matching) resolved by rewriting the entire Concrete-logic pseudocode block to mirror the final spec scenarios: empty-severity sentinel variants accepted with reference to external-findings-format.md, per-external scoping rule (only apply-*.json triggers stale) applied to States 2 + 3 + 5, repo-relative source_path normalization rule applied to States 3 + 4. Label updated from implicit-historical to 'post-iter-2 + iter-3 final model'. WARN 2 (README L499 small-change row says 'accept default proceed-to-archive' contradicting the new default-recommend-external behavior) resolved by replacing the cell text with Codex's suggested phrasing: 'In-context once; proceed directly only if accepting the noted in-context-only risk' — preserves the low-stakes guidance without naming archive as the default. 0 SUGGESTIONs to address. Codex's Notes section confirmed core surfaces are clean (validate --strict passes, SKILL/command/spec align with iter-2 resolutions, parser contract reused, 0 @review: markers).",
+  "next_recommended": "Optional: re-run /opsx:review --as system harden-review-mode-recommendations to verify the design.md edit doesn't surface new internal-coherence findings; or skip directly to /opsx:archive harden-review-mode-recommendations since both findings were doc-coherence fixes (no behavior change). The external review is now resolved via Path B convergence — the next system-mode review will fire State 3 'External system review findings resolved via /opsx:address-reviews. Ready to archive.' phrasing.",
+  "kind": "editorial",
+  "source": "from-file",
+  "source_path": "openspec/changes/harden-review-mode-recommendations/.orbit-runs/external-system-2026-05-26T19-50-42Z.md",
+  "external_reviewer": "GPT-5 Codex",
+  "input_findings_summary": {
+    "critical": 0,
+    "warning": 2,
+    "suggestion": 0
+  },
+  "pushback_verification": "Both findings verified against current state. WARN 1 confirmed: design.md L56 said 'each ## CRITICAL/WARNING/SUGGESTION section contains only \"None.\"' (singular sentinel, not the variant set the spec now accepts); L57 said Path A disqualified by 'no later apply-*.json or address-reviews-*.json' (no per-external scoping); L62 said 'address-reviews-*.json (with source_path referencing this external)' (no normalization rule). All three sub-claims of the divergence verified. WARN 2 confirmed: README L499 cell read 'accept default proceed-to-archive' verbatim — this would lead a cold reader to infer the old default still applied for small changes, contradicting the very behavior change this change introduces. No stale-suppressions.",
+  "resolution_summary": {
+    "resolved": 2,
+    "stale_suppressed": 0,
+    "deferred": 0,
+    "escalated": 0
+  },
+  "resolutions": [
+    {
+      "severity": "WARNING",
+      "title": "Design state machine still documents pre-resolution Path A/Path B rules",
+      "marker_source": "external",
+      "classification": "trivial fix",
+      "decision": "rewrite D-logic-1 Concrete-logic pseudocode block to mirror the final spec; label as 'post-iter-2 + iter-3 final model' (keeping the iter-1 historical context in the surrounding 'Why this 5-state design' prose which already accurately summarizes the pre-iter-2 motivation)",
+      "action": "Replaced design.md L47-81 Concrete-logic block. Substantive changes: (a) State 2 Path A clean check now references the empty-severity-sentinel definition from openspec-address-reviews/references/external-findings-format.md with the four accepted variants (None./None/none./(none)); (b) State 2 + State 3 artifact-change guards now reference ONLY apply-*.json (per-external scoping); (c) State 3 + State 4 source_path matching now specifies repo-relative normalization rule with absolute-path normalization clause; (d) State 5 includes the per-external scoping clarification. Label updated to explicitly say 'post-iter-2 + iter-3 final model'. Original code block was 34 lines; new code block is 48 lines (more precise, denser).",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "WARNING",
+      "title": "README small-change guidance contradicts the system-mode default flip",
+      "marker_source": "external",
+      "classification": "trivial fix",
+      "decision": "adopt Codex's suggested rewrite verbatim",
+      "action": "Replaced README L499 small-change row cell text: 'In-context once; accept default proceed-to-archive' → 'In-context once; proceed directly only if accepting the noted in-context-only risk'. Preserves the low-stakes guidance message but removes the misleading 'default' framing that contradicted the new behavior.",
+      "ripple_flagged": []
+    }
+  ],
+  "remaining_markers_in_scope": 0,
+  "persisted_escalations": []
+}
