@@ -1,0 +1,12 @@
+{
+  "command": "review-external",
+  "timestamp": "2026-05-26T23:58:05Z",
+  "change": "address-reviews-accepts-internal-json",
+  "final_assessment": "External system-mode review prompt packaged for address-reviews-accepts-internal-json (iter 1, mode system); awaiting findings from target AI. This is the FIRST external review for this change in either mode — proposal-mode used the inline-walk workaround (since v1 --from-file doesn't accept JSON, which is exactly what this change closes).",
+  "next_recommended": "Paste openspec/changes/address-reviews-accepts-internal-json/.orbit-runs/external-prompt-system-2026-05-26T23-58-04Z.md into the target AI, save the response as openspec/changes/address-reviews-accepts-internal-json/.orbit-runs/external-system-<TS>.md, then /opsx:address-reviews address-reviews-accepts-internal-json --from-file <path>",
+  "kind": "editorial",
+  "mode": "system",
+  "prompt_path": "openspec/changes/address-reviews-accepts-internal-json/.orbit-runs/external-prompt-system-2026-05-26T23-58-04Z.md",
+  "target": null,
+  "awaiting_findings": true
+}
