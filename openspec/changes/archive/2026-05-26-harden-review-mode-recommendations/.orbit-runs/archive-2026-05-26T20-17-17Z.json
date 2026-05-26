@@ -1,0 +1,57 @@
+{
+  "command": "archive",
+  "timestamp": "2026-05-26T20:17:17Z",
+  "change": "harden-review-mode-recommendations",
+  "kind": "workflow",
+  "final_assessment": "Archived cleanly to openspec/changes/archive/2026-05-26-harden-review-mode-recommendations/. Pre-archive: 0 unresolved @review: markers; 4/4 artifacts done; 14/14 tasks complete; audit-drift sweep returned 0 CRITICAL across the 4 categories (Cat 1 N/A: no RENAMED/REMOVED requirements; Cat 2 skip: no openspec/lenses/; Cat 3: cross-doc coherence already verified in review-system iter-2 at 20-01-08Z; Cat 4: N/A pre-sync). Spec sync applied 2 delta operations cleanly: orbit-conventions baseline gained ADDED `Review mode decision framework` (5 scenarios); orbit-review baseline `Final assessment phrasings depend on mode` MODIFIED from 6 scenarios to 14 (5-state convergence model + iteration-aware logic + precedence + edge-case assumptions). Project-wide `openspec validate --all --strict` passed 11/11. Full audit trail (20 files) travelled with the change into .orbit-runs/.",
+  "next_recommended": "Commit and push the archive + synced baselines, then close GitHub #20 and #13 with a one-line rationale linking to this archive. Optional follow-up: file a GitHub issue for the schema-doc gap surfaced as the iter-2 SUGGESTION (run-summary-schema.md should document the new convergence_state / convergence_state_label / convergence_inputs / skip_reasons / dogfood_note fields; tracked as forward-looking, not part of this change's scope).",
+  "audit": {
+    "ran": true,
+    "skipped_via_flag": false,
+    "context": "pre-archive",
+    "findings_total": 0,
+    "findings_by_category": { "1": 0, "2": 0, "3": 0, "4": 0 },
+    "categories_skipped": ["2"],
+    "skip_reasons": { "2": "lenses absent (openspec/lenses/ does not exist)" }
+  },
+  "user_decision": "proceeded_clean",
+  "sync_specs": {
+    "ran": true,
+    "user_choice": "sync_now",
+    "delta_capabilities": ["orbit-conventions", "orbit-review"],
+    "operations": [
+      {
+        "capability": "orbit-conventions",
+        "operation": "ADDED",
+        "requirement": "Review mode decision framework",
+        "scenarios": 5
+      },
+      {
+        "capability": "orbit-review",
+        "operation": "MODIFIED",
+        "requirement": "Final assessment phrasings depend on mode",
+        "scenarios_before": 6,
+        "scenarios_after": 14
+      }
+    ],
+    "validation": "openspec validate --all --strict → 11 passed, 0 failed"
+  },
+  "artifacts_complete": true,
+  "tasks_complete": true,
+  "unresolved_review_markers": 0,
+  "archive_path": "openspec/changes/archive/2026-05-26-harden-review-mode-recommendations/",
+  "iteration_history_summary": {
+    "propose": 1,
+    "review_proposal_internal": 2,
+    "review_proposal_external": 2,
+    "address_reviews_proposal": 3,
+    "apply_chunks": 4,
+    "review_system_internal": 2,
+    "review_system_external": 1,
+    "address_reviews_system": 1,
+    "total_orbit_runs_files": 21,
+    "convergence_state_at_archive": 3,
+    "convergence_state_label_at_archive": "Path B convergence: external findings resolved via address-reviews"
+  },
+  "warnings": []
+}
