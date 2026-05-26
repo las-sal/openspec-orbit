@@ -1,0 +1,12 @@
+{
+  "command": "review-external",
+  "timestamp": "2026-05-26T12:49:22Z",
+  "change": "harden-review-mode-recommendations",
+  "final_assessment": "External review prompt packaged for harden-review-mode-recommendations (iter 1, mode proposal); awaiting findings from a fresh external AI session. Self-referential note: this change modifies orbit's review skill itself, so external reviewer is explicitly instructed in the meta-context section to watch for self-referential coherence issues.",
+  "next_recommended": "Commit + push the change directory (uncommitted state — entire openspec/changes/harden-review-mode-recommendations/ is new). Then paste openspec/changes/harden-review-mode-recommendations/.orbit-runs/external-prompt-proposal-2026-05-26T12-49-21Z.md into the target AI, save the response as openspec/changes/harden-review-mode-recommendations/.orbit-runs/external-proposal-<TS>.md, then /opsx:address-reviews harden-review-mode-recommendations --from-file <path>",
+  "kind": "editorial",
+  "mode": "proposal",
+  "prompt_path": "openspec/changes/harden-review-mode-recommendations/.orbit-runs/external-prompt-proposal-2026-05-26T12-49-21Z.md",
+  "target": null,
+  "awaiting_findings": true
+}

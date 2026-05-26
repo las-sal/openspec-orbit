@@ -1,0 +1,11 @@
+{
+  "command": "propose",
+  "timestamp": "2026-05-26T12:37:58Z",
+  "change": "harden-review-mode-recommendations",
+  "final_assessment": "Generated proposal/design/tasks/specs for harden-review-mode-recommendations; consumed prior explore.md (7 decisions seeded — D1-D7, all resolved during explore via inline reasoning + batch user-agreement on the 5 open questions). Bundle closes #20 (system-mode default-recommend external) + #13 (document the review-mode decision framework). Single ADDED requirement to orbit-conventions (`Review mode decision framework`, 5 scenarios) + 1 MODIFIED requirement in orbit-review (`Final assessment phrasings depend on mode`, expanded from 5 to 8 scenarios covering the new iteration-aware logic).",
+  "next_recommended": "/opsx:review harden-review-mode-recommendations — proposal artifacts ready; review before apply",
+  "kind": "workflow",
+  "artifacts_created": ["proposal", "design", "tasks", "specs/orbit-review", "specs/orbit-conventions"],
+  "delta_count": 2,
+  "from": "explore"
+}

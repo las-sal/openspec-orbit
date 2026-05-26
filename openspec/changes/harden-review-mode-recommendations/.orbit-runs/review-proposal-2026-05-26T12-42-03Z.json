@@ -1,0 +1,81 @@
+{
+  "command": "review",
+  "timestamp": "2026-05-26T12:42:03Z",
+  "change": "harden-review-mode-recommendations",
+  "final_assessment": "No critical issues. 3 warning(s) to consider. Ready to apply (with noted improvements).",
+  "next_recommended": "/opsx:address-reviews harden-review-mode-recommendations --from-file openspec/changes/harden-review-mode-recommendations/.orbit-runs/review-proposal-2026-05-26T12-42-03Z.json — walk 3 warnings + 2 suggestions (timestamp-source pin, README placement specificity, gap-hunt scenarios for corrupted/multiple files); 2 SUGGESTIONS are minor and may be deferred.",
+  "kind": "editorial",
+  "mode": "proposal",
+  "iteration": 1,
+  "depth": "full",
+  "flags": {
+    "parallel": false,
+    "focus": null,
+    "strict": false,
+    "fresh": true,
+    "mark": false,
+    "skip_verify": false
+  },
+  "passes_run": ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
+  "passes_skipped": [],
+  "findings_summary": {
+    "critical": 0,
+    "warning": 3,
+    "suggestion": 2,
+    "by_pass": {
+      "1": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "2": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "3": { "critical": 0, "warning": 0, "suggestion": 1 },
+      "4": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "5": { "critical": 0, "warning": 2, "suggestion": 0 },
+      "6": { "critical": 0, "warning": 1, "suggestion": 0 },
+      "7": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "8": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "9": { "critical": 0, "warning": 0, "suggestion": 1 }
+    }
+  },
+  "findings": [
+    {
+      "pass": "5",
+      "severity": "WARNING",
+      "file": "specs/orbit-review/spec.md",
+      "line": 34,
+      "title": "Timestamp-comparison source ambiguous (filename token vs JSON field vs mtime)",
+      "recommendation": "Pin the comparison to the filename `<TS>` token (per orbit-conventions `Internal-run JSON summary format`) — immutable across git operations. Add explicit sentence: 'Comparison uses the filename `<TS>` token (per orbit-conventions Internal-run JSON summary format), NOT file mtime or JSON `timestamp` field, to remain stable across git checkout / clone.'"
+    },
+    {
+      "pass": "5",
+      "severity": "WARNING",
+      "file": "tasks.md",
+      "line": 28,
+      "title": "README placement instruction names a section that may not exist verbatim",
+      "recommendation": "Tasks 2.1 says 'between End-to-end workflow and The external review cycle' but README's actual section is `## The orbit workflow` (L60) with ~10 intervening top-level sections before `## The external review cycle` (L482). Pin the exact placement: 'after `## Command reference` (L238–481), before `## The external review cycle` (L482)'. Adjacent to the cycle docs the section cross-references."
+    },
+    {
+      "pass": "6",
+      "severity": "WARNING",
+      "file": "specs/orbit-review/spec.md",
+      "line": 30,
+      "title": "Gap-hunt: corrupted/empty external-system-*.md + multiple-file tie-break unspecified",
+      "recommendation": "Add (a) a scenario or note specifying multiple-file tie-break ('most recent' = max filename-token); (b) a note for corrupted/empty external-system-*.md — does it count for 'converged clean'? Either add a scenario covering it OR explicitly document the v1 assumption: 'An external-system-*.md SHALL be considered present regardless of content; corruption detection is out of scope (drift-audit Cat 4 may surface it later).' Without this, iter-N+1 edge cases produce inconsistent recommendations."
+    },
+    {
+      "pass": "3",
+      "severity": "SUGGESTION",
+      "file": "openspec/specs/orbit-conventions/spec.md",
+      "line": 358,
+      "title": "orbit-conventions baseline `Final-assessment phrasings` will silently differ from orbit-review's new variants",
+      "recommendation": "Optional and arguably out-of-scope: orbit-conventions baseline lists 3 base stock-phrasing templates with `<gate>` placeholders; orbit-review's new system-mode variants extend beyond that template. orbit-conventions defines convention shape; orbit-review owns specific text. The asymmetry is defensible but reads like drift. Defer to a future change that updates the baseline meta-convention, OR add a one-sentence pointer in this change's proposal Impact section noting the asymmetry. design.md's drift-audit Cat 3 mitigation is sufficient for now."
+    },
+    {
+      "pass": "9",
+      "severity": "SUGGESTION",
+      "file": ".orbit-runs/propose-2026-05-26T12-37-58Z.json",
+      "line": 5,
+      "title": "T0 emit's final_assessment says 'expanded from 5 to 8 scenarios' but delta has 9",
+      "recommendation": "Off-by-one in the T0 propose emit's narrative. The 9th scenario is the 'auditable by drift-audit' ancillary one. No fix needed: propose emit is immutable history; next propose-T0 implementation could count `^#### Scenario:` directly rather than rely on author-supplied count. Note for future."
+    }
+  ],
+  "stale_suppressed": [],
+  "iteration_note": "First proposal-mode run for this change."
+}

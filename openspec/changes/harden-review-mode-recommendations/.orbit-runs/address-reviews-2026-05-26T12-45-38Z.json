@@ -1,0 +1,72 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-26T12:45:38Z",
+  "change": "harden-review-mode-recommendations",
+  "final_assessment": "Resolved 3 of 5 findings from review-proposal iter-1 + 2 SUGGESTIONS deferred per reviewer's own recommendation. WARN 1 (timestamp source) fixed by pinning to filename `<TS>` token in both 'converged clean' and 'external stale' scenarios. WARN 2 (README placement) fixed by naming exact placement (after `## Command reference`, before `## The external review cycle`) + verifying via grep that the section IDs match current README structure. WARN 3 (edge cases) addressed via new `Edge-case assumptions for the iteration-aware logic` scenario documenting v1 assumptions (presence regardless of content; multiple-files tie-break uses filename `<TS>` lexical sort; unparseable filename token treated as absent). SUGG 1 (orbit-conventions baseline asymmetry) deferred per reviewer's own recommendation. SUGG 2 (T0 emit off-by-one count) stale-suppressed per reviewer's own recommendation (immutable propose-T0 history). Final spec state: 10 scenarios in orbit-review delta + 5 in orbit-conventions delta; openspec validate --strict passes.",
+  "next_recommended": "re-run /opsx:review --as proposal harden-review-mode-recommendations --fresh to confirm convergence (iter-2 should show 0 WARNINGs from the prior 3). Then /opsx:apply harden-review-mode-recommendations.",
+  "kind": "editorial",
+  "source": "from-file",
+  "source_path": "openspec/changes/harden-review-mode-recommendations/.orbit-runs/review-proposal-2026-05-26T12-42-03Z.json",
+  "external_reviewer": null,
+  "input_findings_summary": {
+    "critical": 0,
+    "warning": 3,
+    "suggestion": 2
+  },
+  "pushback_verification": "All 5 findings verified against current state via Read + grep. WARN 1 confirmed: 'is timestamped LATER/EARLIER than' phrasing in 2 scenarios without source pinning. WARN 2 confirmed: README has `## The orbit workflow` (L60) not 'End-to-end workflow'; 10 intervening sections between workflow + external-review-cycle headings; tasks 2.1 wording was loose. WARN 3 confirmed: corrupted/multiple file cases not addressed in spec scenarios. SUGG 1 confirmed: orbit-conventions `Final-assessment phrasings` (L358) lists base templates with `<gate>` placeholders that don't acknowledge the new system-mode variants. SUGG 2 confirmed: T0 emit narrative said 'expanded from 5 to 8' but delta had 9 (now 10 post-WARN-3-fix). No stale-suppressions.",
+  "resolution_summary": {
+    "resolved": 3,
+    "stale_suppressed": 1,
+    "deferred": 1,
+    "escalated": 0
+  },
+  "resolutions": [
+    {
+      "severity": "WARNING",
+      "title": "Timestamp-comparison source ambiguous (filename token vs JSON field vs mtime)",
+      "marker_source": "external",
+      "classification": "trivial fix",
+      "decision": "pin to filename `<TS>` token per orbit-conventions Internal-run JSON summary format",
+      "action": "Updated 2 scenarios in specs/orbit-review/spec.md (`prior external converged clean` at L34; `external present but stale` at L39). Both now say 'has a filename `<TS>` token (per orbit-conventions Internal-run JSON summary format) LATER/EARLIER than the most recent external-system-*.md's filename token'. Filename `<TS>` is immutable across git operations (unlike mtime); choice is implementable + stable.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "WARNING",
+      "title": "README placement instruction names a section that may not exist verbatim",
+      "marker_source": "external",
+      "classification": "trivial fix",
+      "decision": "name exact placement (after `## Command reference`, before `## The external review cycle`)",
+      "action": "Updated tasks.md task 2.1 to: 'Place it immediately after `## Command reference` (currently L238-481) and immediately before `## The external review cycle` (currently L482) — adjacent to the cycle docs the new section cross-references. Update README's TOC (L9-40) to include the new section in the correct position. Verify line numbers at edit time (README may have shifted); the section anchors are stable even if line numbers move.'",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "WARNING",
+      "title": "Gap-hunt: corrupted/empty external-system-*.md + multiple-file tie-break unspecified",
+      "marker_source": "external",
+      "classification": "decision required",
+      "decision": "document v1 assumption (per user choice — recommended option)",
+      "action": "Added new scenario `Edge-case assumptions for the iteration-aware logic` to specs/orbit-review/spec.md (placed after `Iteration-aware logic does NOT block archive`, before `Recommendation prose is auditable by drift-audit`). Documents 3 v1 assumptions: (a) presence regardless of content (corruption detection out of scope); (b) multiple-files tie-break uses filename `<TS>` lexical sort (works because format is ISO-8601 with colons replaced); (c) unparseable filename token treated as absent. Future drift-audit Cat 4 or downstream tools MAY add validation; v1 stays simple. Scenario count: orbit-review delta 9 → 10.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "orbit-conventions baseline `Final-assessment phrasings` (L358) will silently differ from new variants",
+      "marker_source": "external",
+      "classification": "deferred per reviewer's own recommendation",
+      "decision": "defer to future change (or note in proposal Impact)",
+      "action": "No edit. Reviewer's recommendation explicitly said this is 'arguably out-of-scope'; design.md's existing drift-audit Cat 3 mitigation handles the eventual reconciliation. If a future change updates the baseline meta-convention `Final-assessment phrasings`, this asymmetry will resolve then. Acceptable v1 state.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "T0 emit's final_assessment says 'expanded from 5 to 8 scenarios' but delta has 9 (now 10 post-WARN-3-fix)",
+      "marker_source": "external",
+      "classification": "stale-suppress per reviewer's own recommendation",
+      "decision": "no fix — immutable propose-T0 history",
+      "action": "No edit. Reviewer recommended 'leave for archive (immutable history)'. The propose-T0 JSON is a record of what was emitted at that moment; editing it would corrupt the audit trail. Future propose-T0 implementations could count `^#### Scenario:` directly rather than rely on author-supplied counts, but that's a tooling change, not a per-emit fix.",
+      "ripple_flagged": []
+    }
+  ],
+  "remaining_markers_in_scope": 0,
+  "persisted_escalations": []
+}
