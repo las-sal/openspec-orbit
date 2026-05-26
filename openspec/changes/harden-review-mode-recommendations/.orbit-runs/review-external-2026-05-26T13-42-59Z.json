@@ -1,0 +1,12 @@
+{
+  "command": "review-external",
+  "timestamp": "2026-05-26T13:42:59Z",
+  "change": "harden-review-mode-recommendations",
+  "final_assessment": "External review iter-2 prompt packaged for harden-review-mode-recommendations (proposal mode). Iter-2 specifically validates the substantive design revision triggered by iter-1's CRITICAL: 3-state convergence → 5-state convergence with two-path detection. Awaiting findings from target AI (user choice: GPT-5 Codex for same-AI verification of iter-1 CRITICAL fix, OR fresh Claude for orthogonal eyes).",
+  "next_recommended": "Commit + push the change directory edits (4 modified files from address-reviews iter-2 + 1 new address-reviews JSON + 1 new external-prompt + this T0 JSON). Then paste openspec/changes/harden-review-mode-recommendations/.orbit-runs/external-prompt-proposal-2026-05-26T13-42-58Z.md into the target AI, save the response as openspec/changes/harden-review-mode-recommendations/.orbit-runs/external-proposal-<TS>.md, then /opsx:address-reviews harden-review-mode-recommendations --from-file <path>",
+  "kind": "editorial",
+  "mode": "proposal",
+  "prompt_path": "openspec/changes/harden-review-mode-recommendations/.orbit-runs/external-prompt-proposal-2026-05-26T13-42-58Z.md",
+  "target": null,
+  "awaiting_findings": true
+}

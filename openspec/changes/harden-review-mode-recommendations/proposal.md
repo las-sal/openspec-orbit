@@ -17,7 +17,7 @@ The two bundle naturally: #20 is the behavior change; #13 is the framework that 
 - Proposal-mode review's default-recommendation behavior is **unchanged** — the empirical evidence is specifically about system mode where anchoring risk is highest (AI reviewing code it just wrote).
 
 **Decision-framework documentation added (#13)**:
-- `orbit-conventions` baseline gains a new `Review mode decision framework` requirement (3 scenarios) codifying when each mode is appropriate.
+- `orbit-conventions` baseline gains a new `Review mode decision framework` requirement (5 scenarios: 3 decision-criteria for the three modes + 2 governance/non-enforcement scenarios about docs alignment and non-cycle-pattern-enforcement) codifying when each mode is appropriate.
 - `README.md` gains a new "Choosing a review mode" section between the workflow + external-review sections, discoverable from the TOC.
 - Both surfaces present the same framework; the spec gives normative force, the README gives discoverability.
 
@@ -33,7 +33,7 @@ The two bundle naturally: #20 is the behavior change; #13 is the framework that 
 ### Modified Capabilities
 
 - `orbit-review`: MODIFIED `Final assessment phrasings depend on mode` requirement — system-mode stock phrasings updated for the recommend-external default + iteration-aware logic.
-- `orbit-conventions`: ADD new `Review mode decision framework` requirement codifying when in-context vs `--fresh` vs external is appropriate (3 scenarios — first-pass default / anchoring-break case / cross-AI cross-check case).
+- `orbit-conventions`: ADD new `Review mode decision framework` requirement codifying when in-context vs `--fresh` vs external is appropriate (5 scenarios — 3 decision-criteria: first-pass default / anchoring-break case / cross-AI cross-check case; plus 2 governance scenarios: framework-is-documented-in-README-and-spec and framework-does-NOT-enforce-cycle-patterns).
 
 ## Impact
 

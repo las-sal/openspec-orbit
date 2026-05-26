@@ -40,23 +40,62 @@ This change lands the framework + flips the system-mode default to reflect what 
 **Alternative considered**:
 - Apply default-flip to both modes. Rejected — separate empirical case needed for proposal-mode; the data we have is system-specific.
 
-### D-logic-1: Iteration-aware recommendation logic
+### D-logic-1: Iteration-aware recommendation logic — 5 convergence states + two-path convergence
 
-**Decision**: The recommendation conditions on whether external system review has run for this change yet. If no `external-system-*.md` file exists in `.orbit-runs/`, recommend external next. If external has run and the most recent `external-system-*.md` is older than the current clean `review-system-*.json` (i.e., external ran, then internal re-ran clean), recommend archive directly.
+**Decision**: The recommendation distinguishes 5 convergence states for the system-mode no-CRITICAL case, with two paths to "converged" (Path A: external content is clean; Path B: external findings resolved via address-reviews). The full state machine is codified in the spec scenarios at `specs/orbit-review/spec.md`.
 
 **Concrete logic**:
 ```
-1. Look for openspec/changes/<name>/.orbit-runs/external-system-*.md
-2. If absent → recommend /opsx:review-external (or /opsx:review --fresh)
-3. If present:
-   - Find the most recent internal review-system-*.json
-   - If it's clean (0 critical) and timestamped later than the external file → recommend archive
-   - Otherwise → external is stale, recommend re-running external
+Inputs: .orbit-runs/*.json + *.md filename `<TS>` tokens + (for Path A) external markdown content + (for Path B) address-reviews JSON resolution_summary fields.
+
+State 1 — no prior external:
+  WHEN no external-system-*.md exists
+  → recommend /opsx:review-external (or /opsx:review --fresh)
+
+State 2 — external clean (Path A convergence):
+  WHEN external-system-*.md exists AND its content has zero findings (each ## CRITICAL / ## WARNING / ## SUGGESTION section contains only "None.", no ### entries)
+       AND no later apply-*.json or address-reviews-*.json exists
+  → recommend /opsx:archive (converged via clean content)
+
+State 3 — external resolved (Path B convergence):
+  WHEN external-system-*.md exists with findings AND
+       a later address-reviews-*.json (with source_path referencing this external) shows
+       resolution_summary.deferred == 0 AND resolution_summary.escalated == 0
+       AND no later apply-*.json exists
+  → recommend /opsx:archive (converged via resolution)
+
+State 4 — external present with unresolved findings:
+  WHEN external-system-*.md has findings AND
+       (no address-reviews-*.json references it OR the most recent does has deferred>0 or escalated>0)
+  → recommend /opsx:address-reviews --from-file <external-path>
+
+State 5 — external stale relative to artifact changes:
+  WHEN external-system-*.md exists AND
+       a later apply-*.json filename token is newer than the external's filename token
+       (i.e., artifacts changed after external was run)
+  → recommend re-running /opsx:review-external (or /opsx:review --fresh)
+  → takes precedence over States 2-4 per the precedence-rules scenario
+
+Comparison uses filename `<TS>` token, not mtime (per orbit-conventions
+`Internal-run JSON summary format`); immutable across git operations.
 ```
+
+**Why this 5-state design over a 3-state design**:
+
+The 3-state version (no-external / converged / stale) reviewed in iter-1 had a real correctness flaw caught by external review iter-1's CRITICAL: it determined convergence by file existence + timestamp ordering, which means a CRITICAL-finding external followed by a later clean in-context review would be silently marked "converged." That undercuts the entire purpose of the change.
+
+The 5-state design fixes the gap by treating "external has findings" as a first-class state distinct from "external is clean":
+- Path A (content-clean) avoids requiring address-reviews ceremony for genuinely-clean externals.
+- Path B (resolution-via-address-reviews) handles the case where external had findings and the user walked them.
+- "Unresolved findings" surfaces a recommendation for the user to actually walk the findings.
+- "Stale relative to artifacts" properly defines stale against apply-*.json timestamps (not internal-review timestamps, which was the iter-1 WARN 1 bug).
+- "No prior external" stays as the initial-recommendation state.
+
+**Implementation cost**: orbit-review's recommendation logic must inspect three new file types beyond `review-system-*.json`: external-system-*.md (markdown parse for clean detection), address-reviews-*.json (JSON parse for resolution_summary), apply-*.json (filename token for stale detection). The 5-state state machine is documented + the edge-case-assumptions scenario covers parse failures.
 
 **Why over unconditional always-recommend-external**:
 - Composes with [#12](https://github.com/las-sal/openspec-orbit/issues/12) (general dynamic recommendation framework). This change is the specific default within #12's general logic.
-- Avoids nagging on iter-N+1 where external already converged.
+- Avoids nagging on iter-N+1 where external already converged (via Path A or Path B).
 - Acknowledges that some changes (small, low-stakes) may legitimately archive without external — the framework documentation (per D-docs-1) makes this explicit.
 
 ### D-ux-1: Text-only final-assessment update (no interactive prompt)
@@ -92,7 +131,7 @@ All checks passed. External system review converged clean. Ready to archive.
 
 ### D-docs-1: Documentation in both `orbit-conventions` baseline and README
 
-**Decision**: Add a new `Review mode decision framework` requirement to `orbit-conventions` (3 scenarios codifying the framework as testable statements) + add a new "Choosing a review mode" section to README.
+**Decision**: Add a new `Review mode decision framework` requirement to `orbit-conventions` (5 scenarios: 3 decision-criteria codifying the framework as testable statements, plus 2 governance scenarios — README-and-spec alignment is auditable by drift-audit, and framework guidance does NOT enforce cycle patterns) + add a new "Choosing a review mode" section to README.
 
 **Spec scenarios** (tight; just decision criteria, NOT exhaustive cycle patterns):
 

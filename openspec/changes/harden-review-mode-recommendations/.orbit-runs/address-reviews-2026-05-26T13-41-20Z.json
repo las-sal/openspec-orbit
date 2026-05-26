@@ -1,0 +1,64 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-26T13:41:20Z",
+  "change": "harden-review-mode-recommendations",
+  "final_assessment": "Resolved all 4 findings from external proposal-mode review iter-1 (GPT-5 Codex). CRITICAL (iteration-aware logic can mark unresolved external findings as converged) addressed by expanding the spec from a 3-state to a 5-state convergence model with two-path convergence detection (Path A: external content parsed for clean; Path B: address-reviews JSON inspected for resolution). WARN 1 (stale-branch compares wrong timestamps) folded into the CRITICAL fix — stale is now defined against apply-*.json filename tokens, not internal-review timestamps. WARN 2 (stale W/S phrasing not exact + tasks.md row count off) fixed by giving each of the 5 system-mode no-CRITICAL convergence states explicit stock phrasings for both all-clear and W/S sub-cases (10 stock-phrasing rows total), and updating tasks.md 1.1 to reference 10 rows + the expanded recommendation-logic prose. SUGGESTION (scenario count drift in proposal/design says '3 scenarios' but delta has 5) fixed by updating proposal.md L20 + L36 + design.md L95 to say '5 scenarios (3 decision-criteria + 2 governance)'. orbit-review delta scenario count grew from 10 → 14 to accommodate the 5-state model.",
+  "next_recommended": "re-run /opsx:review --as proposal harden-review-mode-recommendations --fresh to confirm convergence (iter-2 should show 0 CRITICAL from the prior 1). Consider /opsx:review-external (iter-2) before apply since the CRITICAL fix is substantive and benefits from a second cross-AI pass.",
+  "kind": "editorial",
+  "source": "from-file",
+  "source_path": "openspec/changes/harden-review-mode-recommendations/.orbit-runs/external-proposal-2026-05-26T13-00-53Z.md",
+  "external_reviewer": "GPT-5 Codex",
+  "input_findings_summary": {
+    "critical": 1,
+    "warning": 2,
+    "suggestion": 1
+  },
+  "pushback_verification": "All 4 findings verified against current spec text. CRITICAL confirmed: spec.md:34 'converged clean' scenario only checked file existence + timestamp ordering, not findings content; combined with edge-case-assumptions scenario saying 'presence regardless of content', a CRITICAL-finding external file followed by a later clean in-context review would silently flip to converged. WARN 1 confirmed: stale defined as latest review-system EARLIER than latest external — but the bug case (external → apply → clean review) actually puts review AFTER external, triggering converged not stale. WARN 2 confirmed: stale W/S sub-case said 'parallels with warning-count prefix' without explicit phrasing; tasks.md 1.1 said '4 new rows' but split was 3 states × 2 sub-cases = 6 (post-fix: 5 states × 2 = 10). SUGGESTION confirmed: proposal.md L20 + L36 said '3 scenarios' but orbit-conventions delta had 5. No stale-suppressions.",
+  "resolution_summary": {
+    "resolved": 4,
+    "stale_suppressed": 0,
+    "deferred": 0,
+    "escalated": 0,
+    "design_revision": 1
+  },
+  "resolutions": [
+    {
+      "severity": "CRITICAL",
+      "title": "Iteration-aware logic can mark unresolved external findings as converged",
+      "marker_source": "external",
+      "classification": "decision required + substantive design revision",
+      "decision": "two-path convergence (Path A: markdown content parsed for clean; Path B: address-reviews JSON resolution check)",
+      "action": "Expanded the orbit-review spec delta's system-mode no-CRITICAL coverage from 3 states (no-external / converged / stale) to 5 states: (1) no prior external; (2) external content clean — Path A convergence; (3) external resolved via address-reviews — Path B convergence; (4) external present with unresolved findings; (5) external stale relative to artifact changes. Added a precedence-rules scenario for cases where multiple states could match (stale takes precedence over Path A/B/unresolved; unresolved takes precedence over Path A/B). orbit-review's implementation now inspects 3 new file types: external-system-*.md (markdown parse for clean detection), address-reviews-*.json (JSON resolution_summary check), apply-*.json (filename token comparison for stale). Scenario count: 10 → 14 in orbit-review delta. design.md D-logic-1 rewritten to document the 5-state state machine.",
+      "ripple_flagged": ["tasks.md 1.1 row count + recommendation-logic prose"]
+    },
+    {
+      "severity": "WARNING",
+      "title": "Stale-external branch compares the wrong timestamps",
+      "marker_source": "external",
+      "classification": "trivial fix (folded into CRITICAL)",
+      "decision": "tie to CRITICAL fix — stale defined against apply-*.json, not internal-review",
+      "action": "Auto-resolved by the CRITICAL fix's state 5: stale is now defined as 'apply-*.json filename token is LATER than external file's filename token' (i.e., artifacts changed after external was evaluated). This matches the real stale sequence the prose described. WARN 1 + CRITICAL share the same fix surface as intended.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "WARNING",
+      "title": "Stale W/S sub-case lacks exact stock phrasing + tasks.md row count drift",
+      "marker_source": "external",
+      "classification": "trivial fix",
+      "decision": "give all 10 sub-cases exact stock phrasings; update tasks.md row count",
+      "action": "Spec now provides exact stock phrasings for both all-clear and W/S sub-cases of each of the 5 system-mode no-CRITICAL convergence states — 10 total stock-phrasing rows. tasks.md 1.1 updated: '10 new rows' (was '4 new rows'); recommendation-logic prose expanded to cover Path A markdown parse + Path B address-reviews JSON inspection + apply-*.json stale-detection + convergence-state precedence.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "Scenario count drift in proposal/design (says '3 scenarios' for Review mode decision framework; actual is 5)",
+      "marker_source": "external",
+      "classification": "trivial fix",
+      "decision": "update to 5 scenarios with decision-criteria + governance split",
+      "action": "proposal.md L20 + L36 updated to '5 scenarios (3 decision-criteria for the three modes + 2 governance/non-enforcement scenarios about docs alignment and non-cycle-pattern-enforcement)'. design.md D-docs-1 (L95) updated similarly. The split makes the structure of the requirement explicit rather than hiding it behind a single count.",
+      "ripple_flagged": []
+    }
+  ],
+  "remaining_markers_in_scope": 0,
+  "persisted_escalations": []
+}
