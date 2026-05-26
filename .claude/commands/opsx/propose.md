@@ -11,7 +11,7 @@ I'll create a change with artifacts:
 - design.md (how)
 - tasks.md (implementation steps)
 
-When ready to implement, run /opsx:apply
+When ready to implement, run `/opsx:review` (proposal mode) first, then `/opsx:apply`. Per orbit's canonical flow, propose → review → apply; review is the pre-apply checkpoint. See the `Orbit additions` section below for full rationale.
 
 ---
 
@@ -117,6 +117,7 @@ The `openspec-propose` skill is extended by openspec-orbit with a **consume mode
 - **Conflict detection**: if both `openspec/explore/<name>/` and `openspec/changes/<name>/` exist, three-way prompt (regenerate / continue / abort).
 - **Naming inference**: invoked without `<name>` when exactly one staging directory exists → propose that name.
 - **Standalone mode preserved**: when no staging directory exists, falls through to upstream behavior unchanged.
+- **Always recommends `/opsx:review` next, never `/opsx:apply` directly** (per `orbit-run-summary-emit`'s `Propose-shaped and artifact-completion-aware recommendation logic` baseline requirement). The canonical orbit flow is propose → review → apply, with review as the pre-apply checkpoint. The run-summary JSON's `next_recommended` field follows this rule, and the same recommendation appears in chat output.
 - **Three execution disciplines** (read-before-reference / change completeness / pushback) per orbit-conventions.
 
 See `.claude/skills/openspec-propose/SKILL.md` for full consume-mode flow, section mapping, and graceful-degradation cases.

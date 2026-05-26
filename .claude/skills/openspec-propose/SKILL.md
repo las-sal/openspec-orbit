@@ -15,7 +15,7 @@ I'll create a change with artifacts:
 - design.md (how)
 - tasks.md (implementation steps)
 
-When ready to implement, run /opsx:apply
+When ready to implement, run `/opsx:review` (proposal mode) first, then `/opsx:apply`. Per orbit's canonical flow, propose → review → apply; review is the pre-apply checkpoint. See the `Orbit additions` section below for full rationale.
 
 ---
 
