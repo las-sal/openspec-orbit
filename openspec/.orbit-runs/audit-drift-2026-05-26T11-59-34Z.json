@@ -1,0 +1,24 @@
+{
+  "command": "audit-drift",
+  "timestamp": "2026-05-26T11:59:34Z",
+  "change": null,
+  "final_assessment": "project-wide drift check clean.",
+  "next_recommended": "No project-wide drifts detected. Run /opsx:audit-drift periodically to catch new drift.",
+  "kind": "editorial",
+  "context": "standalone",
+  "categories_run": ["1", "3", "4"],
+  "categories_skipped": ["2"],
+  "findings_summary": {
+    "critical": 0,
+    "warning": 0,
+    "suggestion": 0,
+    "by_category": {
+      "1": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "2": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "3": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "4": { "critical": 0, "warning": 0, "suggestion": 0 }
+    }
+  },
+  "findings": [],
+  "stale_suppressed": []
+}
