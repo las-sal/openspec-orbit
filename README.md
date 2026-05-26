@@ -419,7 +419,7 @@ Flags:
 
 ```
 /opsx:address-reviews [<scope>]
-  [--from-file <path>]               ingest external-review findings as virtual markers
+  [--from-file <path>]               ingest review findings as virtual markers (auto-detects external-review markdown or internal review JSON)
   [--keep-resolved-markers]          debug; don't remove on resolution
 ```
 
@@ -768,6 +768,8 @@ The full per-command schemas live alongside each skill at `.claude/skills/<skill
 
 **External-review markdown findings format** — see the worked example in [The external review cycle](#the-external-review-cycle) section above. The format is parsed by `/opsx:address-reviews --from-file` and must follow the exact structure (severity sections + `### Title` + `**File**:` + `**Description**:` field labels) for the parser to work. Full parser contract: `.claude/skills/openspec-address-reviews/references/external-findings-format.md`.
 
+**Internal review JSON findings format** — `/opsx:address-reviews --from-file` also accepts internal `review-<mode>-*.json` files produced by `/opsx:review`. The parser auto-detects format via content sniff (leading `{` → JSON; leading `# External Review:` → markdown). V1 accepts `command: "review"` JSON only; other internal JSON commands (`audit-drift`, `address-reviews`, etc.) are rejected with a clean error. Full parser contract: `.claude/skills/openspec-address-reviews/references/internal-findings-format.md`.
+
 ### `<topic>_convention.md` files at project root
 
 Conventions are the **AI-readable rules layer** — durable patterns that apply broadly across the codebase (e.g., "files use kebab-case", "errors look like X"). Distinct from:
@@ -871,7 +873,7 @@ Unresolvable markers have three options (per-marker user choice):
     ├── openspec-audit-drift/     ← orbit new
     │   └── references/           ← run-summary schema
     ├── openspec-address-reviews/ ← orbit new
-    │   └── references/           ← external-findings format, run-summary schema
+    │   └── references/           ← external-findings + internal-findings formats, run-summary schema
     └── openspec-*/                ← other upstream skills (verify-change, apply, etc.)
 
 openspec/

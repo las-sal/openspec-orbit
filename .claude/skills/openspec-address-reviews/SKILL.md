@@ -55,11 +55,17 @@ grep -rn "@review:" <scope> | grep -v <safe-exclusions>
 
 `<scope>` accepts a path, a pattern, or a change name (heuristic: if it matches `openspec/changes/<name>/` or `openspec list --json` output, scope to that directory).
 
-**`--from-file <path>` ingest** (external review findings):
+**`--from-file <path>` ingest** (review findings file — external markdown OR internal JSON):
 
-Parse the file's markdown structure into virtual markers per the parser contract at `references/external-findings-format.md`. Read that file when implementing the parser — it specifies the exact expected format (produced by `/opsx:review-external`), the virtual-marker construction rules, and the strict/lenient split for malformed input handling.
+The `--from-file` flag accepts TWO format families: (a) **external-review markdown** (produced by external AIs per `/opsx:review-external`'s prompt template), (b) **internal review JSON** (produced by `/opsx:review` to `.orbit-runs/review-<mode>-*.json`). The parser auto-detects format via content sniff and routes to the appropriate parser:
 
-Virtual markers walk the same lifecycle as inline markers, with one exception: **the marker-removal step (Step 3d below) is a no-op for virtual markers** — there's no source-file marker text to delete.
+- **Leading `{`** (first non-whitespace character) → JSON parser, per the contract at `references/internal-findings-format.md`. V1 accepts `command: "review"` JSON only; other internal JSON commands (`audit-drift`, `address-reviews`, etc.) are rejected with a clean unsupported-command error.
+- **Leading `# External Review:`** → markdown parser, per the contract at `references/external-findings-format.md`. This is the only markdown format orbit produces — written by external AIs after pulling the repo + reading the `/opsx:review-external` prompt.
+- **Neither leading pattern matches** → emit a clean format-mismatch error naming both supported formats; refuse to act on partial parse.
+
+The sniff inspects content only — it does NOT depend on file extension or pathname. Each finding (from either format) becomes a virtual marker with the same shape: `severity` / `title` / `file:line` / `description` / `source` (tagged `external` for markdown, `internal-review` for JSON). Virtual markers walk the same lifecycle as inline markers, with one exception: **the marker-removal step (Step 3d below) is a no-op for virtual markers regardless of provenance** — there's no source-file marker text to delete (the JSON file or markdown file is an audit artifact that travels with the change into archive; removing it on resolution would be wrong).
+
+**Fresh pushback applies to JSON virtual markers**: the JSON's own `stale_suppressed[]` array already filtered stale findings at review time, but state may have changed between the review and the resolve. The Step 3a pushback verification (per the primary discipline above) runs for every virtual marker — JSON-sourced or markdown-sourced — to catch staleness introduced since the source review/external pass.
 
 ### 2. Triage
 
@@ -217,7 +223,7 @@ Adjacent forms (same discovery grep, different semantics):
 - **Never write new `@review:` markers.** Only `/opsx:review --as proposal --mark` does that. address-reviews can transform markers (e.g., to `@todo:` or `@review(escalated):`) but never creates fresh `@review:` markers.
 - **No auto-cascade in v1.** Ripple-flagged files are listed, not edited. v2 may add `--cascade` (issue #3).
 
-## Worked example (--from-file ingest, iter 5 of bootstrap-openspec-orbit)
+## Worked example (`--from-file` markdown ingest, iter 5 of bootstrap-openspec-orbit)
 
 ```
 ## Address-reviews report
@@ -258,10 +264,61 @@ Suggested next: re-run /opsx:review --as proposal to confirm convergence.
 Run summary: openspec/changes/bootstrap-openspec-orbit/.orbit-runs/address-reviews-2026-05-18T14-43-41Z.json
 ```
 
+## Worked example (`--from-file` JSON ingest, single SUGGESTION from a system-mode review)
+
+```
+## Address-reviews report
+
+Source: --from-file openspec/changes/harden-review-mode-recommendations/.orbit-runs/review-system-2026-05-26T20-01-08Z.json (illustrative; the actual change has since been archived — real path is under openspec/changes/archive/2026-05-26-harden-review-mode-recommendations/)
+Source format: internal review JSON (command: "review", mode: system, iteration: 2)
+Input findings: 0 CRITICAL / 0 WARNING / 1 SUGGESTION
+Markers walked: 1 (all)
+Pushback verification: 1 verified against current state; 0 stale suppressions.
+
+### Summary
+
+| Status        | Count |
+|---------------|-------|
+| ✓ Resolved    | 1     |
+| ⚠ Stale       | 0     |
+| ⏸ Deferred    | 0     |
+| ✗ Escalated   | 0     |
+
+### ✓ Resolved
+- **.claude/skills/openspec-review/references/run-summary-schema.md:22** — [SUGGESTION] Schema reference does not document new convergence fields emitted by iteration-aware logic.
+  Source: internal-review
+  Action: classified as `decision required` (out-of-scope deferral vs include-in-current-change). User chose to defer to a future change; filed as task in `tasks.md` referencing the schema-doc gap; original JSON unchanged (marker-removal no-op for virtual markers).
+  Ripple: openspec-review/SKILL.md flagged (consumer of the schema doc).
+
+### Final assessment
+
+0 unresolved findings.
+Suggested next: continue with current change's archive flow; the schema-doc gap is filed as a follow-up task and will be addressed in a future change.
+
+Run summary: openspec/changes/harden-review-mode-recommendations/.orbit-runs/address-reviews-2026-05-26T20-XX-XXZ.json
+```
+
+This example demonstrates the JSON path: the input is an internal `review-system-*.json` produced by `/opsx:review --as system`; auto-detect routes to the JSON parser (leading `{`); the single `findings[]` entry becomes a virtual marker; the lifecycle walks it (pushback verifies the schema gap still exists → classify as `decision required` → user defers → file as task → marker-removal no-op since virtual). Identical lifecycle to the markdown example above, different parser routing.
+
 ## Graceful degradation
 
 - **No markers found** → emit `No @review: markers in scope. Nothing to do.` and exit clean.
 - **`--from-file` path missing** → fail clearly with usage; don't fall back to repo scan.
-- **`--from-file` parse failure** → emit format guidance; do not act on partial parse.
+- **`--from-file` neither-format-detected** → emit a clean format-mismatch error naming both supported formats (referencing `references/external-findings-format.md` and `references/internal-findings-format.md`) plus the observed leading-content snippet; refuse to act on partial parse. Concrete error shape:
+
+  ```
+  `--from-file <path>`: unrecognized format.
+
+  Supported formats:
+  - External-review markdown — see references/external-findings-format.md
+  - Internal review JSON (review-<mode>-*.json) — see references/internal-findings-format.md
+
+  Detected: <observed first-line snippet>
+  ```
+- **`--from-file` JSON parse failure** (leading `{` but invalid JSON) → emit a clean parse-error message naming the file and the JSON parse-error position (best-effort); exit without acting. User fixes the file and re-runs.
+- **`--from-file` unsupported JSON `command` field** (valid JSON but `command` is not `"review"`) → emit a clean error naming the supported value (`"review"`) and the unsupported value detected; reference both format docs for self-diagnosis; exit without acting. V1 supports `review-<mode>-*.json` only.
+- **`--from-file` markdown malformed** (leading `# External Review:` but missing required sections / broken field labels) → emit a markdown-parse-error message with format guidance from `references/external-findings-format.md`; exit without acting.
+- **`--from-file` JSON missing `findings[]`** → treat as malformed input; emit a clean error naming the missing/malformed field; reference `internal-findings-format.md`; exit.
+- **`--from-file` JSON with empty `findings: []`** → NOT an error. Succeed with zero virtual markers; resolution log reports a clean empty walk with note `Source JSON had no findings to walk; resolution log is informational.` A clean review with `findings: []` is the expected state for an all-clear pass.
 - **No `tasks.md` in change context** → unresolvable-default-file-as-task falls back to creating a root-level `TODO.md` entry with a note.
 - **Marker found in a baseline spec** (`openspec/specs/<capability>/`) → warn that this is unusual; baseline specs should not carry markers; still walk it per user choice but flag in the log.

@@ -1,0 +1,23 @@
+{
+  "command": "apply",
+  "timestamp": "2026-05-26T23:43:51Z",
+  "change": "address-reviews-accepts-internal-json",
+  "kind": "workflow",
+  "chunk": "1 of 3",
+  "chunk_name": "Reference doc + parser logic prose",
+  "chunk_complete": true,
+  "tasks_completed": 5,
+  "tasks_remaining": 8,
+  "user_validation_remaining": 3,
+  "tasks_completed_this_session": 5,
+  "tasks_completed_this_chunk": ["1.1", "1.2", "1.3", "1.4", "1.5"],
+  "files_changed": [
+    ".claude/skills/openspec-address-reviews/references/internal-findings-format.md (NEW; 5-section parser-contract doc symmetric with external-findings-format.md: Expected file format / Parser contract / Malformed input handling / Tolerated variations / Worked example. Documents `command: \"review\"` discriminator, `findings[]` field mapping, `source: \"internal-review\"` tag, fresh-pushback semantics, strict/lenient field split, worked example using the harden-review-mode-recommendations iter-2 SUGGESTION as the input JSON.)",
+    ".claude/skills/openspec-address-reviews/SKILL.md (--from-file <path> ingest section rewritten: now describes 2-format auto-detect via content sniff with leading-{ → JSON path + leading-# External Review: → markdown path + neither → format-mismatch error; cites both reference docs; documents shared marker-removal no-op for both virtual-marker provenances; documents fresh-pushback-applies-to-JSON-virtual-markers per D-pushback-1)",
+    ".claude/commands/opsx/address-reviews.md (Input section --from-file description broadened to reflect auto-detect routing + both supported formats + v1 `command: \"review\"` scope; What it does Step 1 mentions the auto-detect logic)",
+    ".claude/skills/openspec-address-reviews/references/external-findings-format.md (one-line cross-reference at top + title clarified `for --from-file markdown parsing` to disambiguate from JSON path)",
+    "README.md (2 sites: L422 area `--from-file` flag description broadened to mention both formats; L769 area new `Internal review JSON findings format` sub-header added as sibling to existing `External-review markdown findings format` sub-header, with pointer to internal-findings-format.md + v1 `command: \"review\"`-only scope mentioned)"
+  ],
+  "final_assessment": "Chunk 1 complete. Reference doc + SKILL/command mirror + cross-reference + README updates all landed. The auto-detect routing logic is now documented in 4 places (SKILL.md, opsx/address-reviews.md, README.md, both reference docs). Parser contract for the JSON path is unambiguous: command field discriminator, field mapping, malformed input handling, tolerated variations, worked example all spelled out.",
+  "next_recommended": "/opsx:apply address-reviews-accepts-internal-json — next chunk: JSON worked example in SKILL.md + graceful-degradation format-error cases + markdown-example coherence check (3 tasks)"
+}

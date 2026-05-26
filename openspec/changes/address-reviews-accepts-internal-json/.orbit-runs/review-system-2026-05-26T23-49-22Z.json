@@ -1,0 +1,69 @@
+{
+  "command": "review",
+  "kind": "editorial",
+  "timestamp": "2026-05-26T23:49:22Z",
+  "scope": "openspec/changes/address-reviews-accepts-internal-json",
+  "change": "address-reviews-accepts-internal-json",
+  "mode": "system",
+  "iteration": 1,
+  "depth": "full",
+  "flags": ["--as", "system", "--fresh", "--full"],
+  "passes_run": [
+    "P0 verify-change equivalent (13/13 tasks + openspec validate --strict)",
+    "P1 baseline compliance",
+    "P2 cohesion (touched files + dependents)",
+    "P3 surface walk (--from-file CLI surface)",
+    "P6 drift / residue cross-doc consistency"
+  ],
+  "passes_skipped": [
+    "P4 perspective reviews (no openspec/lenses/perspectives.md present)",
+    "P5 critical-path scan (no openspec/lenses/critical-paths.md present)"
+  ],
+  "skip_reasons": {
+    "P4": "no perspectives defined; skip Pass 4",
+    "P5": "no critical paths defined; skip Pass 5"
+  },
+  "findings_summary": {
+    "critical": 0,
+    "warning": 0,
+    "suggestion": 2,
+    "by_pass": {
+      "P6": { "critical": 0, "warning": 0, "suggestion": 2 }
+    }
+  },
+  "findings": [
+    {
+      "pass": "P6",
+      "severity": "SUGGESTION",
+      "file": "README.md",
+      "line": 876,
+      "title": "Directory tree comment for openspec-address-reviews/references still lists only external-findings + run-summary schema",
+      "recommendation": "Update the comment on README L876 from `← external-findings format, run-summary schema` to `← external-findings + internal-findings formats, run-summary schema` so the directory tree mirrors the actual on-disk references/ contents (which now includes internal-findings-format.md)."
+    },
+    {
+      "pass": "P6",
+      "severity": "SUGGESTION",
+      "file": ".claude/skills/openspec-address-reviews/SKILL.md",
+      "line": 272,
+      "title": "JSON worked example cites a path that no longer exists at the documented location (harden-review-mode-recommendations was archived 2026-05-26)",
+      "recommendation": "Optional: append a parenthetical note clarifying that the source change has since been archived (path moved to openspec/changes/archive/2026-05-26-harden-review-mode-recommendations/.orbit-runs/), or rephrase the example as illustrative-only. Not behavior-affecting; worked-example paths are inherently illustrative."
+    }
+  ],
+  "stale_suppressed": [],
+  "iteration_note": "First system-mode run for this change.",
+  "convergence_state": 1,
+  "convergence_state_label": "no prior external system review",
+  "convergence_inputs": {
+    "external_system_files_present": false,
+    "external_system_files": [],
+    "address_reviews_files_for_external": [],
+    "latest_apply_token": "2026-05-26T23-48-02Z",
+    "latest_external_system_token": null,
+    "stale": false,
+    "path_a_clean": false,
+    "path_b_resolved": false
+  },
+  "dogfood_note": "Catalyzing observation: this change closes #4 (raised by bootstrap-openspec-orbit iter-2, surfaced again by the harden-review-mode-recommendations iter-2 SUGGESTION that lived in JSON without a clean lifecycle path).",
+  "final_assessment": "No critical issues. 2 suggestion(s) to consider. Recommend /opsx:review-external for fresh-context cross-check before archive (per orbit-conventions Review mode decision framework). Or /opsx:review --fresh for a lighter pass. Proceed to /opsx:archive (with noted improvements) if accepting the in-context-only risk.",
+  "next_recommended": "/opsx:review-external (or /opsx:review --fresh) before /opsx:archive"
+}

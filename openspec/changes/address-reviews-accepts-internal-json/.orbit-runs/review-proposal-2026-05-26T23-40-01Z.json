@@ -1,0 +1,76 @@
+{
+  "command": "review",
+  "kind": "editorial",
+  "timestamp": "2026-05-26T23:40:01Z",
+  "scope": "openspec/changes/address-reviews-accepts-internal-json",
+  "final_assessment": "All checks passed. Ready to apply.",
+  "next_recommended": "Proceed to /opsx:apply (proposal-mode convergence verified; iter-1 walked 5 findings + deferred 2 with documented rationale; no net-new findings introduced by the walk; strict validation passes; scenario count = 13; phantom `# Internal Review:` residue confirmed gone; README scope captured in Impact + task 1.5; spec scenarios for empty/missing findings[] added; design.md cycle-prevention non-goal extended; task 1.2 carries fresh-pushback MUST language).",
+  "mode": "proposal",
+  "iteration": 2,
+  "depth": "full",
+  "flags": ["--full", "--fresh"],
+  "passes_run": [
+    "P1 schema validate",
+    "P2 baseline-fit",
+    "P3 explore coverage",
+    "P4 internal coherence",
+    "P5 task fidelity",
+    "P6 risk/edge surfaced",
+    "P7 archival clarity",
+    "P8 marker hygiene",
+    "P9 stale-finding pushback"
+  ],
+  "passes_skipped": [],
+  "findings_summary": {
+    "critical": 0,
+    "warning": 0,
+    "suggestion": 0
+  },
+  "findings": [],
+  "stale_suppressed": [
+    {
+      "id": "iter1-CRITICAL-1",
+      "severity": "CRITICAL",
+      "title": "Phantom `# Internal Review:` markdown header",
+      "evidence": "Verified via `grep -rn 'Internal Review:' openspec/changes/address-reviews-accepts-internal-json/` — 0 hits in artifacts (single match in design.md:58 is for `External Review:` in a virtual-marker discussion, not the phantom format). Sniff in design.md D-detect-1 (L29) + D-format-error-1 (L72-85) now references only `# External Review:` for markdown. Spec scenarios at L9, L20, L39 all use `# External Review:` exclusively. Resolution log: address-reviews-2026-05-26T23-37-11Z.json."
+    },
+    {
+      "id": "iter1-WARN-1",
+      "severity": "WARNING",
+      "title": "README scope omission",
+      "evidence": "proposal.md L32 lists README under Impact citing both L422 area (--from-file flag description) and L769 area (External-review markdown findings format sub-header). tasks.md L27 adds task 1.5 with stable section anchors and an at-edit-time line-number verification reminder. Confirmed README anchors live at L422 and L769 (current state)."
+    },
+    {
+      "id": "iter1-WARN-2",
+      "severity": "WARNING",
+      "title": "Empty / missing `findings[]` scenarios not specced",
+      "evidence": "spec.md adds two scenarios — `Internal review JSON missing findings[] field` (L27-30) and `Internal review JSON with empty findings[]` (L32-35). Total scenario count = 13 (verified via `grep -c '^#### Scenario:'`). Positioning sits cleanly between `Unsupported JSON command field` (L22) and `Malformed input — neither format matches` (L37) — siblings in the malformed-input cluster. No coherence break with surrounding scenarios."
+    },
+    {
+      "id": "iter1-SUGG-3",
+      "severity": "SUGGESTION",
+      "title": "Task 1.2 should explicitly carry fresh-pushback MUST",
+      "evidence": "tasks.md L21 task 1.2 now explicitly states: `the walk-section prose MUST document that fresh pushback applies to JSON-virtual markers even though the JSON's own stale_suppressed[] array already filtered stale findings at review time (per D-pushback-1; the same lifecycle discipline applies regardless of marker provenance).`"
+    },
+    {
+      "id": "iter1-SUGG-4",
+      "severity": "SUGGESTION",
+      "title": "Cycle-prevention non-goal needs v2-extension caveat",
+      "evidence": "design.md L23 non-goal bullet extended: `NOTE: if a future change extends the parser to accept command: \"address-reviews\" JSON, cycle-detection guards become required (a walk that produces its own input would loop) — that future change MUST add explicit cycle awareness.`"
+    },
+    {
+      "id": "iter1-SUGG-1-deferred",
+      "severity": "SUGGESTION",
+      "title": "MODIFIED requirement title rename (deferred — stale-suppressible)",
+      "evidence": "Title rendered as `--from-file ingest of review findings file` (spec.md L3) — broader than baseline `--from-file ingest of external-review findings`. Per iter-1 deferral rationale (address-reviews-2026-05-26T23-37-11Z.json), broader title accurately reflects broader scope; openspec validate --strict accepts; archival clarity acceptable. Already-decided; no re-litigation needed."
+    },
+    {
+      "id": "iter1-SUGG-2-deferred",
+      "severity": "SUGGESTION",
+      "title": "Baseline `Marker removal invariant` not modified (deferred — stale-suppressible)",
+      "evidence": "MODIFIED Requirement body (spec.md L5) captures `marker-removal as a no-op (no source-file marker text exists to remove for either virtual-marker type)` — covers the JSON-virtual no-op semantics without requiring a separate baseline modification. Per iter-1 deferral rationale, expanding delta surface without behavior change provides no archival value. Already-decided."
+    }
+  ],
+  "pushback_verification": "All 5 resolved iter-1 findings re-verified against current state with concrete evidence (grep counts + file:line citations). All 2 deferred findings re-verified as already-decided with documented rationale in iter-1 address-reviews JSON. No net-new findings surfaced by the convergence walk: (a) the 2 new spec scenarios sit cleanly between siblings in the malformed-input cluster — same WHEN/THEN structure, same reference-doc citation pattern; (b) the README task 1.5 has stable section-anchor language with at-edit-time line-verification reminder (the iter-1 design choice that line numbers may shift is acknowledged in-task, which is the right call); (c) the design.md non-goal extension is a clean appendix to an existing bullet — no internal contradiction; (d) the task 1.2 fresh-pushback addition aligns with D-pushback-1 verbatim. Net-coherent post-walk: proposal.md Impact + design.md decisions + spec.md scenarios + tasks.md chunks all agree. Strict validation passes. Marker hygiene: 0 inline `@review:` markers in artifacts (the lone match in design.md:58 is a discussion reference, not a marker).",
+  "iteration_note": "Convergence verified after iter-1 walk. 0 critical / 0 warning / 0 suggestion net-new. 5 prior resolved findings re-verified-as-stale; 2 prior deferred findings re-verified-as-stale (already-decided). Change is ready to apply."
+}

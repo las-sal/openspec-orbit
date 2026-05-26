@@ -1,0 +1,17 @@
+{
+  "command": "propose",
+  "timestamp": "2026-05-26T20:33:26Z",
+  "change": "address-reviews-accepts-internal-json",
+  "final_assessment": "Proposal artifacts generated for closing issue #4 (address-reviews --from-file should accept internal-review JSON). 4 artifacts complete (proposal/design/specs/tasks); openspec validate --strict passes. Spec delta scope: MODIFIED `--from-file ingest of review findings file` requirement in orbit-address-reviews (renamed from `--from-file ingest of external-review findings` to reflect broader scope) with 7 scenarios covering markdown + JSON paths + format-detection + 3 malformed-input cases; MODIFIED `Pushback discipline applied per marker` to add a JSON-virtual-marker scenario reaffirming fresh pushback. Standalone mode (no openspec/explore/ staging dir); seed = issue #4 body + session context from system-mode iter-2 SUGGESTION pattern observed in harden-review-mode-recommendations.",
+  "next_recommended": "/opsx:review address-reviews-accepts-internal-json --as proposal — pre-apply review per orbit canonical flow (propose → review → apply). After review converges: /opsx:apply (3 chunks: reference doc + SKILL prose; worked example + format-error handling; validation + user-validation).",
+  "kind": "workflow",
+  "mode": "standalone",
+  "artifacts_created": ["proposal", "design", "specs", "tasks"],
+  "spec_delta_capabilities": ["orbit-address-reviews"],
+  "validation": "openspec validate address-reviews-accepts-internal-json --strict → valid",
+  "issue_closed": "openspec-orbit#4",
+  "seed_sources": [
+    "GitHub issue #4 (filed 2026-05-18; updated since then)",
+    "harden-review-mode-recommendations iter-2 system review SUGGESTION (the iter-2 catalyzing case)"
+  ]
+}

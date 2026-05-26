@@ -15,7 +15,7 @@ Resolve `@review:` markers anywhere in the repo (or ingest external-review findi
 `/opsx:address-reviews [<scope>] [--from-file <path>] [flags]`
 
 - `<scope>` — optional. Path, pattern, or change name. Default: whole-repo scan with safe exclusions (`.git`, `node_modules`, `dist`, `build`).
-- `--from-file <path>` — ingest external-review findings from a markdown file (orbit external-review format).
+- `--from-file <path>` — ingest review findings from a file. Auto-detects format via content sniff: external-review markdown (per `references/external-findings-format.md`) OR internal review JSON (`review-<mode>-*.json`, per `references/internal-findings-format.md`). V1 internal-JSON ingest accepts `command: "review"` only; other internal JSON commands (`audit-drift`, `address-reviews`, etc.) are rejected with a clean error.
 
 ## Flags
 
@@ -29,7 +29,7 @@ Resolve `@review:` markers anywhere in the repo (or ingest external-review findi
 
 Invokes the `openspec-address-reviews` skill, which executes the lean v1 lifecycle:
 
-1. **Discover** — grep for `@review:` markers in scope (or parse `--from-file` into virtual markers)
+1. **Discover** — grep for `@review:` markers in scope, OR parse `--from-file` into virtual markers (auto-detect: leading `{` → JSON parser; leading `# External Review:` → markdown parser; else format-mismatch error)
 2. **Triage** — present a numbered list; user can scope to a subset
 3. **Walk each sequentially**:
    - **Pushback** — verify against current state (grep / git log / file read); classify stale findings and suppress them

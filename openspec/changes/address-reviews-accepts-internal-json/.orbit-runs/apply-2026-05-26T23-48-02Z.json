@@ -1,0 +1,19 @@
+{
+  "command": "apply",
+  "timestamp": "2026-05-26T23:48:02Z",
+  "change": "address-reviews-accepts-internal-json",
+  "kind": "workflow",
+  "chunk": "3 of 3 (final)",
+  "chunk_name": "Validation + user-validation handoff (final)",
+  "chunk_complete": true,
+  "tasks_completed": 13,
+  "tasks_remaining": 0,
+  "user_validation_remaining": 0,
+  "tasks_completed_this_session": 13,
+  "tasks_completed_this_chunk": ["3.2", "3.3", "3.4", "3.5"],
+  "files_changed": [
+    "openspec/changes/address-reviews-accepts-internal-json/tasks.md (final 4 user-validation checkboxes marked complete per user attestation 'mark 3.2-3.5 complete and continue'; no inline content edits — these are user-validation gates that the user accepted)"
+  ],
+  "final_assessment": "Chunk 3 complete. All 13 tasks across 3 chunks done. The address-reviews `--from-file` parser now accepts both external-review markdown AND internal review JSON via content-sniff auto-detect; v1 JSON ingest scoped to `command: \"review\"` only (other internal commands rejected with clean errors); fresh-pushback discipline applies to JSON virtual markers; marker-removal is no-op for both virtual-marker provenances. The implementation surface (SKILL + command + 2 reference docs + README) is internally consistent. openspec validate --strict passes.",
+  "next_recommended": "/opsx:review --as system address-reviews-accepts-internal-json — system-mode review with --fresh recommended. Under the new (just-archived) iteration-aware logic, this will fire State 1 (no prior external system review for this change) and recommend /opsx:review-external before archive. Optional dogfood-test per task 3.5: feed this change's review-system-*.json through /opsx:address-reviews --from-file after archive to validate the JSON parser against a real orbit-emitted shape."
+}

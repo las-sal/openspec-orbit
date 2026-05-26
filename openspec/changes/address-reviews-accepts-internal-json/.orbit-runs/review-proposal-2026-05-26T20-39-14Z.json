@@ -1,0 +1,97 @@
+{
+  "command": "review",
+  "timestamp": "2026-05-26T20:39:14Z",
+  "change": "address-reviews-accepts-internal-json",
+  "final_assessment": "1 critical issue(s) found. Fix before /opsx:apply.",
+  "next_recommended": "Fix the phantom `# Internal Review:` markdown sniff in design.md D-detect-1, D-format-error-1, and the orbit-address-reviews spec's three affected scenarios (no such markdown format is produced by any orbit command — internal review only emits JSON). Then re-run /opsx:review --as proposal --fresh.",
+  "kind": "editorial",
+  "mode": "proposal",
+  "iteration": 1,
+  "depth": "full",
+  "flags": {
+    "parallel": false,
+    "focus": null,
+    "strict": false,
+    "fresh": true,
+    "mark": false,
+    "skip_verify": false
+  },
+  "passes_run": ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
+  "passes_skipped": [],
+  "findings_summary": {
+    "critical": 1,
+    "warning": 2,
+    "suggestion": 4,
+    "by_pass": {
+      "1": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "2": { "critical": 1, "warning": 0, "suggestion": 1 },
+      "3": { "critical": 0, "warning": 1, "suggestion": 0 },
+      "4": { "critical": 0, "warning": 0, "suggestion": 1 },
+      "5": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "6": { "critical": 0, "warning": 1, "suggestion": 1 },
+      "7": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "8": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "9": { "critical": 0, "warning": 0, "suggestion": 1 }
+    }
+  },
+  "findings": [
+    {
+      "pass": "2",
+      "severity": "CRITICAL",
+      "file": "openspec/changes/address-reviews-accepts-internal-json/design.md",
+      "line": 29,
+      "title": "Phantom `# Internal Review:` markdown header — no such format is produced anywhere in orbit",
+      "recommendation": "Internal review only emits JSON (`review-<mode>-*.json`); no orbit command writes a `# Internal Review:` markdown file. The sniff in D-detect-1 (design.md:29), D-format-error-1 (design.md:74), and the three scenarios in specs/orbit-address-reviews/spec.md (lines 20, 29, 39) reference a format that doesn't exist. Either (a) remove all `# Internal Review:` references — sniff matches only `# External Review:` for markdown — or (b) introduce the format as part of this change with its own parser contract (significantly larger scope). Option (a) matches the proposal's stated v1 scope (markdown unchanged; JSON added)."
+    },
+    {
+      "pass": "3",
+      "severity": "WARNING",
+      "file": "README.md",
+      "line": 422,
+      "title": "README references `--from-file` only for external-review markdown; will be stale post-apply",
+      "recommendation": "Multiple README sections describe `--from-file` as ingesting external-review markdown (line 422 — `ingest external-review findings as virtual markers`; line 743 — table entry; line 769 — parser contract pointer). Post-apply, the flag accepts JSON too. proposal.md `Impact` does not list README.md. Add a task (or update Impact + add a sub-task under chunk 1) to update README.md's `--from-file` description and add a pointer to `internal-findings-format.md`."
+    },
+    {
+      "pass": "6",
+      "severity": "WARNING",
+      "file": "openspec/changes/address-reviews-accepts-internal-json/specs/orbit-address-reviews/spec.md",
+      "line": 12,
+      "title": "JSON-ingest scenario does not cover `command: \"review\"` + missing/empty `findings[]`",
+      "recommendation": "Spec covers JSON parse failure (line 32) and unsupported `command` (line 22), but a JSON file with `command: \"review\"` AND no `findings[]` array (or an empty array) is not addressed. Tasks 1.1d mentions `missing findings[]` as a malformed-input case in the reference doc but no spec scenario codifies the behavior. Add scenarios: (a) `findings[]` missing → parse error treated like JSON-parse-failure path, (b) `findings[]` present but empty → succeed with zero virtual markers + log empty resolution log. Codegen ambiguity: an implementer could choose to error on empty `findings[]` or succeed silently."
+    },
+    {
+      "pass": "2",
+      "severity": "SUGGESTION",
+      "file": "openspec/changes/address-reviews-accepts-internal-json/proposal.md",
+      "line": 25,
+      "title": "Proposal claims MODIFIED requirement title is renamed; openspec convention prefers RENAMED FROM for clarity",
+      "recommendation": "Baseline requirement is `--from-file ingest of external-review findings`; delta uses `--from-file ingest of review findings file`. `openspec validate --strict` passes, so the upstream CLI is tolerant. But the proposal text at line 25 says `rename of requirement title` — convention-wise, when a title materially changes, callers reading just the diff may be confused. Suggest either (a) keep the original title (modify body only) since the requirement remains conceptually the same, or (b) add a brief inline note in spec.md flagging the title change for archive-time clarity."
+    },
+    {
+      "pass": "4",
+      "severity": "SUGGESTION",
+      "file": "openspec/changes/address-reviews-accepts-internal-json/specs/orbit-address-reviews/spec.md",
+      "line": 3,
+      "title": "MODIFIED Requirement body subtly changes scope wording; baseline's Marker removal invariant requirement coupling not surfaced",
+      "recommendation": "Baseline `Marker removal invariant` requirement (orbit-address-reviews:99-111) is scoped to inline `@review:` markers and uses `--keep-resolved-markers`. JSON virtual markers (new) skip marker-removal entirely as a no-op. The MODIFIED Requirement at line 5 captures this in the body (`marker-removal as a no-op for either virtual-marker type`), but the baseline Marker removal invariant doesn't acknowledge virtual markers exist. Not strictly contradictory — the no-op is silently consistent — but archive coherence would improve if the change also lightly modifies the baseline `Marker removal invariant` requirement to mention virtual markers as the no-op carve-out. Optional."
+    },
+    {
+      "pass": "6",
+      "severity": "SUGGESTION",
+      "file": "openspec/changes/address-reviews-accepts-internal-json/specs/orbit-address-reviews/spec.md",
+      "line": 61,
+      "title": "Fresh-pushback scenario for JSON virtual markers has no explicit task",
+      "recommendation": "The new Scenario `Internal-review JSON virtual markers receive fresh pushback` (line 61) is normatively required, but the only task that touches it is 1.1 (reference doc) and 1.2 (SKILL.md `--from-file` ingest section). Neither task explicitly says `walk section MUST document that fresh pushback applies to JSON virtual markers`. Design.md D-pushback-1 specifies the documented-in locations. Suggestion: add a sub-bullet under task 1.2 like `(c) Document in the walk section that JSON-virtual markers receive fresh pushback even though the JSON's own stale_suppressed[] filtered at review time.`"
+    },
+    {
+      "pass": "9",
+      "severity": "SUGGESTION",
+      "file": "openspec/changes/address-reviews-accepts-internal-json/design.md",
+      "line": 23,
+      "title": "Non-goals list \"Cycle prevention for address-reviews-*.json ingest\" but the rationale is buried",
+      "recommendation": "Design line 23 explains cycle prevention is out of scope because `v1's command: \"review\" filter is enough`. This is true today, but if v2 ever extends to accept `command: \"address-reviews\"` JSON, the cycle risk re-emerges. Either drop the bullet or expand it to a one-line follow-up note that future extension to address-reviews JSON ingest MUST include cycle-detection guards. Minor."
+    }
+  ],
+  "stale_suppressed": [],
+  "iteration_note": null
+}

@@ -1,0 +1,91 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-26T23:37:11Z",
+  "change": "address-reviews-accepts-internal-json",
+  "final_assessment": "Walked all 7 findings from internal proposal-mode review iter-1 (Claude --fresh subagent). CRITICAL (phantom `# Internal Review:` markdown header) resolved by mechanical removal across 5 sites (design.md L29 + L74; spec.md L20 + L29 + L39); the sniff logic now matches only `# External Review:` for markdown, aligning with the proposal's stated scope. WARN 1 (README scope omission) resolved by extending proposal.md Impact + adding task 1.5 to chunk 1 covering README L422 + L769 updates. WARN 2 (empty/missing findings[] not specced) resolved by adding 2 scenarios to orbit-address-reviews delta (missing `findings[]` → parse error; empty `findings[]` → zero-walker success with informational log). SUGGESTION 3 (fresh-pushback task) resolved by extending task 1.2 with explicit walk-section-MUST language. SUGGESTION 4 (cycle-prevention non-goal expansion) resolved by extending design.md non-goal bullet with v2 cycle-awareness requirement. SUGGESTION 1 (MODIFIED requirement title rename) deferred: title broadening matches the body's broader scope; openspec validate --strict passes; archival clarity acceptable as-is. SUGGESTION 2 (baseline `Marker removal invariant` not modified) deferred: MODIFIED Requirement body captures the no-op carve-out; adding a separate baseline modification expands delta surface without behavior change. Both deferrals recorded with rationale; orbit-conventions does not require all suggestions to be resolved.",
+  "next_recommended": "/opsx:review address-reviews-accepts-internal-json --as proposal --fresh — convergence-confirmation pass after CRITICAL + 2 WARNs resolved. Expected: 0 critical, 0 warning, possibly 0-2 SUGGESTIONs (the 2 deferred suggestions may re-surface; both have rationale documented and can be stale-suppressed). Alternative: /opsx:review-external for cross-AI verification of the parser-contract precision.",
+  "kind": "editorial",
+  "source": "inline-walk",
+  "source_path": "openspec/changes/address-reviews-accepts-internal-json/.orbit-runs/review-proposal-2026-05-26T20-39-14Z.json",
+  "source_walk_workaround": "v1 of /opsx:address-reviews --from-file does NOT accept JSON (which is exactly what this change closes). Walked findings inline via the AI agent without the formal --from-file machinery. This is the meta-irony of dogfooding this change — once it lands, this exact walk pattern would invoke --from-file <review-proposal-*.json> cleanly. Workaround documented per the same pattern used in bootstrap-openspec-orbit iter-2 (2026-05-18) when the same gap surfaced.",
+  "internal_reviewer": "Claude (--fresh subagent)",
+  "input_findings_summary": {
+    "critical": 1,
+    "warning": 2,
+    "suggestion": 4
+  },
+  "pushback_verification": "All 7 findings verified against current state. CRITICAL confirmed via grep — 5 sites with `# Internal Review:` text existed; no orbit command produces such a markdown file. WARN 1 confirmed — README L422 + L743 + L769 all reference --from-file with external-only framing. WARN 2 confirmed — spec covered JSON-parse-failure and unsupported-command but had no scenario for valid-command + missing/empty findings[]. SUGGESTION 3 confirmed — task 1.2 referenced D-pushback-1 implicitly but not explicitly. SUGGESTION 4 confirmed — design L23 non-goal mentioned cycle prevention without v2-extension caveat. SUGGESTION 1 + 2 verified but deferred (rationale in final_assessment). No stale-suppressions.",
+  "resolution_summary": {
+    "resolved": 5,
+    "stale_suppressed": 0,
+    "deferred": 2,
+    "escalated": 0
+  },
+  "resolutions": [
+    {
+      "severity": "CRITICAL",
+      "title": "Phantom `# Internal Review:` markdown header",
+      "marker_source": "internal-review",
+      "classification": "trivial fix",
+      "decision": "mechanical removal of all 5 references; sniff matches only `# External Review:` for markdown route (the only markdown format orbit produces)",
+      "action": "Edited design.md L29 (D-detect-1) + L74 (D-format-error-1); edited spec.md L20 (auto-detect scenario) + L29 (neither-format scenario) + L39 (markdown-malformed scenario). All 5 sites now reference `# External Review:` only. D-detect-1 prose adds a parenthetical note: 'this is the only markdown format orbit produces — written by external AIs per /opsx:review-external's prompt template; internal /opsx:review does NOT emit markdown'. Auto-detect spec scenario adds the same clarification. Post-fix grep confirms 0 residue.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "WARNING",
+      "title": "README's --from-file description will be stale post-apply",
+      "marker_source": "internal-review",
+      "classification": "trivial fix",
+      "decision": "extend change scope to cover README updates",
+      "action": "Edited proposal.md Impact to add a README bullet covering both sites (L422 area + L769 area). Added task 1.5 to chunk 1 covering the two specific README sites with line-number guidance (`Verify line numbers at edit time` since README may shift). Section anchors are stable.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "WARNING",
+      "title": "JSON-ingest path doesn't cover empty / missing findings[]",
+      "marker_source": "internal-review",
+      "classification": "trivial fix",
+      "decision": "add 2 explicit scenarios codifying behavior",
+      "action": "Added 2 scenarios to orbit-address-reviews delta: (a) `Internal review JSON missing findings[] field` → parse-error path with reference to internal-findings-format.md; (b) `Internal review JSON with empty findings[]` → success with zero virtual markers + informational resolution log (NOT an error — a clean review with all-clear findings is the expected state). Total scenarios in the delta now 13 (was 11). openspec validate --strict still passes.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "MODIFIED requirement title rename — RENAMED FROM consideration",
+      "marker_source": "internal-review",
+      "classification": "decision required",
+      "decision": "DEFER — accept current title; the broader title (`--from-file ingest of review findings file`) accurately reflects the broader scope after this change; openspec validate --strict passes; archival clarity acceptable as-is. Original title (`--from-file ingest of external-review findings`) would be inaccurate post-merge since the requirement covers both shapes.",
+      "action": "No edit. Documented rationale in this resolution log.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "Baseline `Marker removal invariant` not modified to surface JSON-virtual-marker no-op",
+      "marker_source": "internal-review",
+      "classification": "decision required",
+      "decision": "DEFER — the MODIFIED Requirement body at spec.md:5 captures the no-op explicitly (`marker-removal as a no-op for either virtual-marker type`); the baseline `Marker removal invariant` requirement remains internally consistent because virtual markers were already a recognized case from the v1 markdown ingest path. Adding a separate baseline modification expands delta surface without changing behavior.",
+      "action": "No edit. Documented rationale in this resolution log.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "Fresh-pushback scenario for JSON virtual markers has no explicit task coverage",
+      "marker_source": "internal-review",
+      "classification": "trivial fix",
+      "decision": "add explicit walk-section MUST language to task 1.2",
+      "action": "Extended task 1.2 with an explicit sentence: 'the walk-section prose MUST document that fresh pushback applies to JSON-virtual markers even though the JSON's own stale_suppressed[] array already filtered stale findings at review time (per D-pushback-1; the same lifecycle discipline applies regardless of marker provenance).' Implementation now has unambiguous task coverage.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "Non-goals cycle-prevention note potentially misleading",
+      "marker_source": "internal-review",
+      "classification": "trivial fix",
+      "decision": "extend non-goal bullet with v2 cycle-awareness requirement",
+      "action": "Extended design.md non-goal bullet to add: 'NOTE: if a future change extends the parser to accept command: address-reviews JSON, cycle-detection guards become required (a walk that produces its own input would loop) — that future change MUST add explicit cycle awareness.' Surfaces the v2-extension risk without expanding v1 scope.",
+      "ripple_flagged": []
+    }
+  ],
+  "remaining_markers_in_scope": 0,
+  "persisted_escalations": []
+}

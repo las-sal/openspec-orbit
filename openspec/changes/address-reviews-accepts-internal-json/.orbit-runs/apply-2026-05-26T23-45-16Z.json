@@ -1,0 +1,19 @@
+{
+  "command": "apply",
+  "timestamp": "2026-05-26T23:45:16Z",
+  "change": "address-reviews-accepts-internal-json",
+  "kind": "workflow",
+  "chunk": "2 of 3 (+ task 3.1 included)",
+  "chunk_name": "Worked example + format-error handling + validation",
+  "chunk_complete": true,
+  "tasks_completed": 9,
+  "tasks_remaining": 4,
+  "user_validation_remaining": 3,
+  "tasks_completed_this_session": 9,
+  "tasks_completed_this_chunk": ["2.1", "2.2", "2.3", "3.1"],
+  "files_changed": [
+    ".claude/skills/openspec-address-reviews/SKILL.md (chunk 2: added new JSON-ingest worked example positioned adjacent to existing markdown example; retitled markdown example to '--from-file markdown ingest' for clarity (task 2.3 — markdown example reads coherently after retitle); graceful-degradation section expanded with 5 new format-error cases: neither-format-detected with concrete error shape, JSON parse failure, unsupported JSON command field, markdown malformed, JSON missing findings[], JSON empty findings[] (explicitly NOT an error))"
+  ],
+  "final_assessment": "Chunk 2 complete + task 3.1 (validation) passed inline. The SKILL.md now has two adjacent worked examples (markdown + JSON) so users can compare; graceful degradation covers all 6 new format-error paths plus the 2 success-with-zero-markers case for empty findings[]. openspec validate --strict → 'Change address-reviews-accepts-internal-json is valid'. The implementation surfaces (SKILL + command + 2 reference docs + README) now consistently describe the auto-detect + JSON path + v1 command-discriminator + fresh-pushback semantics.",
+  "next_recommended": "/opsx:apply address-reviews-accepts-internal-json — final chunk: user-validation handoff (tasks 3.2-3.5; only 3.5 is non-user-validation). Will pause for user attestation on the parser-contract precision, SKILL prose, and spec scenarios."
+}
