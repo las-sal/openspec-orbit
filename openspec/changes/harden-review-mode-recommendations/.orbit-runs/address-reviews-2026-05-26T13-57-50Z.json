@@ -1,0 +1,63 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-26T13:57:50Z",
+  "change": "harden-review-mode-recommendations",
+  "final_assessment": "Resolved all 4 findings from external proposal-mode review iter-2 (GPT-5 Codex). iter-2 confirmed the iter-1 CRITICAL was materially fixed (Notes section: 'iter-1 CRITICAL appears materially fixed'). All 3 iter-2 WARNINGs were precision-tightening of the new 5-state model: WARN 1 (state-machine coverage gap) resolved per user decision Option B (scope artifact-change guards to per-external; only apply-*.json files affect convergence; unrelated address-reviews for other inputs do NOT trigger stale or unresolved). WARN 2 (Path A parser stricter than existing contract) resolved by referencing the canonical empty-severity-sentinel definition from openspec-address-reviews/references/external-findings-format.md (accepts `None.`, `None`, `none.`, `(none)` as equivalent). WARN 3 (Path B source_path matching unspecified) resolved by adding repo-relative path normalization rule. SUGGESTION (task 3.2 stale 3-state checklist) resolved by expanding task 3.2 to cover all 5 states + new parsing/matching/scoping assumptions + edge-case checks.",
+  "next_recommended": "Optional: re-run /opsx:review --as proposal harden-review-mode-recommendations --fresh for an internal convergence-confirmation pass; or skip directly to /opsx:apply harden-review-mode-recommendations to start implementation. The change has now had 2 internal + 2 external review iterations; convergence is likely.",
+  "kind": "editorial",
+  "source": "from-file",
+  "source_path": "openspec/changes/harden-review-mode-recommendations/.orbit-runs/external-proposal-2026-05-26T13-50-14Z.md",
+  "external_reviewer": "GPT-5 Codex",
+  "input_findings_summary": {
+    "critical": 0,
+    "warning": 3,
+    "suggestion": 1
+  },
+  "pushback_verification": "All 4 findings verified against current spec/tasks text. WARN 1 confirmed: Path A + Path B both disqualified by 'later address-reviews-*.json for OTHER inputs', but no state caught the resulting 'clean external + unrelated address-reviews' case. WARN 2 confirmed: external-findings-format.md L67 explicitly treats `None`, `None.`, `none.`, `(none)` as equivalent empty-severity sentinels; Path A in spec only accepted exact `None.`. WARN 3 confirmed: Path B referred to source_path matching without specifying canonicalization rule. SUGGESTION confirmed: task 3.2 still listed 'no prior external / converged clean / stale' (3-state framing). No stale-suppressions.",
+  "resolution_summary": {
+    "resolved": 4,
+    "stale_suppressed": 0,
+    "deferred": 0,
+    "escalated": 0
+  },
+  "resolutions": [
+    {
+      "severity": "WARNING",
+      "title": "State machine coverage gap: clean external + unrelated address-reviews falls through all 5 states",
+      "marker_source": "external",
+      "classification": "decision required",
+      "decision": "Option B — scope artifact-change guards to per-external (only apply-*.json affects convergence; unrelated address-reviews-*.json for other inputs do not)",
+      "action": "Updated Path A scenario (spec.md:34) to drop 'address-reviews-*.json' from the artifact-change guard; now only `apply-*.json` filename token comparison disqualifies Path A. Updated Path B scenario (spec.md:39) similarly — explicitly notes 'later address-reviews-*.json for OTHER inputs do NOT affect this external's convergence'. Updated the precedence-rules scenario (spec.md:55) to add 'The per-external scoping rule' explanation. The 5-state model is now exhaustive: every change-state falls into exactly one of states 1-5.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "WARNING",
+      "title": "Path A clean-content parser stricter than the existing external-findings parser contract",
+      "marker_source": "external",
+      "classification": "trivial fix",
+      "decision": "reuse the existing parser contract from openspec-address-reviews/references/external-findings-format.md",
+      "action": "Updated Path A scenario (spec.md:34) to reference the canonical empty-severity-sentinel definition: accepts `None.` or equivalent — `None`, `none.`, `(none)` — per the existing parser contract. orbit-review and openspec-address-reviews now share one clean-sentinel definition; cross-AI loop semantics stay consistent.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "WARNING",
+      "title": "Path B source_path matching unspecified",
+      "marker_source": "external",
+      "classification": "trivial fix",
+      "decision": "specify repo-relative path normalization for source_path comparison",
+      "action": "Updated Path B scenario (spec.md:39) with the comparison rule: 'using repo-relative path normalization: both the address-reviews source_path and the candidate external file path are canonicalized to repo-relative form before exact string comparison; absolute paths are accepted only after normalization to the same repo-relative target'. Updated the unresolved-findings scenario (spec.md:44) to reference this same rule via 'repo-relative-normalized per the Path B comparison rule'.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "Task 3.2 user-validation checklist describes the old 3-state model",
+      "marker_source": "external",
+      "classification": "trivial fix",
+      "decision": "expand task 3.2 to cover all 5 convergence states + new parsing/matching/scoping assumptions",
+      "action": "Updated task 3.2 (tasks.md:45-54): replaced '(no prior external / converged clean / stale)' with the explicit 5-state enumeration (1-5); added new sub-bullets for Path A markdown parsing precision (including the accepted sentinel variants), Path B JSON inspection precision (including repo-relative source_path normalization), stale detection scope (apply-*.json, not internal-review), convergence-state precedence rules, per-external scoping (unrelated address-reviews don't transition states), and edge-case-assumptions coverage. Updated (a)-(d) sub-bullets to align with the 5-state model + added (e) for edge-case scenarios.",
+      "ripple_flagged": []
+    }
+  ],
+  "remaining_markers_in_scope": 0,
+  "persisted_escalations": []
+}

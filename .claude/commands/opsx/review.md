@@ -47,9 +47,51 @@ Invokes the `openspec-review` skill, which:
 7. Emits the final-assessment line (mode-specific gate text: `/opsx:apply` vs `/opsx:archive`)
 8. Persists a run summary to `openspec/changes/<change-name>/.orbit-runs/review-<mode>-<TS>.json`
 
+## Final assessment (mode + iteration-aware)
+
+The final-assessment line is one of a fixed set of stock phrasings. Proposal mode uses 3 phrasings (CRITICAL / Only W/S / all clear). System mode uses 1 CRITICAL phrasing + 10 "no CRITICAL" phrasings, selected by an iteration-aware logic that resolves one of **5 convergence states** based on `.orbit-runs/` artifacts. The system-mode no-CRITICAL default (State 1, no prior external) nudges toward external review before archive — empirical basis: in-context system review missed **3 of 3** real implementation bugs in `bootstrap-orbit-status-cli`'s first archived cycle (all caught by external GPT-5 Codex review).
+
+### Proposal mode (3 phrasings)
+
+| State | Phrasing |
+|---|---|
+| ≥1 CRITICAL | `X critical issue(s) found. Fix before /opsx:apply.` |
+| Only WARNING/SUGGESTION | `No critical issues. Y warning(s) to consider. Ready to apply (with noted improvements).` |
+| All clear | `All checks passed. Ready to apply.` |
+
+### System mode — ≥1 CRITICAL
+
+| State | Phrasing |
+|---|---|
+| ≥1 CRITICAL | `X critical issue(s) found. Fix before /opsx:archive.` |
+
+### System mode — no CRITICAL (5 convergence states × 2 sub-cases)
+
+- **State 1 — no prior external system review** (`external-system-*.md` absent): recommend `/opsx:review-external` (or `/opsx:review --fresh` as lighter alternative) before archive; cite the bootstrap-orbit-status-cli 3-of-3 empirical evidence in the prose.
+- **State 2 — Path A convergence (external content is clean)**: `External system review (clean) converged. Ready to archive.`
+- **State 3 — Path B convergence (external findings resolved via address-reviews)**: `External system review findings resolved via /opsx:address-reviews. Ready to archive.`
+- **State 4 — external present with unresolved findings**: recommend `/opsx:address-reviews --from-file <external-path>` to walk them before archive.
+- **State 5 — external stale relative to artifact changes** (takes precedence over States 2–4): recommend re-running `/opsx:review-external` (or `/opsx:review --fresh`).
+
+Each state has both an "all clear" and an "Only WARNING/SUGGESTION" sub-case — 10 stock phrasings total. See `.claude/skills/openspec-review/SKILL.md` Step 9 for the exact wordings.
+
+### Iteration-aware logic
+
+To select the convergence state, inspect `openspec/changes/<name>/.orbit-runs/` and resolve in this order:
+
+1. **Presence** — no `external-system-*.md` → State 1.
+2. **Stale (highest precedence)** — compare the external's filename `<TS>` token against the most recent `apply-*.json` token (per orbit-conventions `Internal-run JSON summary format`; lexical sort works because tokens are `YYYY-MM-DDTHH-MM-SSZ`). If apply is newer → State 5. Per-external scoping: only `apply-*.json` triggers stale, not unrelated `address-reviews-*.json`.
+3. **Path A (content clean)** — each `## CRITICAL`/`## WARNING`/`## SUGGESTION` section in the external markdown contains only the empty-severity sentinel (`None.` or accepted equivalents `None`, `none.`, `(none)` per `openspec-address-reviews/references/external-findings-format.md`) with zero `### <title>` entries. If clean → State 2.
+4. **Path B (resolution)** — most recent `address-reviews-*.json` whose `source_path` (canonicalized to repo-relative) references this external file has `resolution_summary.deferred == 0` AND `resolution_summary.escalated == 0` → State 3. Per-external scoping: address-reviews for OTHER inputs do NOT affect this external's convergence.
+5. **Unresolved** — external has findings AND no Path B resolution → State 4.
+
+Edge cases (multiple matching files, unparseable tokens, parse failures, dangling source_path) follow the v1 assumptions documented in the spec's `Edge-case assumptions for the iteration-aware logic` scenario; the SKILL.md Step 9 prose reproduces them.
+
+**The recommendation is advisory, not a gate**: orbit surfaces the suggestion but the user retains the choice to skip.
+
 ## Output
 
-Standard 3-dimension scorecard report with CRITICAL / WARNING / SUGGESTION severities, file:line refs, and actionable recommendations. Mode and iteration are shown in the header. Final-assessment line uses one of the stock phrasings (see SKILL.md).
+Standard 3-dimension scorecard report with CRITICAL / WARNING / SUGGESTION severities, file:line refs, and actionable recommendations. Mode and iteration are shown in the header. Final-assessment line uses one of the stock phrasings above (see SKILL.md for the full table and a worked system-mode example).
 
 ## Execution disciplines
 

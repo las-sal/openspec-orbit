@@ -1,0 +1,19 @@
+{
+  "command": "apply",
+  "timestamp": "2026-05-26T14:32:11Z",
+  "change": "harden-review-mode-recommendations",
+  "kind": "workflow",
+  "chunk": "2 of 3",
+  "chunk_name": "Update README — add 'Choosing a review mode' section",
+  "chunk_complete": true,
+  "tasks_completed": 9,
+  "tasks_remaining": 5,
+  "user_validation_remaining": 4,
+  "tasks_completed_this_session": 9,
+  "tasks_completed_this_chunk": ["2.1", "2.2", "2.3", "2.4"],
+  "files_changed": [
+    "README.md (new top-level section '## Choosing a review mode' inserted at L483, between '## Command reference' (L239) and '## The external review cycle' (L513); TOC entry added between '/opsx:archive' and 'The external review cycle' entries; section content: three-mode framework summary (in-context / --fresh / external) with anchoring-risk + cross-AI-cost framing; empirical basis paragraph citing bootstrap-orbit-status-cli 3-of-3 with the 3 specific bug types named; 4-row size-tier table (small/medium/substantial/high-stakes) with suggested proposal-mode + system-mode cycles per tier; explicit 'guidance NOT enforcement' framing per Framework guidance does NOT enforce cycle patterns scenario; cross-references to both orbit-conventions Review mode decision framework + orbit-review Final assessment phrasings depend on mode requirements; drift-audit Cat 3 cross-doc consistency mention)"
+  ],
+  "final_assessment": "Chunk 2 complete. README section in place between Command reference + The external review cycle as specified by task 2.1. Cross-reference verification passes: 'Review mode decision framework' appears at L485 + L507; 'Final assessment phrasings depend on mode' appears at L485 + L493 + L508 (both spec requirements named, both spec files referenced). Cross-doc consistency check (task 2.4) confirms 7 README claims all map cleanly to spec scenarios in orbit-conventions: 3-mode framework, anchoring risk, empirical basis, system-mode default-flip behavior, advisory-not-gate framing, drift-audit Cat 3 coverage, and guidance-not-enforcement principle.",
+  "next_recommended": "/opsx:apply harden-review-mode-recommendations — next chunk: Validation + user-validation handoff (5 tasks; only 3.1 is non-user-validation)"
+}

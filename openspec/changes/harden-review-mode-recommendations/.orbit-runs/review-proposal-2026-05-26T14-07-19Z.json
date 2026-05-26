@@ -1,0 +1,71 @@
+{
+  "command": "review",
+  "timestamp": "2026-05-26T14:07:19Z",
+  "change": "harden-review-mode-recommendations",
+  "final_assessment": "No critical issues. 2 suggestion(s) to consider. Ready to apply.",
+  "next_recommended": "/opsx:apply harden-review-mode-recommendations — convergence confirmed across 1 internal + 2 external iterations; all 12 prior findings resolved and verified-as-stale against current state. The 2 SUGGESTIONS are nit-level and explicitly no-action-required.",
+  "kind": "editorial",
+  "mode": "proposal",
+  "iteration": 2,
+  "depth": "full",
+  "flags": {
+    "parallel": false,
+    "focus": null,
+    "strict": false,
+    "fresh": true,
+    "mark": false,
+    "skip_verify": false
+  },
+  "passes_run": ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
+  "passes_skipped": [],
+  "findings_summary": {
+    "critical": 0,
+    "warning": 0,
+    "suggestion": 2,
+    "by_pass": {
+      "1": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "2": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "3": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "4": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "5": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "6": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "7": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "8": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "9": { "critical": 0, "warning": 0, "suggestion": 2 }
+    }
+  },
+  "findings": [
+    {
+      "pass": "9",
+      "severity": "SUGGESTION",
+      "file": "specs/orbit-review/spec.md",
+      "line": 60,
+      "title": "Sibling-artifact reference to design.md Non-Goals",
+      "recommendation": "Inline parenthetical points at design.md which travels with the change into archive; reference still resolves. If preference is for fully self-contained baseline spec text after sync-specs, rephrase the parenthetical to cite the rationale directly. No action required."
+    },
+    {
+      "pass": "9",
+      "severity": "SUGGESTION",
+      "file": "tasks.md",
+      "line": 52,
+      "title": "Per-external scoping phrasing reads slightly looser than spec.md:55",
+      "recommendation": "Tasks L52 says 'only apply-*.json and address-reviews-*.json files referencing THIS external'; spec L55 says 'ONLY apply-*.json files matter — address-reviews-*.json files for OTHER inputs do NOT trigger stale'. Semantically consistent (Path B already restricts to matched-source-path); could tighten tasks L52 to mirror spec for byte-level alignment, but not required."
+    }
+  ],
+  "stale_suppressed": [
+    {"source": "internal iter-1 WARN 1", "evidence": "spec.md:34+L49 now pin filename <TS> token per orbit-conventions Internal-run JSON summary format"},
+    {"source": "internal iter-1 WARN 2", "evidence": "tasks.md:28 + README L238/L482 placement verified"},
+    {"source": "internal iter-1 WARN 3", "evidence": "Edge-case assumptions scenario added at spec.md:62-65 documenting 5 v1 assumptions"},
+    {"source": "internal iter-1 SUGG 1", "evidence": "deferred per reviewer; recorded in address-reviews-2026-05-26T12-45-38Z.json"},
+    {"source": "internal iter-1 SUGG 2", "evidence": "stale-suppressed per reviewer; immutable propose-T0 history"},
+    {"source": "external iter-1 CRITICAL", "evidence": "3-state→5-state revision; Path A/B distinct; external iter-2 Notes confirms 'materially fixed'"},
+    {"source": "external iter-1 WARN 1", "evidence": "spec.md:49 stale now defined against apply-*.json filename tokens"},
+    {"source": "external iter-1 WARN 2", "evidence": "10 explicit stock-phrasing sub-cases (5 all-clear + 5 W/S, grep-verified); tasks.md:16 = '10 new rows'"},
+    {"source": "external iter-1 SUGG", "evidence": "proposal.md:20+L36 + design.md:134 say '5 scenarios (3 + 2)'"},
+    {"source": "external iter-2 WARN 1", "evidence": "spec.md:55 per-external scoping rule added; Path A/B guards now reference only apply-*.json"},
+    {"source": "external iter-2 WARN 2", "evidence": "spec.md:34 references external-findings-format.md L67 sentinel definition"},
+    {"source": "external iter-2 WARN 3", "evidence": "spec.md:39 specifies repo-relative path normalization"},
+    {"source": "external iter-2 SUGG", "evidence": "tasks.md:46-55 enumerates 5 states + Path A/B precision + scoping + edge-case coverage"}
+  ],
+  "iteration_note": "Internal iter-2 (convergence confirmation). Prior: 1 internal + 2 external. All 12 prior findings walked and resolved across 3 address-reviews JSONs; no findings repeat."
+}

@@ -21,6 +21,7 @@ A workflow tool that owns the `.claude/` surface (skills, commands, supporting d
     - [`/opsx:address-reviews [<scope>]`](#opsxaddress-reviews-scope)
     - [`/opsx:review-external <change-name> [--as proposal|system]`](#opsxreview-external-change-name---as-proposalsystem)
     - [`/opsx:archive <change-name>`](#opsxarchive-change-name)
+  - [Choosing a review mode](#choosing-a-review-mode)
   - [The external review cycle](#the-external-review-cycle)
     - [The full cycle, concretely](#the-full-cycle-concretely)
     - [Why the format is rigid](#why-the-format-is-rigid)
@@ -476,6 +477,36 @@ Flags:
 ```
 
 Full design: [`sketches/archive.md`](./openspec/changes/bootstrap-openspec-orbit/sketches/archive.md)
+
+---
+
+## Choosing a review mode
+
+orbit offers three review modes; the choice materially affects review-finding completeness. The normative criteria live in the orbit-conventions baseline `Review mode decision framework` requirement; this section is the discoverable user-facing summary. Runtime nudges (e.g., `/opsx:review --as system`'s default-recommend-external behavior) are governed by the orbit-review baseline `Final assessment phrasings depend on mode` requirement.
+
+**The three modes:**
+
+- **In-context** (`/opsx:review`) — the current AI session does the review against its accumulated context. Fast iteration; low cross-AI cost. Anchoring risk: the session may be biased toward confirming work it has visibility into.
+- **`--fresh` internal subagent** (`/opsx:review --fresh`) — a fresh subagent within the same Claude process. Loses session-level anchoring; same model architecture so model-level biases remain. Middle-ground between in-context and external.
+- **External** (`/opsx:review-external`) — a self-contained prompt packaged for a different AI session (different model + different chat + completely separate context). Maximum independence; cross-AI round-trip cost.
+
+**Empirical basis for the system-mode default-flip**: on `bootstrap-orbit-status-cli` (orbit's first archived dogfood cycle), in-context `/opsx:review --as system` flagged 2 non-bug warnings while external GPT-5 Codex review caught **3 of 3 real implementation bugs** the in-context pass missed (timestamp sort bug, mtime-vs-filename-timestamp freshness bug, missing required render segment). This is why system-mode review's "no CRITICAL" final-assessment now recommends external (or `--fresh`) before archive when no external system review has run for the change. The recommendation is advisory, not a gate — see the `Final assessment phrasings depend on mode` requirement for the 5-state iteration-aware logic.
+
+**Recommended cycle patterns by change size** (guidance, NOT cycle-pattern enforcement per the framework's governance scenario):
+
+| Change size | Suggested proposal-mode cycle | Suggested system-mode cycle |
+|---|---|---|
+| Small (docs-only, single-file, low-stakes) | In-context once | In-context once; accept default proceed-to-archive |
+| Medium (multi-file, one capability) | In-context iter-1, optionally `--fresh` iter-2 | External once before archive |
+| Substantial (multi-capability, breaking changes, security-sensitive) | In-context + `--fresh` + external | External; address-reviews; re-external if artifacts changed |
+| High-stakes (production rollout, customer-visible APIs) | All three modes across iterations | External + `--fresh` cross-check |
+
+These patterns aren't enforced — orbit will archive any change without external review if the user accepts the noted risk. The framework's `Framework guidance does NOT enforce cycle patterns` scenario codifies this explicitly: orbit surfaces the recommendation; the user retains the choice.
+
+**Cross-references**:
+- Normative criteria for each mode: orbit-conventions `Review mode decision framework` requirement (see `openspec/specs/orbit-conventions/spec.md`).
+- Runtime recommendation logic (5 convergence states, two-path detection): orbit-review `Final assessment phrasings depend on mode` requirement (see `openspec/specs/orbit-review/spec.md`).
+- Drift-audit catches divergence between this README section and the spec scenarios via Category 3 (cross-doc consistency).
 
 ---
 

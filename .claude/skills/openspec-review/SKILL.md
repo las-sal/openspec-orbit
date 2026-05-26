@@ -214,16 +214,73 @@ If no prior matching summaries: emit `First <mode>-mode run for this change.` or
 
 ### 9. Emit the final assessment
 
-Stock phrasings, mode-specific gate text:
+Stock phrasings, mode-specific gate text. Proposal mode uses three phrasings (CRITICAL / Only W/S / all clear). System mode is more nuanced: when CRITICALs are present, one stock phrasing applies; when no CRITICAL is present, the recommendation depends on which of **5 convergence states** the change is in (see the iteration-aware logic below).
 
-| Mode | State | Phrasing |
-|---|---|---|
-| proposal | ≥1 CRITICAL | `X critical issue(s) found. Fix before /opsx:apply.` |
-| proposal | Only WARNING/SUGGESTION | `No critical issues. Y warning(s) to consider. Ready to apply (with noted improvements).` |
-| proposal | All clear | `All checks passed. Ready to apply.` |
-| system | ≥1 CRITICAL | `X critical issue(s) found. Fix before /opsx:archive.` |
-| system | Only WARNING/SUGGESTION | `No critical issues. Y warning(s) to consider. Ready to archive (with noted improvements).` |
-| system | All clear | `All checks passed. Ready to archive.` |
+#### Proposal mode (3 phrasings)
+
+| State | Phrasing |
+|---|---|
+| ≥1 CRITICAL | `X critical issue(s) found. Fix before /opsx:apply.` |
+| Only WARNING/SUGGESTION | `No critical issues. Y warning(s) to consider. Ready to apply (with noted improvements).` |
+| All clear | `All checks passed. Ready to apply.` |
+
+#### System mode — ≥1 CRITICAL
+
+| State | Phrasing |
+|---|---|
+| ≥1 CRITICAL | `X critical issue(s) found. Fix before /opsx:archive.` |
+
+#### System mode — no CRITICAL (5 convergence states × 2 sub-cases = 10 phrasings)
+
+When the report has zero CRITICAL findings, orbit-review applies the iteration-aware logic (below) to determine which convergence state applies, then emits one of 10 stock phrasings. The empirical basis for nudging toward external review on State 1: in-context system review missed **3 of 3** real implementation bugs in `bootstrap-orbit-status-cli`'s first archived cycle (all caught by external GPT-5 Codex review).
+
+**State 1 — no prior external system review** (no `external-system-*.md` in `.orbit-runs/`):
+- All clear: `All checks passed. Recommend /opsx:review-external for fresh-context cross-check before archive (per orbit-conventions Review mode decision framework; in-context system review missed 3 of 3 real bugs in bootstrap-orbit-status-cli's first archived cycle). Or /opsx:review --fresh for a lighter pass (same model, fresh context). Proceed directly to /opsx:archive if accepting that risk.`
+- Only W/S: `No critical issues. Y warning(s) to consider. Recommend /opsx:review-external for fresh-context cross-check before archive (per orbit-conventions Review mode decision framework). Or /opsx:review --fresh for a lighter pass. Proceed to /opsx:archive (with noted improvements) if accepting the in-context-only risk.`
+
+**State 2 — Path A convergence: external content is clean**:
+- All clear: `All checks passed. External system review (clean) converged. Ready to archive.`
+- Only W/S: `No critical issues. Y warning(s) to consider. External system review (clean) converged. Ready to archive (with noted improvements).`
+
+**State 3 — Path B convergence: external findings resolved via address-reviews**:
+- All clear: `All checks passed. External system review findings resolved via /opsx:address-reviews. Ready to archive.`
+- Only W/S: `No critical issues. Y warning(s) to consider. External system review findings resolved via /opsx:address-reviews. Ready to archive (with noted improvements).`
+
+**State 4 — external present with unresolved findings**:
+- All clear: `All checks passed against current state, but the prior /opsx:review-external has unresolved findings. Run /opsx:address-reviews --from-file <external-path> to walk them before archive. Or accept the unresolved-external risk and proceed to /opsx:archive.`
+- Only W/S: `No critical issues. Y warning(s) to consider. Prior /opsx:review-external has unresolved findings. Run /opsx:address-reviews --from-file <external-path> to walk them before archive.`
+
+**State 5 — external stale relative to artifact changes** (takes precedence over States 2-4 per the precedence rules below):
+- All clear: `All checks passed against current state, but the prior /opsx:review-external is older than the most recent apply step (artifacts changed since external evaluated). Re-run /opsx:review-external to validate against current product state before archive. Or /opsx:review --fresh for a lighter re-check.`
+- Only W/S: `No critical issues. Y warning(s) to consider. Prior /opsx:review-external is older than the most recent apply step. Re-run /opsx:review-external to validate against current product state. Or /opsx:review --fresh for a lighter re-check.`
+
+#### Iteration-aware logic (system mode, no CRITICAL)
+
+To determine which of States 1–5 applies, inspect `openspec/changes/<name>/.orbit-runs/` and resolve in this order:
+
+1. **Presence check** — does any `external-system-*.md` exist? If not, return **State 1**.
+
+2. **Stale check (highest precedence)** — for the most recent `external-system-*.md`, compare its filename `<TS>` token against the most recent `apply-*.json` filename `<TS>` token (per orbit-conventions `Internal-run JSON summary format`; tokens are `YYYY-MM-DDTHH-MM-SSZ` — ISO-8601 with colons replaced — and sort lexically). If an `apply-*.json` token is later than the external's token, return **State 5** regardless of external content. Per-external scoping: only `apply-*.json` triggers stale — unrelated `address-reviews-*.json` files (for other inputs) do NOT.
+
+3. **Path A content-clean check** — read the most recent `external-system-*.md`. Parse it for findings under `## CRITICAL`, `## WARNING`, `## SUGGESTION` headings. Path A clean = each section contains only the empty-severity sentinel (`None.` or one of the accepted equivalents — `None`, `none.`, `(none)` — per `openspec-address-reviews/references/external-findings-format.md`) with zero `### <title>` entries beneath. If clean and not stale, return **State 2**.
+
+4. **Path B resolution check** — find the most recent `address-reviews-*.json` whose `source_path` field (canonicalized to repo-relative form before comparison; absolute paths are accepted only after the same normalization) references the external markdown file. If such a JSON exists AND `resolution_summary.deferred == 0` AND `resolution_summary.escalated == 0`, the external's findings were walked to completion — return **State 3**. Per-external scoping: address-reviews-*.json files for OTHER inputs do NOT affect this external's convergence.
+
+5. **Unresolved findings** — external is present with `### <title>` entries beneath at least one severity AND no Path B resolution applies (no matching address-reviews OR most recent matching one has `deferred > 0` or `escalated > 0`). Return **State 4**.
+
+**Edge-case assumptions for v1** (per the spec's `Edge-case assumptions for the iteration-aware logic` scenario):
+- Multiple matching files of same type → most-recent filename `<TS>` token wins (lexical sort).
+- Unparseable filename token → treated as absent for comparison purposes.
+- External markdown parse failure → treated as NOT-clean (defaults to State 4 or 5).
+- `address-reviews-*.json` parse failure → treated as if no address-reviews ran for that external (defaults to State 4).
+- Dangling `source_path` (references non-existent file) → ignored for convergence detection.
+
+**Precedence rules** (when multiple states could match):
+1. State 5 (stale) > all others — artifacts changed; external's evaluation no longer trusted.
+2. State 4 (unresolved) > State 2/3 — unresolved findings beat a stale-but-resolved external.
+3. States 2 and 3 are mutually exclusive (Path A clean and Path B resolved cannot both apply to the same external).
+
+**Iteration-aware logic does NOT block archive**: the recommendation is advisory, not a gate. The user retains the choice to skip; orbit surfaces the recommendation but does not enforce. (Decision to NOT add a pre-archive external-review-presence check is intentional — orbit's role is to surface, not gate.)
 
 ### 10. Persist the run summary
 
@@ -339,4 +396,36 @@ No critical issues. 4 warning(s) to consider. Ready to apply (with noted improve
 
 Run summary: openspec/changes/bootstrap-openspec-orbit/.orbit-runs/review-proposal-2026-05-18T14-43-41Z.json
 ```
+
+## Worked example (system mode, all clear, no prior external)
+
+Short illustration showing the State 1 "all clear" phrasing — the system-mode default that nudges toward external review before archive:
+
+```markdown
+## Review: example-change --as system
+
+Mode: system (inferred from all tasks checked + git diff non-empty)
+Iteration: 1 (first system-mode run for this change)
+Depth: full
+
+### Summary
+
+| Dimension    | Critical | Warning | Suggestion |
+|--------------|----------|---------|------------|
+| Completeness | 0        | 0       | 0          |
+| Correctness  | 0        | 0       | 0          |
+| Coherence    | 0        | 0       | 0          |
+
+### Findings
+
+None.
+
+### Final assessment
+
+All checks passed. Recommend /opsx:review-external for fresh-context cross-check before archive (per orbit-conventions Review mode decision framework; in-context system review missed 3 of 3 real bugs in bootstrap-orbit-status-cli's first archived cycle). Or /opsx:review --fresh for a lighter pass (same model, fresh context). Proceed directly to /opsx:archive if accepting that risk.
+
+Run summary: openspec/changes/example-change/.orbit-runs/review-system-2026-05-26T15-12-08Z.json
+```
+
+In State 2 (Path A — external content is clean) or State 3 (Path B — external findings resolved via address-reviews), the recommendation simplifies to `Ready to archive` — the iteration-aware logic stops nudging once the external converges.
 

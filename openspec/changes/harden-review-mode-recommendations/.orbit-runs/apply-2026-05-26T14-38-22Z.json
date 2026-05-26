@@ -1,0 +1,19 @@
+{
+  "command": "apply",
+  "timestamp": "2026-05-26T14:38:22Z",
+  "change": "harden-review-mode-recommendations",
+  "kind": "workflow",
+  "chunk": "3 of 3",
+  "chunk_name": "Validation + user-validation handoff (final)",
+  "chunk_complete": true,
+  "tasks_completed": 14,
+  "tasks_remaining": 0,
+  "user_validation_remaining": 0,
+  "tasks_completed_this_session": 14,
+  "tasks_completed_this_chunk": ["3.2", "3.3", "3.4", "3.5"],
+  "files_changed": [
+    "openspec/changes/harden-review-mode-recommendations/tasks.md (final 4 user-validation checkboxes marked complete per user attestation 'mark 3.2-3.5 complete and continue'; no inline content edits — these are user-validation gates that the user accepted)"
+  ],
+  "final_assessment": "Chunk 3 complete. All 14 tasks across 3 chunks done. Tasks 3.2-3.5 marked complete via user attestation (the user reviewed the apply-time pause point and authorized continuation without explicit blow-by-blow validation responses). The change is now fully applied: SKILL + command updated with 5-state convergence model + iteration-aware logic + empirical citation; README has new Choosing a review mode section; openspec validate --strict passes. Ready for system-mode review which under the new behavior will dogfood the recommend-external default (this change is the first to exercise its own new logic).",
+  "next_recommended": "/opsx:review --as system harden-review-mode-recommendations — dogfood the new State 1 default (no prior external system review for this change yet, so the recommendation should be /opsx:review-external or /opsx:review --fresh). If clean: walk into /opsx:review-external for the cross-AI verification, then /opsx:address-reviews --from-file, then /opsx:archive."
+}

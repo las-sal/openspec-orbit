@@ -1,0 +1,47 @@
+{
+  "command": "review",
+  "timestamp": "2026-05-26T14:44:15Z",
+  "change": "harden-review-mode-recommendations",
+  "final_assessment": "All checks passed. Recommend /opsx:review-external for fresh-context cross-check before archive (per orbit-conventions Review mode decision framework; in-context system review missed 3 of 3 real bugs in bootstrap-orbit-status-cli's first archived cycle). Or /opsx:review --fresh for a lighter pass (same model, fresh context). Proceed directly to /opsx:archive if accepting that risk.",
+  "next_recommended": "/opsx:review-external harden-review-mode-recommendations — system-mode is clean; State 1 default fires because no external-system-*.md exists yet for this change. Dogfooding moment: this is the first change to exercise its own new logic. Alternative: /opsx:review --as system --fresh harden-review-mode-recommendations (lighter same-model cross-check) or /opsx:archive (accept in-context-only risk).",
+  "kind": "editorial",
+  "mode": "system",
+  "iteration": 1,
+  "depth": "full",
+  "flags": {
+    "parallel": false,
+    "focus": null,
+    "strict": false,
+    "fresh": false,
+    "mark": false,
+    "skip_verify": false
+  },
+  "passes_run": ["0", "1", "2", "3", "6"],
+  "passes_skipped": ["4", "5"],
+  "skip_reasons": {
+    "4": "no perspectives defined (openspec/lenses/ absent)",
+    "5": "no critical paths defined (openspec/lenses/ absent)"
+  },
+  "convergence_state": 1,
+  "convergence_state_label": "no prior external system review",
+  "convergence_inputs": {
+    "external_system_md_present": false,
+    "address_reviews_for_external_present": false,
+    "stale_apply_after_external": false
+  },
+  "findings_summary": {
+    "critical": 0,
+    "warning": 0,
+    "suggestion": 0,
+    "by_pass": {
+      "0": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "1": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "2": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "3": { "critical": 0, "warning": 0, "suggestion": 0 },
+      "6": { "critical": 0, "warning": 0, "suggestion": 0 }
+    }
+  },
+  "findings": [],
+  "iteration_note": "First system-mode run for this change. Pass 0 (verify-change equivalent): 14/14 tasks checked + openspec validate --strict passes. Pass 1 (baseline compliance): SKILL.md content describes the new 5-state convergence model + iteration-aware logic; baseline orbit-review spec still describes the old 3-state system-mode framing — this is the expected pre-sync state during apply→archive (the MODIFIED requirement in the change delta resolves on archive via sync-specs; not a baseline violation). Pass 2 (cohesion): SKILL ↔ command file mirror verified; README new section self-contained; no callers broken. Pass 3 (surface walk): /opsx:review --as system CLI surface unchanged (same flags, same name); output format extended (longer phrasings) per design. Pass 4 + 5 skipped (no lenses). Pass 6 (drift/residue): 0 stale 'All checks passed. Ready to archive.' hits; 0 unresolved @review: markers in change directory; empirical 3-of-3 citation consistent across SKILL.md + command file + README.",
+  "dogfood_note": "This is the first change to exercise its own new logic. The State 1 default-recommend-external behavior fires here because no external-system-*.md exists for this change yet — exactly the case the change is designed to address."
+}

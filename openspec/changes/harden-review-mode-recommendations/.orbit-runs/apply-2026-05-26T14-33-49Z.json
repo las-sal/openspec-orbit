@@ -1,0 +1,17 @@
+{
+  "command": "apply",
+  "timestamp": "2026-05-26T14:33:49Z",
+  "change": "harden-review-mode-recommendations",
+  "kind": "workflow",
+  "chunk": "3 of 3",
+  "chunk_name": "Validation + user-validation handoff",
+  "chunk_complete": false,
+  "tasks_completed": 10,
+  "tasks_remaining": 4,
+  "user_validation_remaining": 4,
+  "tasks_completed_this_session": 10,
+  "tasks_completed_this_chunk": ["3.1"],
+  "files_changed": [],
+  "final_assessment": "Chunk 3 partial — task 3.1 (openspec validate --strict) passed with 'Change harden-review-mode-recommendations is valid'. Tasks 3.2-3.5 are user-validation gates: 3.2 user reads rewritten SKILL.md Step 9 (5-state phrasings + iteration-aware logic + edge-case assumptions + per-external scoping); 3.3 user reads new README Choosing a review mode section (3-mode framework + size tiers + cross-references); 3.4 user reads new Review mode decision framework scenarios in orbit-conventions delta (5 scenarios: 3 decision-criteria + 2 governance); 3.5 if no blocking findings, change is ready for /opsx:review proposal-mode pre-apply review (already completed in iter-2 convergence run earlier today) then /opsx:apply (in progress) then /opsx:review --as system (will dogfood new behavior) then /opsx:archive. Pausing for user validation.",
+  "next_recommended": "User: read tasks 3.2-3.5 in tasks.md — confirm each user-validation checklist passes. Once confirmed, mark them checked. Then this change is fully applied and ready for /opsx:review --as system harden-review-mode-recommendations (dogfooding the new system-mode external-default recommendation logic against this change itself)."
+}
