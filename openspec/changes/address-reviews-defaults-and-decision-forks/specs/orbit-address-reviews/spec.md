@@ -37,7 +37,7 @@ The cascade IN set is defined by exclusion. The OUT list captures four lifecycle
 
 - **OUT — change-dir audit trail**: `openspec/changes/<name>/.orbit-runs/*` and `openspec/.orbit-runs/*`. Audit-trail files; editing would corrupt the workflow's own record. NEVER edited by cascade.
 - **OUT — baseline specs**: `openspec/specs/<capability>/spec.md`. Baseline mutations flow through the proposal cycle (`/opsx:propose` → delta spec → `/opsx:archive` triggers `sync-specs` to propagate). Cascade refuses direct baseline edits; the appropriate action is to add a delta in the current change's `specs/<capability>/spec.md`.
-- **OUT — cross-change directories**: `openspec/changes/<other-name>/*` (other active changes' directories). Change-isolation invariant; each change's authoring is its own context.
+- **OUT — cross-change directories (active and archived)**: `openspec/changes/<other-name>/*` (other active changes' directories) AND `openspec/changes/archive/*` (any archived change, regardless of date prefix). Change-isolation invariant for active changes; immutable-history invariant for archived changes. Cascade never edits either, even when the current change's ripple-flag set surfaces a path inside one. The corresponding scenario `Cascade respects current-change scope only` documents both cases.
 - **OUT — safe-exclusions**: `.git/`, `node_modules/`, `dist/`, `build/`. Universal "never edit anywhere" set.
 
 **Mode invariants**:
@@ -75,8 +75,8 @@ The cascade IN set is defined by exclusion. The OUT list captures four lifecycle
 
 #### Scenario: Cascade skips safe-exclusion paths
 
-- **WHEN** a finding's ripple-flag set includes any path under `.git/`, `node_modules/`, `dist/`, `build/`, or another safe-exclusion path
-- **THEN** the cascade SKIPS that file (universal "never edit" set); the resolution log records the path under `ripple_cascade.flagged_not_applied` with reason `safe-exclusion path; never edited`. Such paths typically should not appear in a ripple-flag set at all — if one does, it's likely a ripple-flag-analysis bug worth surfacing in the resolution log so the user can investigate.
+- **WHEN** a finding's ripple-flag set includes any path under exactly one of the four safe-exclusion prefixes: `.git/`, `node_modules/`, `dist/`, `build/`
+- **THEN** the cascade SKIPS that file (universal "never edit" set); the resolution log records the path under `ripple_cascade.flagged_not_applied` with reason `safe-exclusion path; never edited`. Such paths typically should not appear in a ripple-flag set at all — if one does, it's likely a ripple-flag-analysis bug worth surfacing in the resolution log so the user can investigate. The safe-exclusion prefix set is EXACT — implementers MUST NOT extend it ad-hoc to other paths during codegen. Expanding the set requires a spec change to amend this list explicitly; the Option D framing depends on the OUT list being closed and predictable.
 
 #### Scenario: --no-cascade flag suppresses all cascade
 
@@ -151,7 +151,7 @@ When a finding's recommendation contains a disjunctive structure (multiple optio
 2. **Heuristic path** (external markdown findings, JSON findings without `recommendation_options`): the parser SHALL scan the finding's `**Description**:` (markdown) or `recommendation` (JSON) field for STRICT disjunctive signals:
    - Numbered alternatives: `(A) … (B)`, `1. … 2.`, `[A] … [B]`
    - "Either … or …" with clause-level branches (each clause is a recognizable recommendation)
-   - "**Options**:" or "Options:" prefix followed by a list or numbered enumeration
+   - "Options:" prefix followed by a list or numbered enumeration, including both bold variants (`**Options**:` with the colon outside the bold span, AND `**Options:**` with the colon inside the bold span) — both are accepted equivalently after markdown normalization. Implementers SHOULD normalize the input's markdown emphasis before pattern-matching this trigger so the detector behaves consistently across the two conventions.
 3. **NOT** triggers: loose "or" in prose like "fix it now or later", "X or Y could happen", "the issue is A or B and we should address one of them." These prose patterns do NOT trigger fork detection.
 
 **Source recording**: the resolution-log entry's `recommendation_fork.source` field SHALL be `"structured"` when the structured path fired, `"heuristic"` when the heuristic path fired.

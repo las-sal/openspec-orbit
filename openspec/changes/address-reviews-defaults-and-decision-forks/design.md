@@ -97,7 +97,7 @@ This design captures the three coordinated changes plus the supporting JSON-shap
 
 **Heuristic strictness**:
 
-- Triggers: numbered alternatives (`(A) … (B)`, `1. … 2.`, `[A] … [B]`), "either … or" with clause-level branches, `**Options**:` or `Options:` prefix followed by a list.
+- Triggers: numbered alternatives (`(A) … (B)`, `1. … 2.`, `[A] … [B]`), "either … or" with clause-level branches, "Options:" prefix followed by a list (both bold variants `**Options**:` and `**Options:**` are accepted after markdown normalization, per spec).
 - NOT triggers: loose "or" in prose. False-negative bias (better to miss a fork than to fire one inappropriately).
 
 **Source recording**: resolution log captures `recommendation_fork.source: "structured" | "heuristic"` for downstream auditing.

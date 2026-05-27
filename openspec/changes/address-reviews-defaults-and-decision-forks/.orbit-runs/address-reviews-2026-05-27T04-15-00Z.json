@@ -1,0 +1,92 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-27T04:15:00Z",
+  "change": "address-reviews-defaults-and-decision-forks",
+  "kind": "editorial",
+  "iteration": 3,
+  "source": "from-file",
+  "source_path": "openspec/changes/address-reviews-defaults-and-decision-forks/.orbit-runs/external-proposal-2026-05-27T03-56-14Z.md",
+  "source_command": "review-external",
+  "source_token": "2026-05-27T03-56-14Z",
+  "latest_apply_token": null,
+  "executed_by": "in_context",
+  "walk_mode": "per_finding",
+  "external_reviewer": "GPT-5 Codex",
+  "input_findings_summary": {
+    "count": 3,
+    "by_severity": { "critical": 0, "warning": 2, "suggestion": 1 }
+  },
+  "pushback_verification": "All 3 findings verified against current state at spec.md. EW1 verified — line 40 normative OUT bullet only mentions 'other active changes' directories' without naming archive paths; the scenario at lines 80-82 covers archives via prose but the normative list is the authoritative reference for an implementer. EW2 verified — line 78 uses 'or another safe-exclusion path' open-ended phrase that lets implementers add exclusions ad-hoc during codegen, undermining the Option D 'closed and predictable OUT list' framing. ES1 verified — line 154 had `**Options**:` (bold-around-word) + `Options:` (plain); proposal.md and design.md use the alternate `**Options:**` (bold-includes-colon) form. Bold variant ambiguity worth resolving via accept-both + normalize.",
+  "resolutions": [
+    {
+      "id": "EW1",
+      "severity": "WARNING",
+      "classification": "trivial_fix",
+      "action": "Extended cross-change OUT bullet at specs/orbit-address-reviews/spec.md:40 to explicitly cover both active and archived changes. New bullet: `OUT — cross-change directories (active and archived): openspec/changes/<other-name>/* (other active changes' directories) AND openspec/changes/archive/* (any archived change, regardless of date prefix). Change-isolation invariant for active changes; immutable-history invariant for archived changes. Cascade never edits either, even when the current change's ripple-flag set surfaces a path inside one. The corresponding scenario `Cascade respects current-change scope only` documents both cases.` Closes the gap between normative bullet and scenario.",
+      "ripple_cascade": {
+        "applied": ["openspec/changes/address-reviews-defaults-and-decision-forks/specs/orbit-address-reviews/spec.md"],
+        "flagged_not_applied": []
+      }
+    },
+    {
+      "id": "EW2",
+      "severity": "WARNING",
+      "classification": "trivial_fix",
+      "action": "Rewrote `Cascade skips safe-exclusion paths` scenario at specs/orbit-address-reviews/spec.md:76-79. Old WHEN: `.git/`, `node_modules/`, `dist/`, `build/`, 'or another safe-exclusion path'. New WHEN: `exactly one of the four safe-exclusion prefixes: .git/, node_modules/, dist/, build/`. Added normative postscript: `The safe-exclusion prefix set is EXACT — implementers MUST NOT extend it ad-hoc to other paths during codegen. Expanding the set requires a spec change to amend this list explicitly; the Option D framing depends on the OUT list being closed and predictable.` Closes the implementer-invention escape hatch.",
+      "ripple_cascade": {
+        "applied": ["openspec/changes/address-reviews-defaults-and-decision-forks/specs/orbit-address-reviews/spec.md"],
+        "flagged_not_applied": []
+      }
+    },
+    {
+      "id": "ES1",
+      "severity": "SUGGESTION",
+      "classification": "trivial_fix",
+      "action": "Updated the heuristic-trigger bullet at specs/orbit-address-reviews/spec.md:154 to explicitly accept BOTH bold variants of the Options-prefix and require markdown normalization. New text: `'Options:' prefix followed by a list or numbered enumeration, including both bold variants (`**Options**:` with the colon outside the bold span, AND `**Options:**` with the colon inside the bold span) — both are accepted equivalently after markdown normalization. Implementers SHOULD normalize the input's markdown emphasis before pattern-matching this trigger so the detector behaves consistently across the two conventions.` Cascaded to design.md:100 to match the spec's accept-both-after-normalize rule. design.md:48, design.md:188, proposal.md:15 retain the shorthand `**Options:**` reference (now one of two equivalent forms; not incorrect, just abbreviated).",
+      "ripple_cascade": {
+        "applied": [
+          "openspec/changes/address-reviews-defaults-and-decision-forks/specs/orbit-address-reviews/spec.md",
+          "openspec/changes/address-reviews-defaults-and-decision-forks/design.md"
+        ],
+        "flagged_not_applied": [
+          {
+            "path": "openspec/changes/address-reviews-defaults-and-decision-forks/design.md:48",
+            "reason": "shorthand reference to **Options:** — now one of two equivalent forms per the spec's accept-both rule; not incorrect, no edit needed"
+          },
+          {
+            "path": "openspec/changes/address-reviews-defaults-and-decision-forks/design.md:188",
+            "reason": "same as :48 (shorthand in Risks table)"
+          },
+          {
+            "path": "openspec/changes/address-reviews-defaults-and-decision-forks/proposal.md:15",
+            "reason": "same as :48 (shorthand in proposal What Changes)"
+          }
+        ]
+      }
+    }
+  ],
+  "resolution_summary": {
+    "resolved": 3,
+    "stale": 0,
+    "deferred": 0,
+    "escalated": 0,
+    "by_classification": {
+      "trivial_fix": 3
+    }
+  },
+  "walk_mode_observation_meta": "External Codex review caught 3 codegen-readiness gaps that 2 internal review cycles + 2 walks did NOT surface. All 3 are tightening of the Option D path-prefix contract: (a) normative OUT bullet didn't cover archives; (b) safe-exclusion phrase was open-ended; (c) bold-Options variant ambiguity. None are architectural — Option D's framing held up. Empirical case for external review on novel-framing changes: confirmed (similar to prior `address-reviews-accepts-internal-json` cycle where Codex caught the audit-drift contract conflict that 2 internal iters missed).",
+  "post_resolution_state": {
+    "openspec_validate": "passes (--strict)",
+    "tasks_total": 47,
+    "tasks_done": 0,
+    "deltas_total": 7
+  },
+  "final_assessment": "All 3 Codex iter-1 external findings resolved as trivial fixes. EW1 closed the gap between cross-change OUT bullet and scenario (archives now in normative list). EW2 closed the implementer-invention escape hatch in safe-exclusion phrase. ES1 aligned heuristic bold-Options variants via accept-both + normalize. Option D framing held up under external scrutiny — all 3 findings were edge tightening, not architectural challenges. openspec validate --strict passes. The proposal has now converged across 2 internal + 1 external review cycles with 15 findings resolved total.",
+  "next_recommended": "/opsx:apply address-reviews-defaults-and-decision-forks — proposal fully converged. The 15 findings across 3 cycles (7 internal iter-1 + 5 internal iter-2 + 3 external Codex iter-1) are all resolved; Option D scope reframe tested under fresh-context internal AND cross-AI external review; openspec validate --strict passes. Ready for implementation.",
+  "iteration_history_summary": {
+    "review_proposal_internal": 2,
+    "review_proposal_external": 1,
+    "address_reviews_proposal": 3,
+    "convergence_state_at_emit": "Path B convergence: external proposal findings resolved via address-reviews iter-3"
+  }
+}
