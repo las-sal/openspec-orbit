@@ -1,0 +1,12 @@
+{
+  "command": "review-external",
+  "timestamp": "2026-05-27T01:52:49Z",
+  "change": "address-reviews-auto-discovers-internal-json",
+  "final_assessment": "External system-mode review prompt packaged for address-reviews-auto-discovers-internal-json (iter 1, mode system); awaiting findings from target AI. This is the FIRST external system-mode review for this change. Proposal-mode had 1 external by GPT-5 Codex (4 WARNs all resolved); the proposal phase fully converged across 2 internal + 1 external iterations. System-mode iter-1 internal --fresh already cleared (0/0/1 cosmetic, inline-fixed) so the external pass is the second-opinion cross-check per orbit's State 1 default.",
+  "next_recommended": "Paste openspec/changes/address-reviews-auto-discovers-internal-json/.orbit-runs/external-prompt-system-2026-05-27T01-52-48Z.md into the target AI, save the response as openspec/changes/address-reviews-auto-discovers-internal-json/.orbit-runs/external-system-<TS>.md, then /opsx:address-reviews address-reviews-auto-discovers-internal-json --from-file <path>",
+  "kind": "editorial",
+  "mode": "system",
+  "prompt_path": "openspec/changes/address-reviews-auto-discovers-internal-json/.orbit-runs/external-prompt-system-2026-05-27T01-52-48Z.md",
+  "target": null,
+  "awaiting_findings": true
+}
