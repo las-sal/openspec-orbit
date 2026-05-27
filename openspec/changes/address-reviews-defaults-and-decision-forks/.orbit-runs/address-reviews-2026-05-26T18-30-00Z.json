@@ -1,0 +1,154 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-26T18:30:00Z",
+  "change": "address-reviews-defaults-and-decision-forks",
+  "kind": "editorial",
+  "iteration": 1,
+  "source": "auto-discovered",
+  "source_path": "openspec/changes/address-reviews-defaults-and-decision-forks/.orbit-runs/review-proposal-2026-05-26T18-00-00Z.json",
+  "source_command": "review",
+  "source_token": "2026-05-26T18-00-00Z",
+  "latest_apply_token": null,
+  "executed_by": "in_context",
+  "input_findings_summary": {
+    "count": 7,
+    "by_severity": { "critical": 1, "warning": 2, "suggestion": 4 }
+  },
+  "discovery_note": "Marker grep returned 1 documentary `@review:` hit at specs/orbit-address-reviews/spec.md:87 (backtick-quoted token inside a scenario describing the marker removal invariant). Suppressed at discovery time as documentary-not-real-marker per orbit-review Pass 8 conventions; auto-discovery fired on the just-emitted review-proposal-2026-05-26T18-00-00Z.json (most-recent and only candidate).",
+  "pushback_verification": "All 7 findings verified against current state at walk-time. C1 verified — the cascade-scope scenario at spec.md:71 literally listed SKILL.md as a 'non-markdown file' example while the NOTE asserted SKILL.md IS markdown and IS in scope. W1 verified — producer specs (orbit-review:10, orbit-audit-drift:10) used `[{label, body}]` while consumer audit-log (orbit-address-reviews:215, 237) used `[\"A: ...\"]`. W2 verified — archived JSON at openspec/changes/archive/2026-05-24-lean-overlay-and-add-orbit-onboard/.orbit-runs/address-reviews-2026-05-23T18-03-25Z.json:59-66 shows v1's top-level flat-array shape; v2 is per-resolution, confirming structural (not just rename) change. S1/S2/S3/S4 verified by direct file inspection.",
+  "resolutions": [
+    {
+      "id": "C1",
+      "severity": "CRITICAL",
+      "classification": "decision_required",
+      "user_decision_path": "Option D (user-proposed, supersedes A/B/C surfaced in review)",
+      "user_decision_rationale": "User pushed back on file-extension-based exclusion: 'orbit is a dev framework that can review ANY kind of file. why exclude code?' Then refined: 'I'd want to ripple through DEV PROJECT files, not DEV FRAMEWORK files.' Finally validated by walking the proposal cycle: baseline-spec mutations flow via /opsx:propose → delta → /opsx:archive → sync-specs — confirmed cascade should NOT bypass that flow. Option D crystallized: OUT list defined by 4 lifecycle-invariant categories (audit trail, baseline specs, cross-change dirs, safe-exclusions); everything else IN regardless of extension. File extension is NOT a discriminator.",
+      "recommendation_fork": {
+        "detected": true,
+        "source": "structured",
+        "options_presented": [
+          { "label": "A", "body": "Drop SKILL.md from non-markdown examples + remove NOTE; default OUT (originally Recommended)" },
+          { "label": "B", "body": "Add SKILL.md explicitly to IN list; default IN" },
+          { "label": "C", "body": "Add new IN category for orbit skill+command files; both IN" }
+        ],
+        "chosen": "D",
+        "discuss_invoked": true,
+        "discuss_outcome": "User invoked discuss-equivalent by asking for more context on the contradiction, then asking about ripple semantics broadly, then about framework-vs-project distinction, then about baseline-spec lifecycle. Discussion led to a 4th option (D) that supersedes A/B/C entirely. Resolution: Option D applied."
+      },
+      "action": "Rewrote cascade scope across 4 files: (1) specs/orbit-address-reviews/spec.md — `Ripple cascade by default` requirement body restructured to lifecycle-invariant OUT-only framing; dropped 'code files OUT' and 'project-level governing docs IN' sub-categories; added scenarios for non-markdown IN, orbit-self-development IN, baseline-spec OUT with delta-guidance reason, safe-exclusion OUT; removed contradictory `Cascade skips code files by default` scenario; also updated the lifecycle requirement's body text. (2) design.md D7 — full rewrite of decision rationale; updated Goals/Non-Goals sections; alternatives considered now lists D as chosen + A/B/C as rejected. (3) proposal.md What Changes — cascade scope description reframed to lifecycle-invariants OUT-only. (4) tasks.md task 1.4 — OUT-category reason codes updated.",
+      "ripple_cascade": {
+        "applied": [
+          "openspec/changes/address-reviews-defaults-and-decision-forks/specs/orbit-address-reviews/spec.md",
+          "openspec/changes/address-reviews-defaults-and-decision-forks/design.md",
+          "openspec/changes/address-reviews-defaults-and-decision-forks/proposal.md",
+          "openspec/changes/address-reviews-defaults-and-decision-forks/tasks.md"
+        ],
+        "flagged_not_applied": []
+      }
+    },
+    {
+      "id": "W1",
+      "severity": "WARNING",
+      "classification": "decision_required",
+      "user_decision_path": "Option (a) — Recommended",
+      "recommendation_fork": {
+        "detected": true,
+        "source": "structured",
+        "options_presented": [
+          { "label": "a", "body": "Make audit log structured: options_presented: [{label, body}] (matches producer)" },
+          { "label": "b", "body": "Keep audit log flat strings; document the producer→audit-log flatten transform" }
+        ],
+        "chosen": "a",
+        "discuss_invoked": false
+      },
+      "action": "Updated specs/orbit-address-reviews/spec.md — `Resolution-log JSON shape extensions` requirement body's `options_presented` field now structured `[{label, body}]` matching producer; `chosen` field clarified as matching one of `options_presented[].label` values. Updated `Recommendation_fork captured when disjunctive triggered` scenario's THEN clause to use structured shape.",
+      "ripple_cascade": {
+        "applied": ["openspec/changes/address-reviews-defaults-and-decision-forks/specs/orbit-address-reviews/spec.md"],
+        "flagged_not_applied": []
+      }
+    },
+    {
+      "id": "W2",
+      "severity": "WARNING",
+      "classification": "trivial_fix",
+      "action": "Rewrote backward-compatibility paragraph in `Resolution-log JSON shape extensions for walk-mode / decision-forks / cascade` requirement (specs/orbit-address-reviews/spec.md). Old paragraph claimed `the two fields capture the same information conceptually` — replaced with explicit structural-change framing: v1 is top-level flat array (no per-resolution attribution); v2 is per-resolution split (attribution captured); shapes are NOT bijective. Added explicit reader guidance for v1-vs-v2 detection.",
+      "ripple_cascade": {
+        "applied": ["openspec/changes/address-reviews-defaults-and-decision-forks/specs/orbit-address-reviews/spec.md"],
+        "flagged_not_applied": []
+      }
+    },
+    {
+      "id": "S1",
+      "severity": "SUGGESTION",
+      "classification": "trivial_fix",
+      "action": "Added new scenario `Malformed recommendation_options array falls back to heuristic detection` to `Disjunctive recommendation fields surface as decision forks` requirement (specs/orbit-address-reviews/spec.md). Covers zero-entry, single-entry, and missing-label/body cases. Defines fallback to heuristic path with stderr warning + `recommendation_fork.structured_path_skipped_reason` field in resolution log.",
+      "ripple_cascade": {
+        "applied": ["openspec/changes/address-reviews-defaults-and-decision-forks/specs/orbit-address-reviews/spec.md"],
+        "flagged_not_applied": []
+      }
+    },
+    {
+      "id": "S2",
+      "severity": "SUGGESTION",
+      "classification": "trivial_fix",
+      "action": "Swapped tasks groups 3 and 4 in tasks.md so producer-side affordance lands before consumer-side detection. Updated chunk preamble accordingly. Renumbered tasks 3.1-3.6 (was 4.1-4.6) and 4.1-4.7 (was 3.1-3.6, with new 4.5 added covering S1's malformed-array fallback documentation).",
+      "ripple_cascade": {
+        "applied": ["openspec/changes/address-reviews-defaults-and-decision-forks/tasks.md"],
+        "flagged_not_applied": []
+      }
+    },
+    {
+      "id": "S3",
+      "severity": "SUGGESTION",
+      "classification": "trivial_fix",
+      "action": "Updated chunk preamble in tasks.md to split former Chunk 4 (groups 7-8) into Chunk 4 (group 7: Documentation surface) + Chunk 5 (group 8: User-validation handoff). Group bodies already separated naturally; preamble update sufficient. Effective for apply-time emit clarity: Chunk 4 boundary is now unambiguously AI-done; Chunk 5 boundary cleanly marks 'awaiting user runtime validation.'",
+      "ripple_cascade": {
+        "applied": ["openspec/changes/address-reviews-defaults-and-decision-forks/tasks.md"],
+        "flagged_not_applied": []
+      }
+    },
+    {
+      "id": "S4",
+      "severity": "SUGGESTION",
+      "classification": "trivial_fix",
+      "action": "Added two producer-side enforcement scenarios to both orbit-review and orbit-audit-drift specs: (1) `Producer-side enforcement — minimum 2 entries when field is present` — producer omits field entirely for single-recommendation findings (preferred) or refuses to emit; (2) `Producer-side enforcement — every entry has required label and body fields` — producer populates or drops malformed entries. Complements consumer-side S1 fallback.",
+      "ripple_cascade": {
+        "applied": [
+          "openspec/changes/address-reviews-defaults-and-decision-forks/specs/orbit-review/spec.md",
+          "openspec/changes/address-reviews-defaults-and-decision-forks/specs/orbit-audit-drift/spec.md"
+        ],
+        "flagged_not_applied": []
+      }
+    }
+  ],
+  "resolution_summary": {
+    "resolved": 7,
+    "stale": 0,
+    "deferred": 0,
+    "escalated": 0,
+    "by_classification": {
+      "decision_required": 2,
+      "trivial_fix": 5
+    }
+  },
+  "walk_mode_observation_meta": "Walked all 7 findings sequentially per the new walk-mode-by-default discipline this change codifies. C1 had a single user-pushback inflection that crystallized into a new option (D) that superseded the original A/B/C. The structured `recommendation_options` field was used in this resolution log to capture both decision-required findings (C1 + W1), dogfooding the very feature this change spec'd. Note: the change is in proposal state — the new walk-mode + cascade behaviors are NOT yet implemented in skill prose; this walk used the in-context AI's manual interpretation. Cascade was applied manually to all 7 findings' ripples without --no-cascade.",
+  "post_resolution_state": {
+    "openspec_validate": "passes (--strict)",
+    "tasks_total": 47,
+    "tasks_done": 0,
+    "deltas_total": 7,
+    "deltas_by_capability": {
+      "orbit-address-reviews": "1 MODIFIED + 1 RENAMED-MODIFIED + 3 ADDED = 5",
+      "orbit-review": "1 ADDED (now with 3 new scenarios from S4)",
+      "orbit-audit-drift": "1 ADDED (now with 2 new scenarios from S4)"
+    }
+  },
+  "final_assessment": "All 7 review findings resolved. C1 was the CRITICAL — user pushed back on the original A/B/C options surfaced; discussion led to Option D (lifecycle-invariant OUT list only; no file-extension discrimination), which significantly simplified AND broadened the cascade-by-default's general-purpose utility. W1 took the structured-audit-log path matching producer shape. W2 reframed the v1→v2 migration as a structural change (not a rename). S1, S3 took trivial-fix paths inline. S2 swapped tasks groups 3↔4 for clean producer→consumer reading order. S4 added producer-side enforcement scenarios complementing the consumer-side fallback. openspec validate --strict passes.",
+  "next_recommended": "/opsx:review --as proposal address-reviews-defaults-and-decision-forks --fresh — proposal state significantly evolved during this walk (C1 Option D was a structural reframe, not a localized fix). A fresh-context proposal review will validate the new cascade-scope spec on its own merits rather than against my prior context. Alternative: /opsx:review-external --as proposal for cross-AI second-opinion — the lifecycle-invariant-OUT-list framing is novel and the hybrid structured/heuristic decision-fork design is subtle; external review would test whether the abstractions hold up under different reading.",
+  "iteration_history_summary": {
+    "review_proposal_internal": 1,
+    "review_proposal_external": 0,
+    "address_reviews_proposal": 1,
+    "convergence_state_at_emit": "iter-1 walk applied; significant scope evolution"
+  }
+}

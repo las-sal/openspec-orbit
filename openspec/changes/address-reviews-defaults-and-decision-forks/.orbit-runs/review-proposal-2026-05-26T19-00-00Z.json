@@ -1,0 +1,124 @@
+{
+  "command": "review",
+  "timestamp": "2026-05-26T19:00:00Z",
+  "change": "address-reviews-defaults-and-decision-forks",
+  "kind": "editorial",
+  "mode": "proposal",
+  "iteration": 2,
+  "depth": "full",
+  "executed_by": "fresh_subagent",
+  "passes_run": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+  "findings_total": 5,
+  "findings_by_severity": { "critical": 0, "warning": 2, "suggestion": 3 },
+  "findings_by_pass": { "1": 0, "2": 1, "3": 1, "4": 1, "5": 0, "6": 1, "7": 1, "8": 0, "9": 0 },
+  "scorecard": {
+    "completeness": { "critical": 0, "warning": 0, "suggestion": 2 },
+    "correctness":  { "critical": 0, "warning": 1, "suggestion": 1 },
+    "coherence":    { "critical": 0, "warning": 1, "suggestion": 0 }
+  },
+  "findings": [
+    {
+      "id": "W1",
+      "severity": "WARNING",
+      "pass": 7,
+      "dimension": "coherence",
+      "title": "design.md Risks/Trade-offs row 193 (`.claude/skills/*/SKILL.md` cascade ambiguity) is residue from the pre-Option-D framing",
+      "file": "openspec/changes/address-reviews-defaults-and-decision-forks/design.md",
+      "line": 193,
+      "recommendation": "Remove or rewrite the SKILL.md ambiguity risk row. Under D7's Option D (lifecycle-invariant OUT list only; no file-extension discrimination), there is no SKILL.md ambiguity — `.claude/skills/<skill>/SKILL.md` is IN unless inside an OUT category (it isn't), so cascade applies uniformly. The row's mitigation language (`Spec'd as case-by-case evaluation against the project-level-governing-docs umbrella`) describes a pre-Option-D mechanism that the spec body no longer specifies. Two resolution paths: (a) delete the row entirely (the Option D framing eliminates the risk); (b) replace it with the genuinely-remaining risk under Option D, e.g., 'Cascade applies to framework files when developing orbit itself' — mitigated by the dedicated 'Cascade applies to orbit framework files when developing orbit itself' scenario in the spec. Path (a) is cleaner."
+    },
+    {
+      "id": "W2",
+      "severity": "WARNING",
+      "pass": 3,
+      "dimension": "correctness",
+      "title": "design.md Risks/Trade-offs row 192 contradicts the v1↔v2 migration framing in the spec body (`semantically equivalent` vs `NOT bijective`)",
+      "file": "openspec/changes/address-reviews-defaults-and-decision-forks/design.md",
+      "line": 192,
+      "recommendation": "Update the row's mitigation language. The current text states `old ripple_flagged_files_aggregate field is replaced by ripple_cascade.flagged_not_applied[] (semantically equivalent)`, which contradicts the spec body at specs/orbit-address-reviews/spec.md:234 (`The shapes are NOT bijective — v1 archived JSONs cannot be losslessly upconverted to v2`). The W2-iter1 resolution explicitly reframed v1→v2 as a structural change (per-resolution attribution gained in v2; lost reading v1). The design.md row should match: replace `semantically equivalent` with `structural change (v2 captures per-resolution attribution; v1's top-level aggregate had none)`. Optional: also drop the `Reader-side migration handled by orbit-status's tier-1 best-effort parse` sentence (orbit-status capability doesn't exist in baseline or archives — forward-reference; see S2)."
+    },
+    {
+      "id": "S1",
+      "severity": "SUGGESTION",
+      "pass": 6,
+      "dimension": "completeness",
+      "title": "`recommendation_fork.structured_path_skipped_reason` field referenced in scenarios + tasks but not enumerated in formal field-shape definition",
+      "file": "openspec/changes/address-reviews-defaults-and-decision-forks/specs/orbit-address-reviews/spec.md",
+      "line": 224,
+      "recommendation": "Add `structured_path_skipped_reason` to the formal field-shape enumeration for `recommendation_fork` at lines 224-229. Current state: the field appears in the malformed-array fallback scenario at line 213 and in tasks.md task 4.5, but the `Field semantics` block at lines 219-232 (which exhaustively lists the recommendation_fork sub-fields: detected, source, options_presented, chosen, discuss_invoked) omits it. An implementer reading only the field-shape block would not know to emit it. Insert: `- structured_path_skipped_reason: string (present only when the structured path was skipped due to malformed recommendation_options; names the reason — e.g., \"only 1 entry in array\", \"missing label on entry index 2\")`. Also update task 5.1's field enumeration to include it."
+    },
+    {
+      "id": "S2",
+      "severity": "SUGGESTION",
+      "pass": 4,
+      "dimension": "correctness",
+      "title": "Empirical-evidence references to `bootstrap-orbit-status-cli` archive path that doesn't exist",
+      "file": "openspec/changes/address-reviews-defaults-and-decision-forks/explore.md",
+      "line": 134,
+      "recommendation": "explore.md:134 cites `openspec/changes/archive/2026-05-20-bootstrap-orbit-status-cli/.orbit-runs/review-system-*.json` as empirical evidence backing #14 / #18; design.md:192 references `orbit-status's tier-1 best-effort parse`. Verified: no `bootstrap-orbit-status-cli` directory exists in `openspec/changes/archive/`, and no `orbit-status` capability exists under `openspec/specs/`. These appear to be either user-shorthand for an undocumented experience or forward-references to a future change. Two resolution paths: (a) replace the cited path with the actual archive that exhibits the empirical pattern, OR a footnote acknowledging the evidence is from undocumented dogfooding sessions; (b) drop the specific path citation, retain the qualitative claim (`5 WARNINGs silently dropped in iter-N+1`). Low priority — does not block apply since the evidence is backing rationale, not a normative spec claim. Pre-existing drift; could be tackled separately."
+    },
+    {
+      "id": "S3",
+      "severity": "SUGGESTION",
+      "pass": 2,
+      "dimension": "completeness",
+      "title": "tasks.md task 1.4 groups `--no-cascade suppressed` with `OUT-category reason codes` despite spec explicitly distinguishing the two",
+      "file": "openspec/changes/address-reviews-defaults-and-decision-forks/tasks.md",
+      "line": 15,
+      "recommendation": "Reword task 1.4 to distinguish OUT-category reasons from mode-suppression. Spec at specs/orbit-address-reviews/spec.md:264 explicitly says `--no-cascade does not classify by IN/OUT — it suppresses cascade entirely; the --no-cascade suppressed reason applies uniformly. Per-OUT-category reasons (audit-trail, baseline-spec, etc.) only appear in the default mode when cascade DID try to apply and was structurally blocked.` Task 1.4 currently lists all 5 reason codes (audit-trail, baseline-spec, cross-change, safe-exclusion, --no-cascade) under the umbrella `OUT-category reason codes used in flagged_not_applied[]` — which conflates a structural classification (4 OUT categories) with a mode toggle. Suggested phrasing: `Document the four OUT-category reason codes (audit-trail, baseline-spec, cross-change, safe-exclusion) AND the mode-suppression reason code (--no-cascade suppressed) used in flagged_not_applied[] entries...`. Trivial doc-clarification."
+    }
+  ],
+  "stale_findings_suppressed": [
+    {
+      "id": "C1",
+      "iter": 1,
+      "reason": "stale: addressed via address-reviews iter-1 walk (Option D applied); see .orbit-runs/address-reviews-2026-05-26T18-30-00Z.json:21-47. The cascade-scope spec was rewritten to lifecycle-invariant OUT-only framing with file-extension non-discrimination; the original A/B/C options surfaced in C1 were superseded by user-proposed Option D."
+    },
+    {
+      "id": "W1",
+      "iter": 1,
+      "reason": "stale: addressed via address-reviews iter-1 walk (Option a applied; structured audit-log shape). Verified at spec.md:227 `options_presented: [{label, body}, …]` matches producer-side `recommendation_options` shape; spec.md:254 scenario uses structured form. No remaining flat `[\"A: ...\"]` residue in spec."
+    },
+    {
+      "id": "W2",
+      "iter": 1,
+      "reason": "stale: addressed via address-reviews iter-1 walk. Verified at spec.md:234-239 — backward-compat paragraph now explicitly states `The shapes are NOT bijective — v1 archived JSONs cannot be losslessly upconverted` and includes reader guidance for v1 vs v2 format detection. (Note: design.md:192 risk-row text retains the older `semantically equivalent` phrasing — captured as fresh W2.)"
+    },
+    {
+      "id": "S1",
+      "iter": 1,
+      "reason": "stale: addressed via address-reviews iter-1 walk. New scenario `Malformed recommendation_options array falls back to heuristic detection` added at spec.md:210-213. Covers zero-entry, single-entry, and missing-label/body cases with stderr warning + fallback to heuristic. (Note: the structured_path_skipped_reason field added by this scenario is mentioned in the scenario body but not in the formal field-shape enumeration — captured as fresh S1.)"
+    },
+    {
+      "id": "S2",
+      "iter": 1,
+      "reason": "stale: addressed via address-reviews iter-1 walk. Tasks groups 3 and 4 swapped (producer-side affordance now group 3; consumer-side detection now group 4); chunk preamble updated. Verified at tasks.md:3-7."
+    },
+    {
+      "id": "S3",
+      "iter": 1,
+      "reason": "stale: addressed via address-reviews iter-1 walk. Chunk preamble in tasks.md split: Chunk 4 (group 7: Documentation surface) + Chunk 5 (group 8: User-validation handoff). Verified at tasks.md:6-7."
+    },
+    {
+      "id": "S4",
+      "iter": 1,
+      "reason": "stale: addressed via address-reviews iter-1 walk. Producer-side enforcement scenarios added to both orbit-review (`Producer-side enforcement — minimum 2 entries when field is present` at spec.md:54-57; `Producer-side enforcement — every entry has required label and body fields` at spec.md:59-62) and orbit-audit-drift (`Producer-side enforcement — minimum 2 entries` at spec.md:51-54; `Producer-side enforcement — every entry has required label and body fields` at spec.md:56-59)."
+    }
+  ],
+  "pre_existing_drift_observed_out_of_scope": [
+    {
+      "note": "The `.claude/skills/openspec-address-reviews/references/run-summary-schema.md:60` field-name drift (uses `ripple_flagged` vs `ripple_flagged_files_aggregate` in archived JSONs) noted in iter-1 review remains. Out of scope for this change since this change replaces the v1 shape with v2 `ripple_cascade.applied / flagged_not_applied` — the v1 field-name drift will be naturally superseded by task 5.1 / 5.2. Captured here for awareness."
+    },
+    {
+      "note": "explore.md retains pre-Option-D framing in D2 (markdown-only IN + project-level governing docs IN) and in the JSON example at lines 87-88 (`options_presented: [\"A: ...\", \"B: ...\"]` flat-string shape + `flagged_not_applied: [\"src/foo.ts (code; cascade off by default)\"]`). Per CLAUDE.md, explore.md is historical pre-propose staging; design.md D1 establishes the explicit-deviation-note pattern for explore→design departures, but D7 omits a similar deviation note for D2. Documentation-only; does not block apply."
+    }
+  ],
+  "final_assessment": "No critical issues. 2 warning(s) to consider. Ready to apply (with noted improvements).",
+  "next_recommended": "/opsx:address-reviews address-reviews-defaults-and-decision-forks — walk the 5 fresh findings (2 WARN both in design.md's Risks/Trade-offs table — pure residue/contradiction with the C1 Option D reframe; 3 SUGG covering field-shape enumeration completeness, evidence-citation accuracy, and a tasks.md wording nit). Both WARNs are localized to design.md and should resolve quickly as trivial-fix or single-decision-required. After resolution: /opsx:apply address-reviews-defaults-and-decision-forks (the change is structurally apply-ready; the spec deltas + tasks chunks are clean). Optional alternative before apply: /opsx:review-external --as proposal for cross-AI second opinion on the lifecycle-invariant-OUT-list framing — but iter-2 is tight enough that this isn't required.",
+  "iteration_history_summary": {
+    "review_proposal_internal": 2,
+    "review_proposal_external": 0,
+    "address_reviews_proposal": 1,
+    "convergence_state_at_emit": "iter-2 fresh review; all 7 iter-1 findings suppressed as stale (resolved via iter-1 walk); 5 fresh findings surfaced — 2 WARN localized to design.md residue, 3 SUGG covering field-shape + evidence citation + wording nits. No CRITICAL. Apply-ready after WARN cleanup."
+  }
+}

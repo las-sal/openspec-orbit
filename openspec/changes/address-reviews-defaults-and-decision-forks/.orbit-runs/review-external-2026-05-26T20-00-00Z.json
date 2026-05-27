@@ -1,0 +1,15 @@
+{
+  "command": "review-external",
+  "timestamp": "2026-05-26T20:00:00Z",
+  "change": "address-reviews-defaults-and-decision-forks",
+  "kind": "editorial",
+  "mode": "proposal",
+  "iteration": 1,
+  "prompt_path": "openspec/changes/address-reviews-defaults-and-decision-forks/.orbit-runs/external-prompt-proposal-2026-05-26T20-00-00Z.md",
+  "target": null,
+  "awaiting_findings": true,
+  "recommended_session": "Fresh different-AI (e.g., GPT-5 Codex). Prior internal work: 2 proposal-mode iters with a major Option D scope reframe in iter-1 driven by user pushback. No prior external proposal review for this change — this is iter-1 external. Different-AI gets a genuine second perspective on the novel cascade-scope framing + hybrid decision-fork design.",
+  "uncommitted_changes_warning": "Change directory is currently untracked (never committed). External review needs committed state pushed to remote so the external AI can pull. Commit + push BEFORE pasting the invocation snippet.",
+  "final_assessment": "External proposal-review prompt packaged at openspec/changes/address-reviews-defaults-and-decision-forks/.orbit-runs/external-prompt-proposal-2026-05-26T20-00-00Z.md. Self-contained — covers cycle context (2 internal iters + Option D reframe), 9-pass instructions, specific probe areas (cascade scope edge cases, hybrid detection routing, v1→v2 migration completeness, cross-repo citation accuracy), and output format (orbit external-review markdown).",
+  "next_recommended": "Paste openspec/changes/address-reviews-defaults-and-decision-forks/.orbit-runs/external-prompt-proposal-2026-05-26T20-00-00Z.md into the target AI, save the response as openspec/changes/address-reviews-defaults-and-decision-forks/.orbit-runs/external-proposal-<TS>.md (TS set by external AI when it writes), then /opsx:address-reviews address-reviews-defaults-and-decision-forks --from-file openspec/changes/address-reviews-defaults-and-decision-forks/.orbit-runs/external-proposal-<TS>.md"
+}

@@ -1,0 +1,109 @@
+{
+  "command": "review",
+  "timestamp": "2026-05-26T18:00:00Z",
+  "change": "address-reviews-defaults-and-decision-forks",
+  "kind": "editorial",
+  "mode": "proposal",
+  "iteration": 1,
+  "depth": "full",
+  "executed_by": "in_context",
+  "passes_run": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+  "findings_total": 7,
+  "findings_by_severity": { "critical": 1, "warning": 2, "suggestion": 4 },
+  "findings_by_pass": { "1": 1, "2": 2, "3": 0, "4": 0, "5": 2, "6": 2, "7": 0, "8": 0, "9": 0 },
+  "scorecard": {
+    "completeness": { "critical": 1, "warning": 1, "suggestion": 2 },
+    "correctness": { "critical": 0, "warning": 1, "suggestion": 1 },
+    "coherence":    { "critical": 0, "warning": 0, "suggestion": 1 }
+  },
+  "findings": [
+    {
+      "id": "C1",
+      "severity": "CRITICAL",
+      "pass": 1,
+      "dimension": "completeness",
+      "title": "Cascade-scope SKILL.md inclusion is self-contradictory and the new umbrella category isn't defined in the requirement body",
+      "file": "openspec/changes/address-reviews-defaults-and-decision-forks/specs/orbit-address-reviews/spec.md",
+      "line": 71,
+      "recommendation": "Pick one of three resolutions: (a) drop the `.claude/skills/openspec-foo/SKILL.md` example from the WHEN clause AND remove the NOTE entirely → SKILL.md files default to OUT of scope (clean); (b) add `.claude/skills/<skill>/SKILL.md` as an explicit IN entry in the requirement body's `**IN — project-level governing docs**` list and remove from the WHEN's non-markdown examples → SKILL.md always IN scope; (c) add a fourth explicit category to the IN list (`**IN — orbit skill files**: `.claude/skills/<skill>/SKILL.md`, `.claude/commands/<verb>.md` per the project-level-skill umbrella`) and remove the case-by-case NOTE language → SKILL.md and command files always IN. Path (a) is the simplest and matches the design.md D7 'tight default scope' framing; later expansion can be a follow-up change.",
+      "recommendation_options": [
+        { "label": "A", "body": "Drop `.claude/skills/openspec-foo/SKILL.md` from the WHEN example list AND remove the NOTE entirely; SKILL.md files default OUT" },
+        { "label": "B", "body": "Add `.claude/skills/<skill>/SKILL.md` explicitly to IN list; SKILL.md always IN scope" },
+        { "label": "C", "body": "Add a new IN category for orbit skill+command files; .claude/skills/ and .claude/commands/ both IN" }
+      ]
+    },
+    {
+      "id": "W1",
+      "severity": "WARNING",
+      "pass": 2,
+      "dimension": "correctness",
+      "title": "Producer field shape (`recommendation_options: [{label, body}]`) and consumer audit-log shape (`options_presented: [\"A: …\"]`) differ without an explicit transform spec",
+      "file": "openspec/changes/address-reviews-defaults-and-decision-forks/specs/orbit-address-reviews/spec.md",
+      "line": 215,
+      "recommendation": "Pick one: (a) make audit-log preserve the structured shape — `options_presented: [{label, body}]` (consistent with producer; readers parse the same object); (b) document the producer→audit-log transform explicitly in the Resolution-log-shape requirement body (e.g., 'each entry in options_presented is formatted as `<label>: <body>` to give log-readers a single readable string per option'). Option (a) is cleaner; option (b) keeps the audit log scan-friendly. Either resolves the silent-transform ambiguity."
+    },
+    {
+      "id": "W2",
+      "severity": "WARNING",
+      "pass": 2,
+      "dimension": "completeness",
+      "title": "v1 → v2 resolution-log migration claim conflates top-level aggregate with per-resolution split (loses attribution)",
+      "file": "openspec/changes/address-reviews-defaults-and-decision-forks/specs/orbit-address-reviews/spec.md",
+      "line": 222,
+      "recommendation": "Rephrase the backward-compatibility paragraph to acknowledge the structural difference: v1's top-level `ripple_flagged_files_aggregate` was a flat array of strings across ALL resolutions (no per-resolution attribution); v2's per-resolution `ripple_cascade.applied / flagged_not_applied` captures attribution at the resolution level. The migration is NOT bijective — v1 archived JSONs cannot be losslessly upconverted. Add explicit reader guidance: 'consumers reading both versions should treat v1's aggregate as the union of all per-resolution ripple sets (attribution lost); v2's per-resolution form is canonical going forward.' Verified by inspecting `openspec/changes/archive/2026-05-24-lean-overlay-and-add-orbit-onboard/.orbit-runs/address-reviews-2026-05-23T18-03-25Z.json:59-66` which shows v1's top-level array shape."
+    },
+    {
+      "id": "S1",
+      "severity": "SUGGESTION",
+      "pass": 6,
+      "dimension": "completeness",
+      "title": "No spec scenario for malformed `recommendation_options` array (e.g., single-entry, empty, or missing label field)",
+      "file": "openspec/changes/address-reviews-defaults-and-decision-forks/specs/orbit-address-reviews/spec.md",
+      "line": 142,
+      "recommendation": "Add a scenario under `Disjunctive recommendation fields surface as decision forks`: WHEN a finding's `recommendation_options` array is present but malformed (zero entries, one entry, missing `label` or `body` on an entry) THEN the consumer SHALL log a warning to stderr and fall back to heuristic detection over the `recommendation` string. This catches producer-side bugs without breaking the walk."
+    },
+    {
+      "id": "S2",
+      "severity": "SUGGESTION",
+      "pass": 5,
+      "dimension": "completeness",
+      "title": "Tasks group 4 (producer-side affordance) should precede group 3 (consumer-side detection) for clean reviewer-walk",
+      "file": "openspec/changes/address-reviews-defaults-and-decision-forks/tasks.md",
+      "line": 27,
+      "recommendation": "Swap groups 3 and 4 (or rename them) so the producer-side `recommendation_options[]` documentation lands BEFORE the consumer-side detection logic. Reviewers reading the applied state will trace producer → consumer naturally; currently group 3 documents reading a field that group 4 then documents writing. The chunk preamble in tasks.md would shift to `Chunk 2 (groups 3-4): Producer-side affordance + consumer-side detection`. Low-priority — apply ordering doesn't actually create blocks since both groups touch independent files."
+    },
+    {
+      "id": "S3",
+      "severity": "SUGGESTION",
+      "pass": 5,
+      "dimension": "coherence",
+      "title": "Chunk 4 mixes AI-doable docs (group 7) with user-validation handoff (group 8); consider splitting into Chunk 4 + Chunk 5",
+      "file": "openspec/changes/address-reviews-defaults-and-decision-forks/tasks.md",
+      "line": 7,
+      "recommendation": "Split the preamble: `Chunk 4 (groups 7): Documentation surface` + `Chunk 5 (groups 8): User-validation handoff`. Per `orbit-run-summary-emit`'s `Apply per-chunk-end emission` requirement, the current bundling is valid (final chunk emits with `chunk_complete: true` + `user_validation_remaining > 0`), but separating user-validation into its own chunk makes the audit trail clearer — `chunk_complete: true` at end of Chunk 4 (group 7) is unambiguously AI-done; Chunk 5 boundary cleanly marks 'awaiting user runtime validation.' Marginal ergonomic improvement."
+    },
+    {
+      "id": "S4",
+      "severity": "SUGGESTION",
+      "pass": 6,
+      "dimension": "correctness",
+      "title": "No spec scenario for malformed `recommendation_options` from PRODUCER side (e.g., emit a 1-entry array)",
+      "file": "openspec/changes/address-reviews-defaults-and-decision-forks/specs/orbit-review/spec.md",
+      "line": 16,
+      "recommendation": "Add a scenario for producer-side enforcement: WHEN a pass attempts to emit a finding with `recommendation_options` containing fewer than 2 entries THEN the producer SHALL either (a) omit the field entirely OR (b) fail validation. This complements consumer-side S1 and prevents corrupt JSON from being emitted in the first place. Apply equivalently to orbit-audit-drift."
+    }
+  ],
+  "stale_findings_suppressed": [],
+  "pre_existing_drift_observed_out_of_scope": [
+    {
+      "note": "`.claude/skills/openspec-address-reviews/references/run-summary-schema.md:60` uses field name `ripple_flagged` but archived JSONs use `ripple_flagged_files_aggregate`. Pre-existing schema-doc drift unrelated to this change; out of scope. (Captured here so a future /opsx:audit-drift Cat 3 run surfaces it.)"
+    }
+  ],
+  "final_assessment": "1 critical issue(s) found. Fix before /opsx:apply.",
+  "next_recommended": "/opsx:address-reviews address-reviews-defaults-and-decision-forks — walk the 7 findings (1 CRITICAL on cascade-scope SKILL.md ambiguity must be resolved first; 2 WARNINGs on field-shape inconsistency + v1→v2 migration semantics; 4 SUGGESTIONs on coverage gaps + tasks ordering). The CRITICAL is a real spec self-contradiction — two implementers reading the cascade-skip-code-files scenario would produce different behavior. After resolution, consider /opsx:review-external --as proposal for second-opinion before /opsx:apply (the structured/heuristic decision-fork detection design is subtle and would benefit from cross-AI review).",
+  "iteration_history_summary": {
+    "review_proposal_internal": 1,
+    "review_proposal_external": 0,
+    "convergence_state_at_emit": "no prior runs (iter-1)"
+  }
+}

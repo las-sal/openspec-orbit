@@ -1,0 +1,98 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-26T19:30:00Z",
+  "change": "address-reviews-defaults-and-decision-forks",
+  "kind": "editorial",
+  "iteration": 2,
+  "source": "auto-discovered",
+  "source_path": "openspec/changes/address-reviews-defaults-and-decision-forks/.orbit-runs/review-proposal-2026-05-26T19-00-00Z.json",
+  "source_command": "review",
+  "source_token": "2026-05-26T19-00-00Z",
+  "latest_apply_token": null,
+  "executed_by": "in_context",
+  "walk_mode": "per_finding",
+  "input_findings_summary": {
+    "count": 5,
+    "by_severity": { "critical": 0, "warning": 2, "suggestion": 3 }
+  },
+  "discovery_note": "Marker grep returned 1 documentary `@review:` hit at specs/orbit-address-reviews/spec.md:94 (backtick-quoted token in marker-removal-invariant scenario). Suppressed at discovery as documentary-not-real-marker. Auto-discovery fired on the most-recent review JSON (iter-2 fresh-subagent emit).",
+  "pushback_verification": "All 5 iter-2 findings verified at walk-time. W1: design.md:193 confirmed pre-Option-D residue (uses 'project-level-governing-docs umbrella' + 'case-by-case' phrasing eliminated by Option D). W2: design.md:192 confirmed direct contradiction with spec.md:234 ('semantically equivalent' vs 'NOT bijective'). S1: spec.md:224 confirmed enumeration omits structured_path_skipped_reason. S2: partial pushback applied — orbit-status IS referenced in baseline specs (orbit-conventions, orbit-review, orbit-run-summary-emit) as cross-repo downstream consumer; bootstrap-orbit-status-cli archive lives in las-sal/orbit-status repo; existing baseline orbit-review/spec.md already cites it as empirical evidence. References are accurate but the cross-repo nature wasn't called out in design.md. S3: tasks.md:15 confirmed conflating structural OUT reasons with mode-suppression in a single list.",
+  "resolutions": [
+    {
+      "id": "W1",
+      "severity": "WARNING",
+      "classification": "trivial_fix",
+      "action": "Rewrote design.md:193 Risks/Trade-offs row. Old row used 'project-level-governing-docs umbrella' and 'case-by-case evaluation' (pre-Option-D framing). Replaced with a new row titled `Cascade misidentifies a file as IN when it should be OUT` that describes Option D's structural OUT-list approach + the safety mechanisms protecting IN edits uniformly. The row now matches the spec body and design.md D7.",
+      "ripple_cascade": {
+        "applied": ["openspec/changes/address-reviews-defaults-and-decision-forks/design.md"],
+        "flagged_not_applied": []
+      }
+    },
+    {
+      "id": "W2",
+      "severity": "WARNING",
+      "classification": "trivial_fix",
+      "action": "Rewrote design.md:192 Risks row + design.md Migration Plan #1 (line 199). Both previously claimed 'semantically equivalent' or 'replaced by' for v1→v2 transition. Updated to explicitly describe the structural change (v1 top-level flat array vs v2 per-resolution; NOT bijective; per-resolution attribution lost in v1). Migration Plan #1 also reframed accordingly. Both now match spec.md:234's normative statement.",
+      "ripple_cascade": {
+        "applied": ["openspec/changes/address-reviews-defaults-and-decision-forks/design.md"],
+        "flagged_not_applied": []
+      }
+    },
+    {
+      "id": "S1",
+      "severity": "SUGGESTION",
+      "classification": "trivial_fix",
+      "action": "Added `structured_path_skipped_reason: string` field to the `recommendation_fork` object enumeration in spec.md:224-229. Field is OPTIONAL — present only when structured path was attempted but skipped due to malformed input; matches the scenario at spec.md:213 + tasks.md task 4.5. Includes example values.",
+      "ripple_cascade": {
+        "applied": ["openspec/changes/address-reviews-defaults-and-decision-forks/specs/orbit-address-reviews/spec.md"],
+        "flagged_not_applied": []
+      }
+    },
+    {
+      "id": "S2",
+      "severity": "SUGGESTION",
+      "classification": "trivial_fix_with_pushback_note",
+      "pushback_note": "References to orbit-status and bootstrap-orbit-status-cli are NOT broken — they're legitimate cross-repo citations following the same pattern as baseline specs (orbit-conventions, orbit-review, orbit-run-summary-emit all reference orbit-status as the downstream consumer). bootstrap-orbit-status-cli archive lives in sibling repo las-sal/orbit-status. The finding's underlying concern (a fresh reader can't easily verify the citation in-repo) is valid; resolved by adding an explicit cross-repo cite note rather than removing references.",
+      "action": "Added a brief parenthetical at design.md:5 (first bootstrap-orbit-status-cli citation) explicitly noting the change lives in cross-repo `las-sal/orbit-status` archive, cites the same evidence-pattern used by baseline orbit-review/spec.md's 3-of-3 cite. design.md:192 already updated in W1's resolution to describe orbit-status as 'the sibling-repo consumer documented in orbit-conventions + orbit-review + orbit-run-summary-emit baselines.' Lines 7 + 152 left as-is (the cross-repo nature is now established in :5 + :192; restating it 3-4 times in the same doc would be noise).",
+      "ripple_cascade": {
+        "applied": ["openspec/changes/address-reviews-defaults-and-decision-forks/design.md"],
+        "flagged_not_applied": []
+      }
+    },
+    {
+      "id": "S3",
+      "severity": "SUGGESTION",
+      "classification": "trivial_fix",
+      "action": "Rewrote tasks.md task 1.4. Old wording grouped `--no-cascade suppressed` under 'OUT-category reason codes', mixing structural OUT-classification reasons with mode-suppression reasons. New wording distinguishes TWO sources: (a) structural OUT-category reasons (4 codes; fire when cascade was on but file matched an OUT prefix); (b) mode-suppression reason `--no-cascade suppressed` (fires uniformly regardless of IN/OUT classification when --no-cascade is set). Wording now matches spec.md's `Ripple cascade by default` mode invariants.",
+      "ripple_cascade": {
+        "applied": ["openspec/changes/address-reviews-defaults-and-decision-forks/tasks.md"],
+        "flagged_not_applied": []
+      }
+    }
+  ],
+  "resolution_summary": {
+    "resolved": 5,
+    "stale": 0,
+    "deferred": 0,
+    "escalated": 0,
+    "by_classification": {
+      "trivial_fix": 4,
+      "trivial_fix_with_pushback_note": 1
+    }
+  },
+  "walk_mode_observation_meta": "Iter-2 walk was significantly tighter than iter-1: all 5 findings were trivial-fix (or trivial-fix-with-pushback) — no decision-required forks fired. The fresh subagent caught residue + contradictions that I (the original author) missed in my address-reviews iter-1 sweep, even though I had explicitly checked for residue at the time. Confirms the empirical case for fresh-context review: an author's recency bias makes their own residue invisible. The C1 Option D reframe's spec body + scenarios remained clean across both reviews — what slipped was lower-priority surfaces (design.md Risks table, schema-enumeration completeness, tasks.md grouping wording).",
+  "post_resolution_state": {
+    "openspec_validate": "passes (--strict)",
+    "tasks_total": 47,
+    "tasks_done": 0,
+    "deltas_total": 7
+  },
+  "final_assessment": "All 5 iter-2 findings resolved. 4 trivial fixes (W1, W2, S1, S3) + 1 trivial-fix with pushback note (S2 — partial pushback acknowledged cross-repo references are legitimate but added clarifying note to design.md). The cascade-scope Option D reframe held coherent through iter-2 fresh review; iter-2 findings were all peripheral cleanup (design.md Risks table residue, schema-enumeration gap, tasks-wording precision). openspec validate --strict passes.",
+  "next_recommended": "/opsx:apply address-reviews-defaults-and-decision-forks — proposal converged across 2 review cycles + 2 resolution walks; cascade-scope Option D framing tested and clean; producer/consumer field shapes aligned; resolution-log JSON shape additions complete with edge-case scenarios. Alternative: /opsx:review-external --as proposal for cross-AI second-opinion before applying — the C1 Option D reframe is novel and the hybrid structured/heuristic decision-fork design is subtle; external review would test whether the abstractions hold up under different reading (recommended given the substantive scope evolution in iter-1).",
+  "iteration_history_summary": {
+    "review_proposal_internal": 2,
+    "review_proposal_external": 0,
+    "address_reviews_proposal": 2,
+    "convergence_state_at_emit": "iter-2 walk clean; all findings resolved trivially"
+  }
+}
