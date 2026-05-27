@@ -1,0 +1,68 @@
+{
+  "command": "review",
+  "timestamp": "2026-05-27T01:02:24Z",
+  "change": "address-reviews-auto-discovers-internal-json",
+  "mode": "proposal",
+  "iteration": 1,
+  "depth": "full",
+  "flags": ["--fresh"],
+  "passes_run": ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
+  "passes_skipped": [],
+  "kind": "editorial",
+  "final_assessment": "No critical issues. 2 warning(s) to consider. Ready to apply (with noted improvements).",
+  "next_recommended": "/opsx:address-reviews address-reviews-auto-discovers-internal-json (auto-discovers this JSON) to walk findings, then /opsx:apply.",
+  "iteration_note": "First proposal-mode run for this change.",
+  "findings_summary": {
+    "critical": 0,
+    "warning": 2,
+    "suggestion": 3
+  },
+  "findings": [
+    {
+      "pass": "2",
+      "severity": "WARNING",
+      "file": "openspec/changes/address-reviews-auto-discovers-internal-json/tasks.md",
+      "line": 55,
+      "title": "Scenario count claim disagrees with spec (and with design.md count)",
+      "recommendation": "tasks.md:55 says '7 new scenarios covering happy path + 6 edge cases' (=13); design.md:105 says '6+ new scenarios cover happy path + 5 edge cases' (=11); spec.md has 10 total scenarios (2 baseline-equivalent + 8 net-new). Reconcile to a single accurate count across the three artifacts — e.g., 'eight new scenarios (1 happy path + 7 edge cases)' in both task 3.3 and design.md risks bullet."
+    },
+    {
+      "pass": "5",
+      "severity": "WARNING",
+      "file": "openspec/changes/address-reviews-auto-discovers-internal-json/specs/orbit-address-reviews/spec.md",
+      "line": 17,
+      "title": "Markers-precede-discovery rule is implicit, not codified",
+      "recommendation": "Spec has two adjacent scenarios ('Change-name positional scope with markers found' L17-20 and '...with no markers — auto-discovers internal JSON' L22-25). The precedence rule (markers grep MUST run BEFORE discovery; markers-found short-circuits discovery) is implied by their juxtaposition but never stated as a MUST. design.md D-priority-1 (L41-49) makes this explicit but it lives only in design. Add one sentence to the modified requirement summary at L5 (or a brief 'Discovery priority order' sentence in the markers-found scenario) so the spec self-contains the precedence rule and codegen reads it without cross-referencing design.md."
+    },
+    {
+      "pass": "6",
+      "severity": "SUGGESTION",
+      "file": "openspec/changes/address-reviews-auto-discovers-internal-json/specs/orbit-address-reviews/spec.md",
+      "line": 40,
+      "title": "Tie-break for identical filename TS tokens not specified",
+      "recommendation": "D-recency-1 says 'single global most-recent across both candidate types' by lexical sort of the filename <TS> token. The 'Multiple JSON candidates resolved by recency' scenario (L38-40) does not address the (rare) collision case where a review-<mode>-<TS>.json and an audit-drift-<TS>.json share an identical <TS> token (e.g., emitted in the same second). Add one sentence: 'When two candidates share an identical <TS> token, stable sort by filename string (audit-drift sorts before review-proposal which sorts before review-system) — deterministic tie-break, no AskUserQuestion.' Edge case; SUGGESTION not WARNING."
+    },
+    {
+      "pass": "5",
+      "severity": "SUGGESTION",
+      "file": "openspec/changes/address-reviews-auto-discovers-internal-json/specs/orbit-address-reviews/spec.md",
+      "line": 14,
+      "title": "Path-vs-change-name disambiguation rule not specified in spec",
+      "recommendation": "The 'Scoped scan — path or pattern' scenario (L12-15) says '(NOT a recognized change name)' but doesn't specify the heuristic for distinguishing a path argument from a change name. design.md D-discovery-1 says 'resolves to an existing change directory at openspec/changes/<name>/ or openspec/changes/archive/<date>-<name>/' — that rule is the disambiguation, but it's spec-implicit only. Consider adding one sentence to the modified requirement summary at L5: 'A positional argument is treated as a change name if it resolves to an existing directory at openspec/changes/<name>/ OR openspec/changes/archive/<date>-<name>/; otherwise it is treated as a path/pattern.' Closes the codegen ambiguity."
+    },
+    {
+      "pass": "2",
+      "severity": "SUGGESTION",
+      "file": "openspec/changes/address-reviews-auto-discovers-internal-json/tasks.md",
+      "line": 42,
+      "title": "Task 2.4 modifies an enum in a reference doc; consider whether the resolution-log emission contract is fully captured",
+      "recommendation": "Task 2.4 extends the run-summary-schema reference doc's `source` enum from `'whole-repo' | 'scope' | 'from-file'` to add `'auto-discovered'`. The spec scenario at L45 mentions this (`source` field as `'auto-discovered'`), so the contract IS declared. Suggest: also bump the field-note at run-summary-schema.md:69 explicitly (currently only describes the three existing values) so the schema reference fully matches the spec scenario."
+    }
+  ],
+  "stale_suppressed": [],
+  "scorecard": {
+    "completeness": {"critical": 0, "warning": 1, "suggestion": 2},
+    "correctness": {"critical": 0, "warning": 1, "suggestion": 0},
+    "coherence": {"critical": 0, "warning": 0, "suggestion": 1}
+  }
+}

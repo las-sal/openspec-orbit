@@ -1,0 +1,72 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-27T01:04:52Z",
+  "change": "address-reviews-auto-discovers-internal-json",
+  "final_assessment": "Walked all 5 findings from internal proposal-mode review iter-1 (Claude --fresh subagent). All resolved as trivial fixes; 0 deferrals. WARN 1 (scenario count drift across tasks.md L55 + design.md L105 + spec.md actual = 10) resolved by reconciling tasks 3.3 to '8 net-new = 1 happy path + 7 edge cases on top of 2 existing baseline = 10 total' AND design.md risks bullet to matching language. WARN 2 (markers-precede-discovery rule implicit in spec but explicit only in design) resolved by adding two normative paragraphs to the MODIFIED requirement intro (L5 area): Discovery priority order block (markers → JSON → empty) + Positional argument resolution block. SUGG 1 (TS collision tie-break unspecified) resolved by extending 'Multiple JSON candidates' scenario with stable lexicographic-sort tie-break + worked alphabetical-order example (audit-drift < review-proposal < review-system). SUGG 2 (path-vs-name disambiguation rule unspecified) resolved by the same MODIFIED requirement intro addition (Positional argument resolution block). SUGG 3 (run-summary-schema field-note prose update missing from task) resolved by broadening task 2.4 to explicitly require BOTH the JSON-shape enum extension AND the field-note prose update, with drift-risk explanation.",
+  "next_recommended": "Optional: re-run /opsx:review --as proposal --fresh for convergence-confirmation pass (expect 0/0/0); or skip directly to /opsx:apply harden-review-mode-recommendations since all 5 findings were trivial textual fixes with no behavior implications. Note: the address-reviews JSON below is being written INLINE (workaround) because the auto-discovery feature this change adds is the very feature that would make /opsx:address-reviews <change-name> work without --from-file. Once this change ships, future iter-2+ walks for THIS workflow will be 1-command instead of inline.",
+  "kind": "editorial",
+  "source": "inline-walk",
+  "source_path": "openspec/changes/address-reviews-auto-discovers-internal-json/.orbit-runs/review-proposal-2026-05-27T01-02-24Z.json",
+  "internal_reviewer": "Claude (--fresh subagent)",
+  "input_findings_summary": {
+    "critical": 0,
+    "warning": 2,
+    "suggestion": 3
+  },
+  "pushback_verification": "All 5 findings verified against current state. WARN 1 confirmed: spec.md has 10 scenarios; tasks.md L55 said '7 new + 6 edge cases' = 13; design.md L105 said '6+ new + 5 edge cases' = 11+; real 3-way drift. WARN 2 confirmed: design.md D-priority-1 (L41) explicitly codifies markers→JSON→empty; spec.md intro at L5 didn't carry that MUST. SUGG 1 confirmed: 'Multiple JSON candidates' scenario at L42 didn't address TS-token collision case. SUGG 2 confirmed: 'Scoped scan' scenario at L18 said '(NOT a recognized change name)' without defining recognition. SUGG 3 confirmed: tasks.md L42 only mentioned the JSON-shape enum at run-summary-schema.md L31 without the field-note prose at L69. No stale-suppressions.",
+  "resolution_summary": {
+    "resolved": 5,
+    "stale_suppressed": 0,
+    "deferred": 0,
+    "escalated": 0
+  },
+  "resolutions": [
+    {
+      "severity": "WARNING",
+      "title": "Scenario count drift across tasks.md + design.md + spec.md (real count = 10)",
+      "marker_source": "internal-review",
+      "classification": "trivial fix",
+      "decision": "reconcile both downstream artifacts to the spec's actual count: 8 net-new = 1 happy path + 7 edge cases on top of 2 existing baseline = 10 total",
+      "action": "Updated tasks.md L55 (task 3.3): replaced '7 new scenarios covering happy path + 6 edge cases' with '8 net-new scenarios = 1 happy path + 7 edge cases on top of the 2 existing baseline scenarios = 10 scenarios total'. Updated design.md L105: replaced '6+ new scenarios cover happy path + 5 edge cases' with '8 net-new scenarios cover the happy path (1) + 7 edge cases (markers-found-precedence / no-candidates / explicit --from-file override / multiple candidates with recency tie-break / standard ingest lifecycle / --mark no-longer-prerequisite / archive-location respected)' — also enumerated the 7 edge cases for clarity.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "WARNING",
+      "title": "Markers-precede-discovery rule implicit in spec; needs explicit MUST",
+      "marker_source": "internal-review",
+      "classification": "trivial fix",
+      "decision": "codify the priority order normatively in the MODIFIED requirement intro",
+      "action": "Added TWO normative paragraphs to spec.md MODIFIED requirement intro (around L5): (1) 'Discovery priority order (normative)' block enumerating the 3-step priority: markers grep first → JSON discovery → clean exit, with explicit notes that --from-file always overrides regardless of state; (2) 'Positional argument resolution (normative)' block specifying the change-name-recognition rule (resolves to openspec/changes/<name>/ or archive/<date>-<name>/), which doubles as the fix for SUGG 2.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "TS collision tie-break unspecified",
+      "marker_source": "internal-review",
+      "classification": "trivial fix",
+      "decision": "specify deterministic tie-break in the 'Multiple JSON candidates' scenario",
+      "action": "Extended spec.md 'Multiple JSON candidates resolved by recency' scenario with: 'If two candidate files share an identical <TS> token (rare; possible only if emitted within the same ISO-second), tie-break by stable lexicographic sort of the full filename (e.g., audit-drift-<TS>.json sorts before review-proposal-<TS>.json before review-system-<TS>.json) and the alphabetically-earlier filename wins.' Worked alphabetical-order example included for codegen-clarity.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "Path-vs-change-name disambiguation rule unspecified",
+      "marker_source": "internal-review",
+      "classification": "trivial fix",
+      "decision": "specify the recognition rule in the MODIFIED requirement intro",
+      "action": "Combined into the WARN 2 fix above — the new 'Positional argument resolution (normative)' block at spec.md L5 area specifies: 'a positional argument is treated as a change name if and only if it resolves to a directory at openspec/changes/<name>/ OR openspec/changes/archive/<YYYY-MM-DD>-<name>/. Otherwise the positional is treated as a path/pattern scope for the grep, and auto-discovery does NOT apply.' This rule applies normatively to both the 'Scoped scan' scenario and the 4 change-name-positional scenarios.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "Task 2.4 enum extension misses the field-note prose at L69",
+      "marker_source": "internal-review",
+      "classification": "trivial fix",
+      "decision": "broaden task 2.4 to require BOTH JSON-shape enum + field-note prose updates",
+      "action": "Updated tasks.md L42 (task 2.4) to explicitly require updates at BOTH sites: (a) the JSON-shape enum at run-summary-schema.md L31 (extend `whole-repo | scope | from-file` to include `auto-discovered`); AND (b) the field-note prose at L69 (currently only describes the three existing values — extend to describe auto-discovered and when it's used). Added a drift-risk note: 'mismatched enum vs prose is a drift risk caught by future audit-drift Cat 3'.",
+      "ripple_flagged": []
+    }
+  ],
+  "remaining_markers_in_scope": 0,
+  "persisted_escalations": []
+}

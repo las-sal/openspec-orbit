@@ -1,0 +1,18 @@
+{
+  "command": "propose",
+  "timestamp": "2026-05-27T00:59:36Z",
+  "change": "address-reviews-auto-discovers-internal-json",
+  "final_assessment": "Proposal artifacts generated for closing #10 (auto-discovery layer on top of just-archived #4's --from-file JSON ingest). 4 artifacts complete; openspec validate --strict passes. Spec delta scope: 1 MODIFIED requirement (`Address-reviews command available`) with 10 scenarios (2 existing + 8 new covering happy path + 6 edge cases). 5 design decisions documented (D-discovery-1: change-name-positional-only trigger; D-priority-1: markers→JSON→empty order; D-recency-1: Option A — single global most-recent across review+audit-drift; D-explicit-override: --from-file always wins; D-no-mark-prerequisite; D-no-stale-detection). Standalone mode; seed = issue #10 body + user's pre-decision on Option A from the discussion in chat.",
+  "next_recommended": "/opsx:review address-reviews-auto-discovers-internal-json --as proposal --fresh — pre-apply review per orbit canonical flow. After review converges: /opsx:apply (3 chunks, 13 tasks). Closes #10 (subsumes the convenience layer above the just-archived #4 parser machinery).",
+  "kind": "workflow",
+  "mode": "standalone",
+  "artifacts_created": ["proposal", "design", "specs", "tasks"],
+  "spec_delta_capabilities": ["orbit-address-reviews"],
+  "validation": "openspec validate address-reviews-auto-discovers-internal-json --strict → valid",
+  "issue_closed": "openspec-orbit#10",
+  "seed_sources": [
+    "GitHub issue #10 (filed 2026-05-19 during bootstrap-orbit-status-cli dogfooding)",
+    "User pre-decision on Option A (most recent by filename <TS> token regardless of command) from chat discussion",
+    "Just-archived #4 work (address-reviews-accepts-internal-json — provides the --from-file parser machinery this change orchestrates)"
+  ]
+}
