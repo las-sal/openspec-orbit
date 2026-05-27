@@ -49,7 +49,7 @@ For each finding under each severity section, construct a virtual marker with:
 | `description` | The `**Description**: <text>` field |
 | `source` | Always `external` (vs `inline` for grep-found markers) |
 
-Virtual markers walk the same lifecycle as inline markers, with one exception: **the marker-removal step (Step 3d in the SKILL.md walk) is a no-op for virtual markers** — there's no source-file marker text to delete.
+Virtual markers walk the same lifecycle as inline markers, with one exception: **the marker-removal step (Step 3e in the SKILL.md walk) is a no-op for virtual markers** — there's no source-file marker text to delete.
 
 ## Malformed input handling
 

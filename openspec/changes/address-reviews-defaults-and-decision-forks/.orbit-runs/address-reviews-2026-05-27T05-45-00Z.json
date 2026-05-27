@@ -1,0 +1,94 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-27T05:45:00Z",
+  "change": "address-reviews-defaults-and-decision-forks",
+  "kind": "editorial",
+  "iteration": 4,
+  "source": "auto-discovered",
+  "source_path": "openspec/changes/address-reviews-defaults-and-decision-forks/.orbit-runs/review-system-2026-05-27T05-30-00Z.json",
+  "source_command": "review",
+  "source_token": "2026-05-27T05-30-00Z",
+  "latest_apply_token": "2026-05-27T05-15-00Z",
+  "executed_by": "in_context",
+  "walk_mode": "per_finding",
+  "input_findings_summary": {
+    "count": 3,
+    "by_severity": { "critical": 0, "warning": 2, "suggestion": 1 }
+  },
+  "pushback_verification": "All 3 findings verified at walk-time. W1: external-findings-format.md:52 confirmed 'Step 3d' cross-reference; SKILL.md Step 3d is now 'Ripple cascade' (was 'Remove marker') per lifecycle reorder; the reference docs point at the wrong step. W2: internal-findings-format.md:103 confirmed identical issue. S1: openspec-audit-drift/SKILL.md:300 confirmed change-scoped recommendation emits `--from-file <this-json>`; baseline orbit-run-summary-emit/spec.md:403 confirmed it says the arg is NOT required (auto-discovery handles it); drift predates this change cycle (was supposed to land via address-reviews-auto-discovers-internal-json but the SKILL.md side wasn't updated).",
+  "resolutions": [
+    {
+      "id": "W1",
+      "severity": "WARNING",
+      "classification": "trivial_fix",
+      "action": "Updated .claude/skills/openspec-address-reviews/references/external-findings-format.md:52 — changed 'Step 3d in the SKILL.md walk' to 'Step 3e in the SKILL.md walk' to match the post-reorder lifecycle (3d=cascade, 3e=remove-marker).",
+      "ripple_cascade": {
+        "applied": [".claude/skills/openspec-address-reviews/references/external-findings-format.md"],
+        "flagged_not_applied": []
+      }
+    },
+    {
+      "id": "W2",
+      "severity": "WARNING",
+      "classification": "trivial_fix",
+      "action": "Updated .claude/skills/openspec-address-reviews/references/internal-findings-format.md:103 — same Step 3d → Step 3e fix. Identical root cause as W1.",
+      "ripple_cascade": {
+        "applied": [".claude/skills/openspec-address-reviews/references/internal-findings-format.md"],
+        "flagged_not_applied": []
+      }
+    },
+    {
+      "id": "S1",
+      "severity": "SUGGESTION",
+      "classification": "decision_required",
+      "user_decision_path": "Option A (Recommended) — fix inline now",
+      "recommendation_fork": {
+        "detected": true,
+        "source": "structured",
+        "options_presented": [
+          { "label": "A", "body": "Fix inline now (1-line edit; minor scope expansion)" },
+          { "label": "B", "body": "File as follow-up task in current change's tasks.md" },
+          { "label": "C", "body": "File as separate GitHub issue + leave SKILL.md untouched" },
+          { "label": "D", "body": "Defer / leave for /opsx:audit-drift to catch on next sweep" }
+        ],
+        "chosen": "A",
+        "discuss_invoked": false
+      },
+      "action": "Updated .claude/skills/openspec-audit-drift/SKILL.md:298-301 — removed `--from-file <this-json>` from the change-scoped findings-produced `next_recommended` template; added a normative postscript paragraph explaining that auto-discovery handles change-scoped invocations + cross-referencing the orbit-address-reviews `Address-reviews command available` requirement + clarifying that project-wide invocations still need explicit --from-file (no change-dir anchor). The command-mirror at .claude/commands/opsx/audit-drift.md was checked — no drift line there. Drift introduced by address-reviews-auto-discovers-internal-json archival cycle (2026-05-26) where the SKILL.md side was missed; now resolved.",
+      "ripple_cascade": {
+        "applied": [".claude/skills/openspec-audit-drift/SKILL.md"],
+        "flagged_not_applied": []
+      },
+      "scope_note": "Pre-existing drift surfaced by Pass 2 (Cohesion) — strictly out-of-scope for this change but inline-fixed per orbit's 'address drift when it surfaces' convention. The fix is a single SKILL.md prose update; no spec delta required (the baseline spec at orbit-run-summary-emit/spec.md:403 is already correct; the SKILL.md was the drifted surface)."
+    }
+  ],
+  "resolution_summary": {
+    "resolved": 3,
+    "stale": 0,
+    "deferred": 0,
+    "escalated": 0,
+    "by_classification": {
+      "trivial_fix": 2,
+      "decision_required": 1
+    }
+  },
+  "walk_mode_observation_meta": "Fresh-context system review caught 2 stale Step 3d→3e cross-references that I missed during apply — exactly the cross-reference type I was scrutinizing for during chunk 1 implementation but didn't sweep into sibling reference docs. The lifecycle reorder needs cross-reference sweep across `references/` not just the SKILL.md cross-ref I caught. Plus 1 pre-existing audit-drift drift fixed inline (Option A) per user choice. Total: 18 findings resolved across 4 review cycles (7 internal-proposal-iter1 + 5 internal-proposal-iter2 + 3 external-proposal-Codex + 3 internal-system-iter1).",
+  "post_resolution_state": {
+    "openspec_validate": "passes (--strict)",
+    "tasks_total": 43,
+    "tasks_done": 35,
+    "user_validation_remaining": 8,
+    "deltas_total": 7
+  },
+  "final_assessment": "All 3 system-mode iter-1 findings resolved. 2 trivial Step 3d→3e cross-reference fixes in reference docs (W1, W2). 1 pre-existing audit-drift drift fixed inline per user choice Option A (S1) — strictly scope expansion but cheap. openspec validate --strict passes. Implementation now coherent across spec deltas + SKILL.md + command mirrors + reference docs + README + onboard.",
+  "next_recommended": "/opsx:review-external --as system address-reviews-defaults-and-decision-forks — cross-AI second-opinion on the post-apply state. Per system-mode State-1 convention + the bootstrap-orbit-status-cli 3-of-3 empirical evidence, external review on system mode is the recommended path before archive. Alternative: /opsx:review --as system --fresh for a lighter in-context cross-check, or accept the State-1 risk and proceed to /opsx:archive.",
+  "iteration_history_summary": {
+    "review_proposal_internal": 2,
+    "review_proposal_external": 1,
+    "address_reviews_proposal": 3,
+    "review_system_internal": 1,
+    "review_system_external": 0,
+    "address_reviews_system": 1,
+    "convergence_state_at_emit": "Path B partial — internal system findings resolved via address-reviews iter-4; no external system review yet"
+  }
+}

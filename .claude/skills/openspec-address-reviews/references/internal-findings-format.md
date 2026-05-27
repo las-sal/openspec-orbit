@@ -100,7 +100,7 @@ For each entry in the JSON's `findings[]` array, construct a virtual marker with
 | `provenance_detail` | The entry's `pass` field (for review JSON) OR `category` field (for audit-drift JSON) — preserved verbatim in the resolution log |
 | `recommendation_options` (optional) | The entry's `recommendation_options[]` array if present and well-formed. Drives the structured decision-fork detection path in Step 3b.5 of the SKILL.md walk. Malformed input (< 2 entries, missing label/body) triggers heuristic fallback with a stderr warning + `structured_path_skipped_reason` field in the resolution log. |
 
-Virtual markers walk the same lifecycle as inline markers, with one exception: **the marker-removal step (Step 3d in the SKILL.md walk) is a no-op** — there's no source-file marker text to delete. (Same behavior as external-markdown virtual markers; the no-op is shared across all virtual-marker provenance.)
+Virtual markers walk the same lifecycle as inline markers, with one exception: **the marker-removal step (Step 3e in the SKILL.md walk) is a no-op** — there's no source-file marker text to delete. (Same behavior as external-markdown virtual markers; the no-op is shared across all virtual-marker provenance.)
 
 ### Command field discriminator
 

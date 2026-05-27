@@ -297,8 +297,10 @@ Per `orbit-run-summary-emit`'s `Audit-drift standalone recommendations` requirem
 
 **Change-scoped + findings produced**:
 ```
-next_recommended: "/opsx:address-reviews <name> --from-file <this-json> — N drift(s) detected; resolve before next workflow step"
+next_recommended: "/opsx:address-reviews <name> — N drift(s) detected; resolve before next workflow step"
 ```
+
+(The `--from-file <this-json>` argument is NOT required for change-scoped invocations: `/opsx:address-reviews` auto-discovers the most-recent `audit-drift-*.json` in the change's `.orbit-runs/` per the `Address-reviews command available` requirement in `orbit-address-reviews`. The just-written `audit-drift-<TS>.json` will be the most recent at recommendation-emit time, so auto-discovery resolves cleanly. Project-wide invocations still require explicit `--from-file` — see below — because they have no change-directory anchor.)
 
 **Change-scoped + clean (zero findings)** — defer to prior workflow narrative:
 - Read the most recent prior `.orbit-runs/*.json` for the same change (excluding the just-written audit-drift JSON itself).

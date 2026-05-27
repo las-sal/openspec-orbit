@@ -1,0 +1,95 @@
+{
+  "command": "review",
+  "timestamp": "2026-05-27T05:30:00Z",
+  "change": "address-reviews-defaults-and-decision-forks",
+  "kind": "editorial",
+  "mode": "system",
+  "iteration": 1,
+  "executed_by": "fresh_subagent",
+  "depth": "full",
+  "flags": {
+    "parallel": false,
+    "focus": null,
+    "strict": false,
+    "fresh": true,
+    "mark": false,
+    "skip_verify": false
+  },
+  "passes_run": ["0", "1", "2", "3", "4", "5", "6"],
+  "passes_skipped": ["4", "5"],
+  "passes_skipped_reasons": {
+    "4": "openspec/lenses/perspectives.md absent; skip Pass 4",
+    "5": "openspec/lenses/critical-paths.md absent; skip Pass 5"
+  },
+  "scorecard": {
+    "completeness": { "critical": 0, "warning": 0, "suggestion": 0, "status": "verify passes; 35/43 tasks done (8 user-validation intentionally unchecked); apply-2026-05-27T05-15-00Z.json shows chunk_complete=true tasks_remaining=8 user_validation_remaining=8 per orbit-conventions semantic rule" },
+    "correctness": { "critical": 0, "warning": 0, "suggestion": 0, "status": "baseline-compliance clean; cohesion clean; no regression of orbit-conventions / orbit-run-summary-emit / orbit-review / orbit-audit-drift baseline requirements" },
+    "coherence": { "critical": 0, "warning": 2, "suggestion": 1, "status": "2 stale cross-reference WARNINGs in references/*-findings-format.md (Step 3d → 3e reorder residue); 1 pre-existing SUGGESTION in audit-drift/SKILL.md `next_recommended` prose (out-of-scope drift from earlier change, not introduced here)" }
+  },
+  "findings_total": 3,
+  "findings_by_severity": { "critical": 0, "warning": 2, "suggestion": 1 },
+  "findings_by_pass": { "0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 3 },
+  "findings": [
+    {
+      "id": "S1-iter1",
+      "pass": "6",
+      "severity": "WARNING",
+      "dimension": "Coherence",
+      "title": "Stale Step 3d cross-reference in external-findings-format.md after Step 3d/3e reorder",
+      "file": ".claude/skills/openspec-address-reviews/references/external-findings-format.md",
+      "line": 52,
+      "recommendation": "Update `(Step 3d in the SKILL.md walk)` to `(Step 3e in the SKILL.md walk)`. The chunk-1 apply reordered the lifecycle so Step 3d is now `Ripple cascade` and Step 3e is `Remove the marker`. The reference doc's claim that 'marker-removal step (Step 3d)' is no-op for virtual markers now points to the wrong step. The Step 1 self-reference inside SKILL.md was updated during apply per the apply emit; these two reference docs were missed. Identical issue in internal-findings-format.md:103 (sibling finding W2-iter1)."
+    },
+    {
+      "id": "W2-iter1",
+      "pass": "6",
+      "severity": "WARNING",
+      "dimension": "Coherence",
+      "title": "Stale Step 3d cross-reference in internal-findings-format.md after Step 3d/3e reorder",
+      "file": ".claude/skills/openspec-address-reviews/references/internal-findings-format.md",
+      "line": 103,
+      "recommendation": "Update `(Step 3d in the SKILL.md walk)` to `(Step 3e in the SKILL.md walk)`. Same root cause as W1-iter1 — the apply-time Step 3d/3e reorder updated SKILL.md's internal cross-reference but missed the two reference docs. Suggested batch-fix: a single sed across both reference files. The address-reviews JSON-virtual-marker parse contract is unaffected by the renumbering; only the doc accuracy is wrong."
+    },
+    {
+      "id": "S3-iter1",
+      "pass": "6",
+      "severity": "SUGGESTION",
+      "dimension": "Coherence",
+      "title": "audit-drift `next_recommended` prose retains `--from-file <this-json>` despite orbit-run-summary-emit baseline dropping the argument for change-scoped invocations (PRE-EXISTING; NOT introduced by this change)",
+      "file": ".claude/skills/openspec-audit-drift/SKILL.md",
+      "line": 300,
+      "recommendation": "OUT OF SCOPE for this change — flagging for visibility only. The baseline `orbit-run-summary-emit` spec (`openspec/specs/orbit-run-summary-emit/spec.md:403`) says change-scoped audit-drift's `next_recommended` SHOULD now be `/opsx:address-reviews <name> — N drift(s) detected; resolve before next workflow step` (no `--from-file <this-json>` arg; auto-discovery picks it up). The implementation in `.claude/skills/openspec-audit-drift/SKILL.md:300` and the schema doc at line 30 still emit the older `--from-file <this-json>` form. Per pushback discipline: `git log` confirms this drift was NOT introduced by `2706383 address-reviews-defaults-and-decision-forks: apply` — the SKILL.md `next_recommended` prose pre-dates this change. The auto-discovery affordance from prior change `address-reviews-accepts-internal-json` made the `--from-file <this-json>` argument unnecessary; this change adds `recommendation_options` to audit-drift but does NOT modify the existing `next_recommended` prose. Recommended: file as a follow-up issue or fold into the next change that touches audit-drift. Filing as SUGGESTION (not WARNING) per false-positive bias — this is auto-discovery-cleanup polish, not a functional bug."
+    }
+  ],
+  "stale_findings_suppressed": [
+    {
+      "title": "options_presented field shape inconsistency",
+      "evidence": "Verified at .claude/skills/openspec-address-reviews/references/run-summary-schema.md:65 + SKILL.md:169,199 — all use structured [{label, body}] shape matching producer-side recommendation_options. No flat-string [\"A: ...\"] residue in implementation surface. Pre-Option-D flat-string shape only appears in .orbit-runs/ audit-trail + explore.md (per CLAUDE.md, explore.md is historical pre-propose staging — not residue)."
+    },
+    {
+      "title": "ripple_flagged_files_aggregate v1 residue",
+      "evidence": "Verified via repo-wide grep — all 16 hits are legitimate. References/run-summary-schema.md:89,112 documents the v1→v2 migration rule (intentional); design.md:192,199 documents v1 in the migration-risks section (intentional); spec delta:231,235,237,238 documents the v1 baseline (intentional); explore.md + .orbit-runs + proposal.md document the original problem (intentional history). NO live v1-field-emitting code or doc; the field is documented as REMOVED not RENAMED."
+    },
+    {
+      "title": "Pre-Option-D vocabulary residue (`code file; cascade off`, `markdown-only`, `in-scope markdown`, etc.)",
+      "evidence": "Verified — all hits in design.md `Alternatives Considered` section legitimately describe the rejected earlier draft (history, not residue); .orbit-runs/ entries are audit-trail (immutable history); archive/ entries are immutable historical context. NO residue in implementation surface (.claude/, README.md, current spec deltas, current design.md decisions)."
+    },
+    {
+      "title": "recommendation_options ≥ 2 entries rule consistency",
+      "evidence": "Verified across producer specs (orbit-review delta + orbit-audit-drift delta), consumer SKILL.md (openspec-address-reviews Step 3b.5), reference docs (run-summary-schema.md + internal-findings-format.md), and command-mirror (opsx/address-reviews.md). All three consumer paths handle malformed input (zero/1 entry, missing label/body) via heuristic fallback + structured_path_skipped_reason field — consistent across SKILL.md, command-mirror, references, and spec delta."
+    },
+    {
+      "title": ".openspec.yaml anomalies",
+      "evidence": "Verified — file contains only `schema: spec-driven` + `created: 2026-05-27`. Normal/minimal; no anomalies."
+    },
+    {
+      "title": "Pass 0 verify-change task state alarm",
+      "evidence": "Verified — tasks.md state is 35 AI-doable [x] + 8 user-validation [ ] unchecked. Apply emit's chunk_complete=true with user_validation_remaining=8 matches tasks_remaining=8 per orbit-conventions semantic rule (line 283): `tasks_remaining > 0 AND user_validation_remaining == tasks_remaining` is the expected state at the final chunk's emit. NOT a CRITICAL; verify-change passes; this is the documented terminal state for changes with user-validation tasks."
+    }
+  ],
+  "iteration_history_summary": "iter-1 internal proposal review surfaced 1 CRITICAL (cascade scope reframe — drove Option D); iter-2 fresh-subagent proposal review surfaced 5 residue findings (all resolved); iter-1 external (GPT-5 Codex) proposal surfaced 3 findings (2 WARN + 1 SUGG; all resolved). All 3 address-reviews walks resolved cleanly. Apply landed in 4 chunks (1,2,3,4 — Chunk 5 is the user-validation handoff). This is iter-1 of system-mode review (no prior `external-system-*.md` for this change).",
+  "convergence_state": 1,
+  "convergence_state_label": "no prior external system review",
+  "final_assessment": "No critical issues. 2 warning(s) to consider. No prior external system review for this change. Per the 3-of-3 empirical evidence (bootstrap-orbit-status-cli), in-context system review missed all real implementation bugs caught by external review. Recommended: /opsx:review-external --as system address-reviews-defaults-and-decision-forks before archive (or /opsx:review --as system --fresh for a lighter cross-check). Or accept the risk and proceed to /opsx:archive (with the 2 warnings addressed via /opsx:address-reviews first).",
+  "next_recommended": "/opsx:address-reviews address-reviews-defaults-and-decision-forks — 2 WARNINGs are mechanical Step 3d→3e cross-reference fixes (sibling files in references/); walk both via auto-discovery, then either /opsx:review-external --as system for cross-AI cross-check or proceed to /opsx:archive accepting the in-context-only risk"
+}
