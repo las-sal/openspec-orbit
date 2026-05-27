@@ -1,0 +1,15 @@
+{
+  "command": "review-external",
+  "timestamp": "2026-05-27T05:50:00Z",
+  "change": "address-reviews-defaults-and-decision-forks",
+  "kind": "editorial",
+  "mode": "system",
+  "iteration": 1,
+  "prompt_path": "openspec/changes/address-reviews-defaults-and-decision-forks/.orbit-runs/external-prompt-system-2026-05-27T05-50-00Z.md",
+  "target": null,
+  "awaiting_findings": true,
+  "recommended_session": "Fresh different-AI (GPT-5 Codex recommended — prior proposal-mode iter-1 by Codex caught 3 substantive findings that 2 internal cycles missed; cross-AI value confirmed empirically for this change's novel reframe). System-mode review is a different surface from proposal — even if Codex saw the proposal, the post-apply state is fresh ground. Alternative: fresh Claude for a different model perspective. Per the bootstrap-orbit-status-cli 3-of-3 empirical evidence, external system review is the recommended gate before archive — in-context system review missed all real implementation bugs in that change's first cycle.",
+  "uncommitted_changes_warning": null,
+  "final_assessment": "External system-review prompt packaged at openspec/changes/address-reviews-defaults-and-decision-forks/.orbit-runs/external-prompt-system-2026-05-27T05-50-00Z.md. Self-contained — full cycle context (2 internal proposal + 1 external proposal + apply + 1 internal system + 4 walks; 18 findings resolved); 7-pass system-mode instructions including pre-apply Pass 0 + 6 system-wide passes; 8 specific probes scrutinizing the post-apply state (lifecycle-reorder ripples, schema migration, field-shape consistency, decision-fork heuristic strictness, etc.); output format with commit+push step per orbit convention.",
+  "next_recommended": "Paste openspec/changes/address-reviews-defaults-and-decision-forks/.orbit-runs/external-prompt-system-2026-05-27T05-50-00Z.md into the target AI (GPT-5 Codex recommended), wait for findings push, then /opsx:address-reviews address-reviews-defaults-and-decision-forks (auto-discovery resolves to the pushed external-system-<TS>.md file as the most-recent .orbit-runs/ artifact)"
+}
