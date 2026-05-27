@@ -24,7 +24,7 @@ The repo uses `@review: <text>` as the inline-review marker syntax (markdown car
 - `@review(escalated): <text>` — escalated; needs human decision
 - `@todo: <text>` — known follow-up work, not a review item
 
-Markers are resolved via `/opsx:address-reviews` (lean v1: discover → triage → walk → ripple flag → report; removes markers on resolution).
+Markers are resolved via `/opsx:address-reviews`: discover → triage → walk each finding through pushback → classify → fix → ripple-cascade → remove-marker. Walk-mode (per-finding) is the default; `--batch` opts in. Cascade-by-default auto-applies parallel edits to ripple-flagged IN-set files (everything outside the four lifecycle-invariant OUT categories: audit trail, baseline specs, cross-change/archive, safe-exclusions); `--no-cascade` opts out. Marker removal happens AFTER cascade.
 
 ## Persistence layout
 

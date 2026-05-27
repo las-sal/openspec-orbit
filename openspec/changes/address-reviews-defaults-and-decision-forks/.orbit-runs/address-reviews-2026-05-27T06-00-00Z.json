@@ -1,0 +1,89 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-27T06:00:00Z",
+  "change": "address-reviews-defaults-and-decision-forks",
+  "kind": "editorial",
+  "iteration": 5,
+  "source": "from-file",
+  "source_path": "openspec/changes/address-reviews-defaults-and-decision-forks/.orbit-runs/external-system-2026-05-27T04-43-42Z.md",
+  "source_command": "review-external",
+  "executed_by": "in_context",
+  "walk_mode": "per_finding",
+  "external_reviewer": "GPT-5 Codex",
+  "input_findings_summary": {
+    "count": 3,
+    "by_severity": { "critical": 0, "warning": 3, "suggestion": 0 }
+  },
+  "pushback_verification": "All 3 findings verified at walk-time by direct line read. EW1: SKILL.md:32 Change-completeness discipline confirmed still said 'v1 does NOT auto-cascade — the user gets a list of files to check, not silent edits.' EW2: SKILL.md:133 classifier confirmed stale and unresolvable still said 'Skip directly to 3d' / 'proceed to 3d' — after the lifecycle reorder, Step 3d is ripple cascade and Step 3e is remove-marker; the text would route stale findings through cascade unnecessarily AND skip the actual remove-marker step. EW3: CLAUDE.md:27 confirmed still taught 'discover → triage → walk → ripple flag → report' lifecycle, conflicting with the newly landed cascade-by-default + walk-mode default + Step 3e marker-removal. All 3 are real lifecycle-reorder + cascade-by-default ripple residue that 2 internal cycles + the apply itself missed.",
+  "resolutions": [
+    {
+      "id": "EW1",
+      "severity": "WARNING",
+      "classification": "trivial_fix",
+      "action": "Rewrote .claude/skills/openspec-address-reviews/SKILL.md:32 Change-completeness discipline. Old text said 'v1 does NOT auto-cascade — the user gets a list of files to check, not silent edits' and referenced 'Step 5 below'. New text describes the cascade-by-default contract: derive the ripple-flag set, apply parallel edits via Step 3d ripple cascade, IN-set auto-applied, OUT-set recorded in flagged_not_applied[] with structural reason, --no-cascade as opt-out. Residue sweep guidance preserved.",
+      "ripple_cascade": {
+        "applied": [".claude/skills/openspec-address-reviews/SKILL.md"],
+        "flagged_not_applied": []
+      }
+    },
+    {
+      "id": "EW2",
+      "severity": "WARNING",
+      "classification": "trivial_fix",
+      "action": "Rewrote .claude/skills/openspec-address-reviews/SKILL.md:133 classifier prose for all 4 outcomes. Stale now correctly skips to Step 3e (was 3d; clarifies Step 3b.5 + 3d do NOT fire — no fix, no ripples). Trivial fix clarifies Step 3b.5 doesn't fire but 3d does after fix. Decision required explicitly references Step 3b.5 fork detection then 3d cascade. Unresolvable default action 'filed as task' happens in 3c; 3d does NOT fire (no fix applied); 3e marker-removal proceeds normally — for @todo/@review(escalated) alternatives, marker is transformed-in-place (Step 3e) rather than removed, and cascade still does not fire.",
+      "ripple_cascade": {
+        "applied": [".claude/skills/openspec-address-reviews/SKILL.md"],
+        "flagged_not_applied": []
+      }
+    },
+    {
+      "id": "EW3",
+      "severity": "WARNING",
+      "classification": "trivial_fix",
+      "action": "Rewrote CLAUDE.md:27 marker-resolution lifecycle line. Old: 'lean v1: discover → triage → walk → ripple flag → report; removes markers on resolution'. New: 'discover → triage → walk each finding through pushback → classify → fix → ripple-cascade → remove-marker' + walk-mode default + cascade-by-default + 4 OUT categories + --batch / --no-cascade opt mechanics + marker removal AFTER cascade. CLAUDE.md auto-loads for future agents; getting this right propagates the new model across sessions.",
+      "ripple_cascade": {
+        "applied": ["CLAUDE.md"],
+        "flagged_not_applied": []
+      }
+    }
+  ],
+  "additional_residue_swept": [
+    {
+      "finding": "SKILL.md:11 opening prose still said 'lean v1 lifecycle: discover → triage → walk → ripple flag → report'",
+      "action": "Rewrote the opening prose to match the new lifecycle (walk includes inner cycle with pushback → classify → fix → ripple-cascade → remove-marker per #11 + #14). Caught by my own sweep after walking EW1-EW3."
+    },
+    {
+      "finding": "commands/opsx/address-reviews.md:36 'cut from lean v1' is historical reference, NOT residue",
+      "action": "Suppressed — this is legitimate history of the lean-v1 design decision (--only/--list were considered then cut). No edit needed."
+    }
+  ],
+  "resolution_summary": {
+    "resolved": 3,
+    "stale": 0,
+    "deferred": 0,
+    "escalated": 0,
+    "by_classification": {
+      "trivial_fix": 3
+    }
+  },
+  "walk_mode_observation_meta": "Codex external system review caught 3 lifecycle-reorder + cascade-by-default ripple effects that BOTH 2 internal cycles AND the apply itself missed. The residue lived in: (a) the disciplines section near the top of SKILL.md, (b) the classifier prose, (c) CLAUDE.md governing doc. Plus I caught a 4th (SKILL.md:11 opening prose) during my own sweep after walking EW1-EW3. Total: 4 lifecycle-reorder residue sites caught by external review + author sweep. The empirical case for external system review on novel-reframe changes: confirmed strongly (matches bootstrap-orbit-status-cli 3-of-3 evidence).",
+  "post_resolution_state": {
+    "openspec_validate": "passes (--strict)",
+    "tasks_total": 43,
+    "tasks_done": 35,
+    "user_validation_remaining": 8,
+    "deltas_total": 7,
+    "lifecycle_reorder_residue_sites_addressed": 4
+  },
+  "final_assessment": "All 3 Codex external system iter-1 findings resolved as trivial fixes. PLUS 1 additional residue site (SKILL.md:11 opening prose) caught by author-sweep during EW1-EW3 walk and fixed inline. 21 findings total resolved across 5 review cycles (7 internal-proposal-iter1 + 5 internal-proposal-iter2 + 3 external-proposal-Codex + 3 internal-system-iter1 + 3 external-system-Codex). The lifecycle reorder + cascade-by-default reframe has now been validated through 2 internal + 2 external review cycles; the implementation matches the spec end-to-end. openspec validate --strict passes.",
+  "next_recommended": "/opsx:review --as system address-reviews-defaults-and-decision-forks --fresh — confirm Path B convergence (external findings resolved via address-reviews). The fresh-context internal system review re-validates the final state against the spec one more time. Alternative: commit + push + /opsx:archive (Path B convergence is already established via this resolution log; the next /opsx:review would be the convergence-state checkpoint).",
+  "iteration_history_summary": {
+    "review_proposal_internal": 2,
+    "review_proposal_external": 1,
+    "address_reviews_proposal": 3,
+    "review_system_internal": 1,
+    "review_system_external": 1,
+    "address_reviews_system": 2,
+    "convergence_state_at_emit": "Path B — external system findings resolved via address-reviews iter-5"
+  }
+}

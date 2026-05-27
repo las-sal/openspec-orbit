@@ -8,7 +8,7 @@ metadata:
   version: "0.1"
   capability: orbit-address-reviews
 ---
-Resolve `@review:` markers across the repo (or external-review findings from a file) with pushback discipline. The lean v1 lifecycle: **discover → triage → walk → ripple flag → report**. Markers are removed from their source files on resolution (the marker-removal invariant) so they don't leak into canonical artifacts.
+Resolve `@review:` markers across the repo (or external-review findings from a file) with pushback discipline. The lifecycle: **discover → triage → walk → report**, where each walked finding completes its inner cycle (pushback → classify → fix → ripple-cascade → remove-marker) in walk-mode by default (per #11). Cascade-by-default auto-applies parallel edits to ripple-flagged IN-set files (per #14). Markers are removed from their source files on resolution (the marker-removal invariant) so they don't leak into canonical artifacts.
 
 **Generates resolutions; does not generate findings.** This is the counterpart to `/opsx:review`. Primary use case: close the cross-AI review cycle by ingesting external-AI findings via `--from-file`. Secondary use case: walk repo-scanned inline `@review:` markers with structured pushback.
 
@@ -29,7 +29,7 @@ Do NOT re-edit already-fixed state. Stale markers get removed without further ed
 
 **Read-before-reference (authoring-time)**. When a marker resolution edits a file (trivial fix or applied decision), reference the actual current content of the file — read first. Don't assume the structure based on what the marker text describes; the file may have evolved since the marker was placed. Re-read after any edit cycle to confirm the change landed correctly.
 
-**Change completeness (modification-time)**. When a marker's resolution touches related artifacts (e.g., resolving a spec marker has downstream design.md / proposal.md implications), surface those as **ripple-flagged files** (Step 5 below). v1 does NOT auto-cascade — the user gets a list of files to check, not silent edits. After mechanical replacement (e.g., a find-replace as part of a trivial fix), sweep for residue: doubled words, broken references, content overwrites. Known residue must not be left for a downstream review to catch.
+**Change completeness (modification-time)**. When a marker's resolution touches related artifacts (e.g., resolving a spec marker has downstream design.md / proposal.md implications), derive the **ripple-flag set** and apply parallel edits via the Step 3d ripple cascade. Cascade-by-default auto-applies edits to IN-set files (everything outside the four lifecycle-invariant OUT categories: audit trail, baseline specs, cross-change/archive, safe-exclusions); OUT-set files are recorded in `ripple_cascade.flagged_not_applied[]` with a structural reason. `--no-cascade` opts out — ALL ripple-flagged files land in `flagged_not_applied[]` with reason `--no-cascade suppressed` regardless of IN/OUT classification. After mechanical replacement as part of a trivial fix, sweep the just-touched files for residue (doubled words, broken references, content overwrites). Known residue must not be left for a downstream review to catch.
 
 ## Steps
 
@@ -130,10 +130,10 @@ Run the verification procedure. Determine: still applies / already fixed / parti
 
 Apply heuristics in order:
 
-1. **stale** — pushback determined the issue is already resolved at HEAD. Skip directly to 3d (remove + log as ⚠ Stale).
-2. **trivial fix** — single-line edit or a few-line localized edit with one obvious correct answer (no design implication, no scope question, no ambiguity in intent). Proceed to 3c without `AskUserQuestion`.
-3. **decision required** — resolution requires ambiguity resolution, a design choice between defensible alternatives, a scope decision, or has implications beyond the immediate location. Surface 2–4 concrete options via **AskUserQuestion** (not open-ended).
-4. **unresolvable** — resolution needs information not currently available (deferred decision, future capability, blocked on external input). Default: file as a task in `tasks.md` (proceed to 3d with action "filed as task"). Alternatives via **AskUserQuestion**: convert to `@todo: <content>`, escalate to `@review(escalated): <content with explanation>`.
+1. **stale** — pushback determined the issue is already resolved at HEAD. Skip directly to Step 3e (marker removal no-op for virtual markers; log as ⚠ Stale). Step 3b.5 (decision-fork detection) and Step 3d (ripple cascade) do NOT fire for stale findings — no fix was applied so no ripples to derive.
+2. **trivial fix** — single-line edit or a few-line localized edit with one obvious correct answer (no design implication, no scope question, no ambiguity in intent). Proceed to 3c without `AskUserQuestion`. Step 3b.5 does NOT fire (no decision needed); Step 3d ripple cascade DOES fire after the fix lands.
+3. **decision required** — resolution requires ambiguity resolution, a design choice between defensible alternatives, a scope decision, or has implications beyond the immediate location. Step 3b.5 (decision-fork detection) fires if the recommendation is disjunctive; otherwise surface 2–4 concrete options via **AskUserQuestion** (not open-ended). Step 3d cascade fires after the fix.
+4. **unresolvable** — resolution needs information not currently available (deferred decision, future capability, blocked on external input). Default: file as a task in `tasks.md` in Step 3c (action "filed as task"); Step 3d cascade does NOT fire (no fix was applied; no ripples); Step 3e marker-removal proceeds normally. Alternatives via **AskUserQuestion**: convert to `@todo: <content>` or escalate to `@review(escalated): <content with explanation>` — in both alternative cases, the marker is **transformed** in place (Step 3e) rather than removed; cascade still does not fire.
 
 #### 3b.5. Decision-fork detection (gated on classify == "decision required")
 
