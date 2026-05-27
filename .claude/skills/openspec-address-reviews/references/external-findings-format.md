@@ -1,6 +1,6 @@
 # Reference: external-findings file format (for `--from-file` markdown parsing)
 
-This is ONE of two supported `--from-file` formats; the other is internal review JSON — see `internal-findings-format.md`. The parser auto-detects format via content sniff (leading `# External Review:` → this format; leading `{` → JSON).
+This is ONE of two supported `--from-file` formats; the other is internal findings JSON (covers both `command: "review"` AND `command: "audit-drift"` shapes) — see `internal-findings-format.md`. The parser auto-detects format via content sniff (leading `# External Review:` → this format; leading `{` → JSON).
 
 The `--from-file <path>` markdown path ingests an external-AI's findings file. The file is produced by `/opsx:review-external` workflows — typically the external AI writes it after pulling the repo and reading the prompt.
 

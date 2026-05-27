@@ -85,6 +85,23 @@ The change is strictly additive: existing flows (markers, `--from-file`, `--mark
 - Auto-discovery makes `--mark` purely a stylistic choice (do you want markers in your diff?), not a structural requirement.
 - The cost is documentation work, not behavior change — `--mark` still drops markers; address-reviews still walks them via grep.
 
+### D-audit-drift-recommendation-update: Update audit-drift's emitted recommendation to use auto-discovery (added iter-2 system external)
+
+**Decision**: As part of this change, MODIFY the baseline `orbit-run-summary-emit` `Audit-drift standalone recommendations` requirement to drop `--from-file <this-json>` from the change-scoped audit-drift findings recommendation. New change-scoped recommendation: `"/opsx:address-reviews <name> — N drift(s) detected; resolve before next workflow step"`. Project-wide recommendation stays unchanged.
+
+**Why**:
+- Baseline `orbit-run-summary-emit/spec.md:412` explicitly says "the `--from-file` flag becomes optional once openspec-orbit#10 lands" — this change IS #10 landing. Honoring the baseline's own forward-promise IS in-scope.
+- Without this update, post-this-change audit-drift would emit a recommendation with a now-unnecessary `--from-file` argument; users would type a longer command than needed. Working-but-suboptimal — but the baseline already named this change as the trigger to fix it.
+- Project-wide audit-drift stays as-is because there's no change-directory anchor; auto-discovery requires a positional change-name to know where to look.
+
+**Why include in this change rather than a follow-up**:
+- The baseline's L412 parenthetical creates an obvious 1:1 dependency. Landing #10 without updating the baseline's own forward-reference leaves stale documentation.
+- The delta is tiny (~3 lines + 1 scenario update). Trivial scope-add.
+- Caught by GPT-5 Codex's iter-1 system-mode external review (SUGG 2); resolving in this change avoids a follow-up.
+
+**Alternative considered**:
+- Defer to a follow-up change. Rejected — the baseline's L412 names this change explicitly as the trigger; deferring leaves the baseline self-contradictory until follow-up lands.
+
 ### D-no-stale-detection: Don't duplicate the apply-token staleness logic at discovery time
 
 **Decision**: Discovery picks the most-recent JSON regardless of whether the change's `apply-*.json` tokens are newer (which would mean artifacts changed since the JSON was written). The resolution log records the source-JSON timestamp and the most-recent apply timestamp; the user reads and decides.

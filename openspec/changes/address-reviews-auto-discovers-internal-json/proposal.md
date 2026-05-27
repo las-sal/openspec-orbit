@@ -28,6 +28,7 @@ Cost-up-front principle: orbit's canonical "review → address-reviews" workflow
 ### Modified Capabilities
 
 - `orbit-address-reviews`: MODIFIED `Address-reviews command available` requirement — extends the discovery step with auto-discovery as a fallback when no markers found. ADDED scenarios for: auto-discovery happens / multiple candidates resolved by recency / discovery finds nothing / explicit `--from-file` overrides discovery / whole-repo invocation skips discovery / path/pattern scope skips discovery.
+- `orbit-run-summary-emit`: MODIFIED `Audit-drift standalone recommendations` requirement — change-scoped audit-drift findings recommendation drops the `--from-file <this-json>` argument (now `/opsx:address-reviews <name>`) since auto-discovery handles the JSON lookup. Project-wide recommendation unchanged (no change-directory anchor; `--from-file` still required). Codifies the change-trigger that baseline L412 already names — "the `--from-file` flag becomes optional once openspec-orbit#10 lands". Caught by external GPT-5 Codex system-mode iter-1 SUGG 2.
 
 ## Impact
 

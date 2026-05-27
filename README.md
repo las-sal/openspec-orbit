@@ -529,8 +529,10 @@ The reason `/opsx:review-external` and `--from-file` exist: the manual cross-AI 
 │     → 3-dim scorecard in chat; address what you can                   │
 │                                                                       │
 │  2. Address findings you agree with                                   │
-│     /opsx:address-reviews                                             │
-│     (walks any @review: markers you've left in artifacts)             │
+│     /opsx:address-reviews foo                                         │
+│     (auto-discovers the just-written review JSON in .orbit-runs/      │
+│      OR walks any @review: markers you've left in artifacts —         │
+│      no --mark pre-step or --from-file flag needed)                   │
 │                                                                       │
 │  3. Generate the handoff package                                      │
 │     /opsx:review-external foo --as proposal                           │

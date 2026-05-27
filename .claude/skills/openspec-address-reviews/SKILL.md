@@ -1,8 +1,8 @@
 ---
 name: openspec-address-reviews
-description: "Resolve `@review:` markers anywhere in the repo (or external-review findings via `--from-file`) by walking each through pushback → classify → fix → ripple-flag → remove-marker. Use after `/opsx:review --mark` drops markers, after an external AI returns findings, or any time the repo has accumulated `@review:` annotations."
+description: "Resolve `@review:` markers anywhere in the repo (or review findings via `--from-file` markdown / JSON, or auto-discovered internal review/audit-drift JSON when invoked with a change name and no markers) by walking each through pushback → classify → fix → ripple-flag → remove-marker. Use after `/opsx:review` writes findings to `.orbit-runs/` (auto-discovered; no `--mark` pre-step needed), after `/opsx:review-external` returns external findings, after `/opsx:audit-drift` writes drift findings, or any time the repo has accumulated `@review:` annotations. `--mark` is optional — auto-discovery makes the canonical 2-command `review → address-reviews` workflow work without pre-marking."
 license: MIT
-compatibility: Requires openspec CLI. Ingests findings files written by `/opsx:review-external`. Pairs with `/opsx:review --mark` (which writes markers).
+compatibility: Requires openspec CLI. Ingests findings via `--from-file` (external-review markdown OR internal `review-<mode>-*.json` OR `audit-drift-*.json`) OR via auto-discovery from `.orbit-runs/` when invoked with a change-name positional and no inline markers found. `--mark` is optional, not prerequisite.
 metadata:
   author: openspec-orbit
   version: "0.1"
@@ -320,7 +320,9 @@ This example demonstrates the JSON path: the input is an internal `review-system
 
 ## Graceful degradation
 
-- **No markers found** → emit `No @review: markers in scope. Nothing to do.` and exit clean.
+- **No markers found in bare or path/pattern scope** → emit `No @review: markers in scope. Nothing to do.` and exit clean.
+- **No markers found in change-name scope, no candidate JSON in `.orbit-runs/`** → emit `No @review: markers in scope and no internal review/audit-drift JSON in .orbit-runs/. Nothing to walk.` and exit clean. Note: this case ONLY applies after Step 1's auto-discovery fallback has been checked; bare/path scope never reaches auto-discovery (no `.orbit-runs/` anchor).
+- **No markers found in change-name scope, candidate JSON in `.orbit-runs/` (auto-discovery fires)** → NOT a graceful-degradation case; proceed with the discovered JSON as if it had been passed via `--from-file` per Step 1's auto-discovery fallback.
 - **`--from-file` path missing** → fail clearly with usage; don't fall back to repo scan.
 - **`--from-file` neither-format-detected** → emit a clean format-mismatch error naming both supported formats (referencing `references/external-findings-format.md` and `references/internal-findings-format.md`) plus the observed leading-content snippet; refuse to act on partial parse. Concrete error shape:
 

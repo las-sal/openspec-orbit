@@ -48,6 +48,10 @@ Sync-specs at archive applies the MODIFIED requirement to baseline.
   - (d) Add field-note prose for each of the new fields explaining when they're emitted (auto-discovered context only) and why (audit-trail mitigation per D-no-stale-detection and D-recency-1)
   - Drift-risk note: mismatched enum vs prose vs spec-scenario is a drift risk caught by future audit-drift Cat 3.
 
+## 2.5 Audit-drift recommendation update (orbit-run-summary-emit baseline)
+
+- [x] 2.5 (Added iter-2 system external) Spec delta at `openspec/changes/address-reviews-auto-discovers-internal-json/specs/orbit-run-summary-emit/spec.md` MODIFIES the baseline `Audit-drift standalone recommendations` requirement: change-scoped audit-drift findings recommendation drops the `--from-file <this-json>` argument (auto-discovery picks it up via recency rule); project-wide audit-drift unchanged (no change-directory anchor). Scenario `Change-scoped standalone audit-drift with findings recommends address-reviews` updated accordingly. Honors the baseline's own L412 parenthetical naming #10 as the trigger. No implementation changes — sync-specs at archive applies the MODIFIED requirement to baseline.
+
 ## 3. Validation + user-validation handoff
 
 - [x] 3.1 Run `openspec validate address-reviews-auto-discovers-internal-json --strict`; resolve any validation findings.

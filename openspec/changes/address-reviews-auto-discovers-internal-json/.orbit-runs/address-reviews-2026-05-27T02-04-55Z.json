@@ -1,0 +1,72 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-27T02:04:55Z",
+  "change": "address-reviews-auto-discovers-internal-json",
+  "final_assessment": "Walked all 5 findings from external system-mode review iter-1 (GPT-5 Codex). 0 CRITICAL / 2 WARNING / 3 SUGGESTION → all 5 resolved. WARN 1 (SKILL graceful-degradation short-circuits auto-discovery) resolved by splitting the 'No markers found' bullet into 3 cases: bare/path scope (old message); change-name scope with no candidate JSON (new auto-discovery-failed message); change-name scope with candidate JSON (proceed, not a degradation case). WARN 2 (SKILL frontmatter description + compatibility still pair with --mark) resolved by rewriting both fields to mention auto-discovered JSON sources + explicit --mark-is-optional framing. SUGG 1 (README L531 workflow walkthrough teaches marker-only follow-up) resolved by updating the ASCII workflow box to show /opsx:address-reviews foo with auto-discovery + no --mark pre-step. SUGG 2 (orbit-run-summary-emit audit-drift recommendation hard-codes --from-file) resolved by adding a SECOND CAPABILITY DELTA to this change: MODIFIED `Audit-drift standalone recommendations` requirement drops --from-file from change-scoped recommendation (project-wide stays unchanged). Honors baseline L412's own promise that #10 landing triggers this update. Added D-audit-drift-recommendation-update design decision + task 2.5 + scope update in proposal.md. SUGG 3 (external-findings-format.md L3 says 'internal review JSON') resolved by updating to 'internal findings JSON' covering both review and audit-drift shapes.",
+  "next_recommended": "Optional: re-run /opsx:review --as system --fresh for convergence-confirmation (scope expanded with second capability delta; worth one more pass to verify cross-capability coherence); or skip directly to /opsx:archive accepting the in-context confidence given Codex iter-1 system-mode had only 2 WARNs (no CRITICAL) all cleanly resolved.",
+  "kind": "editorial",
+  "source": "from-file",
+  "source_path": "openspec/changes/address-reviews-auto-discovers-internal-json/.orbit-runs/external-system-2026-05-27T01-58-56Z.md",
+  "external_reviewer": "GPT-5 Codex",
+  "input_findings_summary": {
+    "critical": 0,
+    "warning": 2,
+    "suggestion": 3
+  },
+  "pushback_verification": "All 5 findings verified against current state. WARN 1 confirmed: SKILL.md L323 graceful-degradation bullet generic 'No markers found' message without distinguishing change-name scope (which should check .orbit-runs/) vs bare/path scope. WARN 2 confirmed: SKILL.md L3 description field + L5 compatibility field both market --mark as paired workflow ('Use after /opsx:review --mark drops markers'); residue from pre-this-change framing. SUGG 1 confirmed: README L531-534 ASCII workflow box shows bare `/opsx:address-reviews` walking 'any @review: markers you've left' — old marker-only framing inconsistent with the new dedicated Auto-discovery paragraph at L428. SUGG 2 confirmed: orbit-run-summary-emit spec.md L403 mandates audit-drift change-scoped recommendation to begin with /opsx:address-reviews <name> --from-file <this-json>; L412 explicitly says --from-file becomes optional once #10 lands — THIS change IS #10 landing, so the baseline references itself as the trigger. SUGG 3 confirmed: external-findings-format.md L3 cross-reference says 'internal review JSON' but the parser now supports both review + audit-drift; the sibling internal-findings-format.md was already broadened to 'internal findings JSON'. No stale-suppressions.",
+  "resolution_summary": {
+    "resolved": 5,
+    "stale_suppressed": 0,
+    "deferred": 0,
+    "escalated": 0
+  },
+  "resolutions": [
+    {
+      "severity": "WARNING",
+      "title": "Graceful-degradation section short-circuits the auto-discovery path",
+      "marker_source": "external",
+      "classification": "trivial fix (codify the priority order in degradation bullets)",
+      "decision": "split 'No markers found' bullet into 3 cases distinguishing bare/path scope from change-name scope",
+      "action": "Rewrote SKILL.md graceful-degradation bullet at L323. New structure: (a) 'No markers found in bare or path/pattern scope' → old message preserved; (b) 'No markers found in change-name scope, no candidate JSON in .orbit-runs/' → new auto-discovery-failed message ('No @review: markers in scope and no internal review/audit-drift JSON in .orbit-runs/. Nothing to walk.'); (c) 'No markers found in change-name scope, candidate JSON found (auto-discovery fires)' → NOT a graceful-degradation case; proceed per Step 1. A fresh implementer reading the bottom checklist now cannot short-circuit auto-discovery.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "WARNING",
+      "title": "SKILL frontmatter description + compatibility still market --mark as the paired workflow",
+      "marker_source": "external",
+      "classification": "trivial fix",
+      "decision": "rewrite both frontmatter fields to mention auto-discovery + explicit --mark-is-optional",
+      "action": "Rewrote SKILL.md frontmatter description (L3) and compatibility (L5) fields. New description mentions auto-discovered internal review/audit-drift JSON + explicit --mark-is-optional clause. New compatibility field enumerates the three input paths (--from-file markdown/JSON + auto-discovery + inline markers) + states --mark is optional. Skill metadata now consistent with the body prose.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "README L531 workflow walkthrough teaches the old marker-only follow-up",
+      "marker_source": "external",
+      "classification": "trivial fix",
+      "decision": "update the ASCII workflow box to show /opsx:address-reviews foo with auto-discovery",
+      "action": "Updated README L531-534 ASCII workflow block. Old text said `/opsx:address-reviews` (bare) walks any markers left in artifacts. New text says `/opsx:address-reviews foo` auto-discovers the just-written review JSON in .orbit-runs/ OR walks any @review: markers — no --mark pre-step or --from-file flag needed. Aligns with the dedicated Auto-discovery paragraph at L428.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "orbit-run-summary-emit audit-drift recommendation hard-codes --from-file (now-optional)",
+      "marker_source": "external",
+      "classification": "decision required (scope expansion)",
+      "decision": "Include the SECOND CAPABILITY DELTA in this change per user choice — modify orbit-run-summary-emit's Audit-drift standalone recommendations requirement",
+      "action": "Created new spec delta at `openspec/changes/address-reviews-auto-discovers-internal-json/specs/orbit-run-summary-emit/spec.md` with MODIFIED `Audit-drift standalone recommendations` requirement: change-scoped audit-drift findings recommendation drops --from-file <this-json> (becomes `/opsx:address-reviews <name> — N drift(s) detected; resolve before next workflow step`); project-wide stays unchanged (no change-directory anchor for auto-discovery). 5 scenarios in delta (the existing 5 with the first scenario updated to drop --from-file expectation). Updated proposal.md Modified Capabilities to add orbit-run-summary-emit + added D-audit-drift-recommendation-update design decision + added task 2.5 to tasks.md. Honors baseline L412's own forward-reference promise.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "external-findings-format.md L3 calls JSON sibling 'internal review JSON' (residue)",
+      "marker_source": "external",
+      "classification": "trivial fix (residue cleanup)",
+      "decision": "broaden 'internal review JSON' → 'internal findings JSON'",
+      "action": "Updated external-findings-format.md L3 cross-reference: 'the other is internal review JSON' → 'the other is internal findings JSON (covers both `command: \"review\"` AND `command: \"audit-drift\"` shapes)'. Matches the sibling internal-findings-format.md title broadening from #4's iter-2.",
+      "ripple_flagged": []
+    }
+  ],
+  "remaining_markers_in_scope": 0,
+  "persisted_escalations": []
+}
