@@ -1,0 +1,42 @@
+{
+  "command": "review",
+  "timestamp": "2026-05-27T02:08:26Z",
+  "change": "address-reviews-auto-discovers-internal-json",
+  "kind": "editorial",
+  "mode": "system",
+  "iteration": 2,
+  "depth": "full",
+  "flags": ["--fresh", "--as system"],
+  "summary": {
+    "completeness": { "critical": 0, "warning": 0, "suggestion": 0 },
+    "correctness":  { "critical": 0, "warning": 0, "suggestion": 0 },
+    "coherence":    { "critical": 0, "warning": 0, "suggestion": 1 }
+  },
+  "findings": [
+    {
+      "pass": 6,
+      "severity": "SUGGESTION",
+      "file": "openspec/changes/address-reviews-auto-discovers-internal-json/specs/orbit-run-summary-emit/spec.md",
+      "line": 19,
+      "title": "Post-archive 'Historical note' parenthetical references this very change by name",
+      "recommendation": "Optional cosmetic polish — the delta's L19 historical-note parenthetical names 'the address-reviews-auto-discovers-internal-json change landing' as the trigger for dropping --from-file. After sync-specs replaces baseline L412, the post-archive baseline will carry a reference back to a change-name that has already been archived. Acceptable as orbit-conventions allows historical notes to name the originating change, but consider rewriting to a date or version-neutral phrasing if you want the baseline to read forward-looking (e.g., 'Prior to v1.4 of orbit-address-reviews, the change-scoped recommendation included --from-file...'). Non-blocking; ship as-is is also defensible."
+    }
+  ],
+  "stale_findings_suppressed": [
+    { "source": "proposal-iter-1-internal",    "count": 5, "evidence": ".orbit-runs/review-proposal-2026-05-27T01-02-24Z.json + address-reviews-2026-05-27T01-04-52Z.json" },
+    { "source": "proposal-iter-1-external",    "count": 4, "evidence": ".orbit-runs/external-proposal-2026-05-27T01-13-24Z.md + address-reviews-2026-05-27T01-21-40Z.json" },
+    { "source": "proposal-iter-2-internal",    "count": 1, "evidence": ".orbit-runs/review-proposal-2026-05-27T01-24-54Z.json (inline-fixed; cosmetic)" },
+    { "source": "system-iter-1-internal",      "count": 1, "evidence": ".orbit-runs/review-system-2026-05-27T01-38-39Z.json (inline-fixed; cosmetic)" },
+    { "source": "system-iter-1-external",      "count": 5, "evidence": ".orbit-runs/external-system-2026-05-27T01-58-56Z.md + address-reviews-2026-05-27T02-04-55Z.json — all 5 walked to resolution; D-audit-drift-recommendation-update + 2.5 + 2nd capability delta added" }
+  ],
+  "convergence_state": 3,
+  "convergence_state_label": "Path B convergence: external findings resolved via address-reviews",
+  "convergence_inputs": {
+    "presence_check": "external-system-2026-05-27T01-58-56Z.md EXISTS — not State 1",
+    "stale_check": "external token=01-58-56Z; latest apply token=01-32-49Z (apply-2026-05-27T01-32-49Z.json). External AFTER latest apply — NOT stale, not State 5",
+    "path_a_check": "external has 2 WARNING + 3 SUGGESTION findings — NOT clean, not State 2",
+    "path_b_check": "address-reviews-2026-05-27T02-04-55Z.json source_path matches external-system-2026-05-27T01-58-56Z.md; resolution_summary.deferred=0, escalated=0 — STATE 3"
+  },
+  "final_assessment": "No critical issues. 1 suggestion(s) to consider. External system review findings resolved via /opsx:address-reviews. Ready to archive (with noted improvements).",
+  "next_recommended": "/opsx:archive address-reviews-auto-discovers-internal-json — State 3 Path B convergence confirmed; both capability deltas (orbit-address-reviews + orbit-run-summary-emit) sync-spec cleanly on archive."
+}
