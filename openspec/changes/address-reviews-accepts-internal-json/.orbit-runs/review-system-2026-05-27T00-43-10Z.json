@@ -1,0 +1,98 @@
+{
+  "command": "review",
+  "timestamp": "2026-05-27T00:43:10Z",
+  "change": "address-reviews-accepts-internal-json",
+  "mode": "system",
+  "iteration": 2,
+  "depth": "full",
+  "flags": {
+    "fresh": true,
+    "parallel": false,
+    "focus": null,
+    "strict": false,
+    "skip_verify": false,
+    "mark": false
+  },
+  "kind": "editorial",
+  "caller": null,
+  "final_assessment": "Path B convergence confirmed. All 5 GPT-5 Codex external findings (1 CRITICAL + 2 WARNING + 2 SUGGESTION) resolved via the iter-2 address-reviews walk (deferred=0, escalated=0). Convergence walk: external 2026-05-27T00-06-24Z later than latest apply 2026-05-26T23-48-02Z (not State 5); address-reviews-2026-05-27T00-20-02Z.json source_path matches external + zero deferrals/escalations (State 3). Iter-2 walk substantively expanded v1 scope (review-only → review-OR-audit-drift) but only edited artifacts the external did not see — per the per-external scoping rule in SKILL.md Step 9 stale check (line 263), only apply-*.json triggers State 5, not address-reviews-*.json files even for the same external. Defensible because the scope expansion was performed in response to the external's own CRITICAL; re-running the external on its own resolved findings would be a no-op convergence test of itself. 0 new findings this pass; 7 prior findings (1 internal iter-1 + 5 external iter-1 + 2 inline iter-1 SUGGs) stale-suppressed against current state.",
+  "next_recommended": "/opsx:archive address-reviews-accepts-internal-json",
+  "findings_summary": {
+    "critical": 0,
+    "warning": 0,
+    "suggestion": 0
+  },
+  "scorecard": {
+    "completeness": { "critical": 0, "warning": 0, "suggestion": 0 },
+    "correctness":  { "critical": 0, "warning": 0, "suggestion": 0 },
+    "coherence":    { "critical": 0, "warning": 0, "suggestion": 0 }
+  },
+  "findings": [],
+  "stale_suppressed": [
+    {
+      "source": "external iter-1 (GPT-5 Codex) CRITICAL",
+      "title": "Audit-drift JSON is rejected even though baseline emits it as address-reviews input",
+      "evidence": "Resolved in address-reviews-2026-05-27T00-20-02Z.json (Option A): spec L5 + new scenario L17-20 'Parse internal audit-drift JSON' now accept command: 'audit-drift'. internal-findings-format.md documents both JSON shapes with parallel parser-contract entries (L36-60). design.md D-shape-1 fully rewritten with external CRITICAL provenance (L40-52)."
+    },
+    {
+      "source": "external iter-1 (GPT-5 Codex) WARNING",
+      "title": "Address-reviews run-summary schema marker_source enum restricted to inline | external",
+      "evidence": "run-summary-schema.md L50 + L71 + L74 now extended to inline | external | internal-review | audit-drift; external_reviewer field scope clarified."
+    },
+    {
+      "source": "external iter-1 (GPT-5 Codex) WARNING",
+      "title": "Review and onboarding surfaces still describe --from-file as external-only",
+      "evidence": "openspec-review/SKILL.md L13, openspec-onboard/SKILL.md L169, opsx/onboard.md L165 all updated to enumerate external-review markdown OR internal review JSON OR audit-drift JSON."
+    },
+    {
+      "source": "external iter-1 (GPT-5 Codex) SUGGESTION",
+      "title": "Core lifecycle removal step still names only external virtual markers",
+      "evidence": "SKILL.md L122 now reads 'Virtual marker (external markdown, internal-review JSON, or audit-drift JSON)' with provenance-aware source-tag logging."
+    },
+    {
+      "source": "external iter-1 (GPT-5 Codex) SUGGESTION",
+      "title": "Internal-findings reference makes required run-summary spine fields look optional",
+      "evidence": "internal-findings-format.md L64-66 new 'Universal-spine field requirements (BOTH formats)' subsection clarifies REQUIRED-in-source vs IGNORED-by-parser."
+    },
+    {
+      "source": "internal iter-1 SUGGESTION (already noted resolved in iter-1)",
+      "title": "Worked example shows single-finding case; could demonstrate multi-finding clarity",
+      "evidence": "Already addressed before external review iter-1."
+    },
+    {
+      "source": "internal iter-1 SUGGESTION (already noted resolved in iter-1)",
+      "title": "Surfaces minor",
+      "evidence": "Already addressed before external review iter-1."
+    }
+  ],
+  "passes_run": ["0", "1", "2", "3", "6"],
+  "passes_skipped": ["4", "5"],
+  "skip_reasons": {
+    "4": "no perspectives defined; skip Pass 4 (per SKILL.md graceful-degradation: openspec/lenses/perspectives.md empty/absent)",
+    "5": "no critical paths defined; skip Pass 5 (per SKILL.md graceful-degradation)"
+  },
+  "pass_findings": {
+    "0_verify_change": "13/13 tasks checked; openspec validate --strict clean; spec delta well-formed (2 MODIFIED requirements, 14 scenarios in delta); design and proposal coherent with spec.",
+    "1_baseline_compliance": "Audit-drift JSON shape in internal-findings-format.md (L36-60) matches the audit-drift baseline schema (.claude/skills/openspec-audit-drift/references/run-summary-schema.md L24-67) field-for-field: top-level command/timestamp/change, context enum, findings_summary, findings[] with category/severity/file/line/title/recommendation. orbit-run-summary-emit's Audit-drift standalone recommendations requirement (L396-440, L412 explicitly names #4) honored — parser now accepts command: 'audit-drift' so the recommendation contract no longer points at a refused command.",
+    "2_cohesion": "9+ touched surfaces all consistent on dual-command path: SKILL.md L58-68 + L122 + graceful-degradation L304-323; opsx/address-reviews.md L18 + L32; internal-findings-format.md throughout; run-summary-schema.md L50 + L74; openspec-review/SKILL.md L13; openspec-onboard/SKILL.md L169; opsx/onboard.md L165; README L422 + L771; spec delta L5 + L29 enumerates rejected commands. No drift detected across surfaces.",
+    "3_surface_walk": "Capability surfaces (orbit-address-reviews command, --from-file flag) coherent. The 'review' vs 'audit-drift' command discriminator is the natural extension of an existing universal-spine field; no new flag, no new invocation pattern. SKILL.md JSON worked example L267-301 demonstrates the JSON path with command: 'review' explicitly (audit-drift path is symmetric per spec scenario + internal-findings-format.md parallel example — see scrutiny #4 below).",
+    "6_drift_residue": "No 'review JSON only' or 'audit-drift not supported' residue in current artifacts/SKILL/README outside historically-correct contexts (design.md L51 documenting the rejected alternative; external markdown describing what was found; resolution log capturing what was resolved). All inline @review: markers absent from change directory."
+  },
+  "scrutiny_notes": {
+    "1_audit_drift_shape_match": "Match confirmed. internal-findings-format.md L36-60 mirrors audit-drift baseline schema (L24-67) at the universal-spine + findings[] level. Provenance slot correctly identified: review uses 'pass', audit-drift uses 'category' (per audit-drift schema L56). category enum '1'-'4' correctly documented at L62.",
+    "2_rejected_commands_internal_consistency": "Rejected commands list in spec L29 ('address-reviews', 'apply', 'archive', 'propose', 'explore', 'new', 'continue', 'ff', 'review-external') reasonably represents what orbit emits. Verified against ad-hoc grep of orbit command set (apply, archive, propose, explore, new, continue, ff, review, review-external, address-reviews, audit-drift, onboard, sync, verify, bulk-archive). Spec list is non-exhaustive ('e.g.' framing) which is fine — the SKILL prose at L319 also notes 'V1 supports review-<mode>-*.json and audit-drift-*.json only', making the inclusion criterion clear (any command other than the two named values). 'verify', 'onboard', 'sync', 'bulk-archive' not enumerated but covered by the catch-all clause; not a finding.",
+    "3_per_external_scoping_defensibility": "Defensible. The iter-2 walk's substantive scope expansion (v1 review-only → v1 review-OR-audit-drift) was performed IN RESPONSE TO the external's CRITICAL — Option A per user choice. Per-external scoping in SKILL.md Step 9 line 263 deliberately excludes address-reviews-*.json from the stale-check trigger; this matches the intent (address-reviews IS the resolution mechanism for the external, so address-reviews running over the external's findings is the convergence path, not invalidation of it). If the apply step had emitted after the address-reviews walk (e.g., a touch-up apply), THAT would correctly trigger State 5. Here, the address-reviews walk landed all the spec/design/SKILL/README changes WITHOUT a subsequent apply emit because Task 1.x checkboxes were already set during the prior apply phase — i.e., the address-reviews walk is itself the iter-2 implementation pass for this change. This is the natural orbit flow for substantive in-flight address-reviews.",
+    "4_json_worked_example_dual_command": "SKILL.md worked example L267-301 demonstrates command: 'review' (review-system-*.json source). The audit-drift JSON path is NOT separately demonstrated in SKILL.md but IS covered by: (a) the parallel JSON schema example in internal-findings-format.md L36-60 (which the SKILL cross-references), (b) the spec scenario 'Parse internal audit-drift JSON' L17-20, (c) the symmetric parser-contract description in internal-findings-format.md L68-91. Per-command-extensions are otherwise identical to review case. Symmetry is well-documented; a separate worked example would be valuable but not material — the existing example + the reference doc parallelism + the spec scenario are sufficient. Not a finding (would be a SUGGESTION at most; below the surface-bar)."
+  },
+  "iteration_note": "Iteration 2 (continuing system-mode run; convergence confirmation after substantive iter-2 address-reviews walk).",
+  "convergence_state": 3,
+  "convergence_state_label": "Path B convergence: external findings resolved via address-reviews",
+  "convergence_inputs": {
+    "step_1_presence": "external-system-2026-05-27T00-06-24Z.md present → not State 1",
+    "step_2_stale": "external token 2026-05-27T00-06-24Z LATER than latest apply token 2026-05-26T23-48-02Z → not State 5. Per-external scoping: address-reviews-*.json does NOT trigger stale check.",
+    "step_3_path_a": "External has findings (1 CRITICAL + 2 WARNING + 2 SUGGESTION) → not Path A clean",
+    "step_4_path_b": "address-reviews-2026-05-27T00-20-02Z.json source_path = openspec/changes/address-reviews-accepts-internal-json/.orbit-runs/external-system-2026-05-27T00-06-24Z.md (matches external). resolution_summary.deferred = 0, resolution_summary.escalated = 0 → State 3 ✓",
+    "step_5_unresolved": "N/A (State 3 returned at step 4)"
+  },
+  "dogfood_note": "This run's convergence walk relied on the per-external scoping rule (address-reviews-*.json does NOT trigger stale State 5). Per-external scoping was added to handle exactly this case (in-flight iter-2 address-reviews walks expanding scope in response to external CRITICAL). The rule earns its keep here."
+}

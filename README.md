@@ -419,7 +419,7 @@ Flags:
 
 ```
 /opsx:address-reviews [<scope>]
-  [--from-file <path>]               ingest review findings as virtual markers (auto-detects external-review markdown or internal review JSON)
+  [--from-file <path>]               ingest review findings as virtual markers (auto-detects external-review markdown, internal review JSON, or audit-drift JSON)
   [--keep-resolved-markers]          debug; don't remove on resolution
 ```
 
@@ -768,7 +768,7 @@ The full per-command schemas live alongside each skill at `.claude/skills/<skill
 
 **External-review markdown findings format** — see the worked example in [The external review cycle](#the-external-review-cycle) section above. The format is parsed by `/opsx:address-reviews --from-file` and must follow the exact structure (severity sections + `### Title` + `**File**:` + `**Description**:` field labels) for the parser to work. Full parser contract: `.claude/skills/openspec-address-reviews/references/external-findings-format.md`.
 
-**Internal review JSON findings format** — `/opsx:address-reviews --from-file` also accepts internal `review-<mode>-*.json` files produced by `/opsx:review`. The parser auto-detects format via content sniff (leading `{` → JSON; leading `# External Review:` → markdown). V1 accepts `command: "review"` JSON only; other internal JSON commands (`audit-drift`, `address-reviews`, etc.) are rejected with a clean error. Full parser contract: `.claude/skills/openspec-address-reviews/references/internal-findings-format.md`.
+**Internal findings JSON format** — `/opsx:address-reviews --from-file` also accepts internal JSON findings produced by `/opsx:review` (`review-<mode>-*.json`) OR `/opsx:audit-drift` (`audit-drift-*.json`). The parser auto-detects format via content sniff (leading `{` → JSON; leading `# External Review:` → markdown). V1 accepts `command: "review"` OR `command: "audit-drift"` JSON; other internal JSON commands (`address-reviews`, `apply`, `archive`, `propose`, etc.) are rejected with a clean error. `command: "address-reviews"` is rejected on purpose to prevent recursive ingest cycles. Full parser contract: `.claude/skills/openspec-address-reviews/references/internal-findings-format.md`.
 
 ### `<topic>_convention.md` files at project root
 

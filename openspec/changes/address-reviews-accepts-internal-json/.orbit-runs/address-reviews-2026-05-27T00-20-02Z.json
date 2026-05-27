@@ -1,0 +1,72 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-27T00:20:02Z",
+  "change": "address-reviews-accepts-internal-json",
+  "final_assessment": "Walked all 5 findings from external system-mode review iter-1 (GPT-5 Codex). CRITICAL (audit-drift contract conflict — baseline orbit-run-summary-emit's Audit-drift standalone recommendations requirement mandates audit-drift findings to emit next_recommended pointing at /opsx:address-reviews --from-file <this-json>, but v1 of this change's parser rejected command: 'audit-drift'; baseline L412 explicitly names #4 as the issue closing the bridge for BOTH JSON families) resolved per user decision Option A — expand v1 to accept command: 'audit-drift' alongside command: 'review'. Substantive rewrite of D-shape-1 + spec scenarios (added 'Parse internal audit-drift JSON' scenario; broadened 'missing/empty findings[]' scenarios from review-only to both shapes; updated 'Unsupported JSON command field' to list still-rejected commands explicitly + note address-reviews cycle-prevention rejection; broadened 'Pushback discipline applied per marker' requirement intro + the JSON-virtual-markers fresh-pushback scenario). Implementation surfaces updated: internal-findings-format.md (now documents both shapes with parallel JSON examples + extended parser contract with `category` provenance slot + new Universal-spine field requirements section addressing SUGG 2); SKILL.md (--from-file ingest section + Step 3d removal list + graceful-degradation cases all reflect both supported commands); opsx/address-reviews.md (mirror); README (L422 flag description + L771 sub-header). WARN 1 (address-reviews/references/run-summary-schema.md marker_source enum restricted to inline | external) resolved by extending enum to inline | external | internal-review | audit-drift + clarifying external_reviewer field is only populated for external-markdown source. WARN 2 (review/onboard SKILLs still describe --from-file as external-only) resolved by updating openspec-review/SKILL.md L13 + openspec-onboard/SKILL.md command-table row + opsx/onboard.md command-table row. SUGG 1 (SKILL.md Step 3d removal list still said 'External (virtual marker)') resolved by generalizing to 'Virtual marker (external markdown, internal-review JSON, or audit-drift JSON)'. SUGG 2 (internal-findings-format.md said universal-spine fields 'MAY be present' — could mislead) resolved by adding explicit 'Universal-spine field requirements' subsection clarifying REQUIRED-in-source-but-IGNORED-by-parser. 0 deferrals.",
+  "next_recommended": "Optional: re-run /opsx:review --as system address-reviews-accepts-internal-json --fresh for convergence-confirmation pass; or /opsx:review-external for cross-AI verification of the audit-drift expansion (would catch any second-order coherence issues introduced by the substantive scope change). Then /opsx:archive once converged.",
+  "kind": "editorial",
+  "source": "from-file",
+  "source_path": "openspec/changes/address-reviews-accepts-internal-json/.orbit-runs/external-system-2026-05-27T00-06-24Z.md",
+  "external_reviewer": "GPT-5 Codex",
+  "input_findings_summary": {
+    "critical": 1,
+    "warning": 2,
+    "suggestion": 2
+  },
+  "pushback_verification": "All 5 findings verified against current state. CRITICAL confirmed via spec read: orbit-run-summary-emit L403+L409 mandate audit-drift to emit /opsx:address-reviews --from-file recommendation; L412 explicitly references #4 (this change) as closing the gap for both formats. WARN 1 confirmed: run-summary-schema.md L50 + L74 restrict to inline | external; this change's own iter-1 address-reviews JSON already wrote marker_source: 'internal-review' — non-schema-compliant emission already happening. WARN 2 confirmed: openspec-review SKILL L13 + onboard SKILL/command tables describe --from-file as external-only. SUGG 1 confirmed: SKILL.md L122 lifecycle removal list said 'External (virtual marker)' singular case. SUGG 2 confirmed: internal-findings-format.md L34 said universal-spine fields 'MAY be present' without distinguishing source-required from parser-ignored. No stale-suppressions.",
+  "resolution_summary": {
+    "resolved": 5,
+    "stale_suppressed": 0,
+    "deferred": 0,
+    "escalated": 0
+  },
+  "resolutions": [
+    {
+      "severity": "CRITICAL",
+      "title": "Audit-drift JSON contract conflict — v1 rejected command: 'audit-drift' but baseline mandates it as --from-file input",
+      "marker_source": "external",
+      "classification": "decision required",
+      "decision": "Option A — expand v1 to accept command: 'audit-drift' alongside command: 'review' (per user choice); honors baseline orbit-run-summary-emit's existing recommendation contract; closes the bridge for both JSON families the baseline names #4 as resolving",
+      "action": "Updated spec delta (orbit-address-reviews): rewrote requirement intro paragraph to mention both supported commands + cycle-prevention rationale; added new scenario 'Parse internal audit-drift JSON' parallel to 'Parse internal review JSON' (with `category` provenance slot instead of `pass`); broadened 'Internal JSON missing findings[] field' + 'Internal JSON with empty findings[]' scenarios from review-only to both shapes; updated 'Unsupported JSON command field' to enumerate still-rejected commands explicitly + note address-reviews cycle-prevention rejection; updated 'Pushback discipline applied per marker' requirement intro + the 'Internal JSON virtual markers receive fresh pushback' scenario to cover both source commands. Scenario count: 13 → 14 (1 new + 5 broadened). Updated proposal.md What-Changes bullet + design.md D-shape-1 entirely (now documents the decision flip with rationale + external CRITICAL provenance). Updated internal-findings-format.md to document both JSON shapes (parallel review + audit-drift examples), parser contract with extended provenance-detail slot, command discriminator with audit-drift acceptance, and the SUGG 2 universal-spine clarification. Updated SKILL.md --from-file ingest section + opsx/address-reviews.md mirror + README L422 + L771 to reflect dual-command support.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "WARNING",
+      "title": "address-reviews run-summary schema marker_source enum restricted to inline | external",
+      "marker_source": "external",
+      "classification": "trivial fix",
+      "decision": "extend enum + clarify external_reviewer scope",
+      "action": "Updated .claude/skills/openspec-address-reviews/references/run-summary-schema.md: enum line 50 extended to 'inline' | 'external' | 'internal-review' | 'audit-drift'; field-notes L71 clarified that external_reviewer is only populated when marker_source is 'external'; field-notes L74 rewritten to enumerate all 4 marker_source values with their provenance.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "WARNING",
+      "title": "openspec-review SKILL + onboard SKILL/command still describe --from-file as external-only",
+      "marker_source": "external",
+      "classification": "trivial fix",
+      "decision": "update producer-side surfaces to mention both internal JSON families + external markdown",
+      "action": "Updated 3 surfaces: openspec-review/SKILL.md L13 (resolution-flows description); openspec-onboard/SKILL.md command-table row L169; opsx/onboard.md command-table row L165. All now mention --from-file accepts external-review markdown OR internal review JSON OR audit-drift JSON (auto-detected by content sniff).",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "SKILL.md Step 3d marker-removal list still names only 'External (virtual marker)'",
+      "marker_source": "external",
+      "classification": "trivial fix",
+      "decision": "generalize the lifecycle list to cover all virtual-marker provenance",
+      "action": "Updated .claude/skills/openspec-address-reviews/SKILL.md Step 3d list: 'External (virtual marker)' → 'Virtual marker (external markdown, internal-review JSON, or audit-drift JSON)' with the appropriate source-tag mention in the log.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "SUGGESTION",
+      "title": "internal-findings-format.md says universal-spine fields 'MAY be present' — could mislead parser implementer",
+      "marker_source": "external",
+      "classification": "trivial fix",
+      "decision": "clarify required-in-source vs ignored-by-parser distinction",
+      "action": "Rewrote internal-findings-format.md L34 area as a new 'Universal-spine field requirements (BOTH formats)' subsection explicitly stating: (a) universal-spine fields are REQUIRED in every real orbit-emitted JSON per orbit-conventions's Internal-run JSON summary format requirement; (b) the address-reviews --from-file parser does NOT consume them when constructing virtual markers — it only reads `command` (as discriminator) and `findings[]` (for marker construction); (c) other top-level fields are present-but-ignored. Distinguishes parser semantics from source-validity.",
+      "ripple_flagged": []
+    }
+  ],
+  "remaining_markers_in_scope": 0,
+  "persisted_escalations": []
+}

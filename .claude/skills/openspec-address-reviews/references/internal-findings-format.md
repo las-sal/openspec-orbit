@@ -1,10 +1,12 @@
 # Reference: internal-findings file format (for `--from-file` JSON parsing)
 
-The `--from-file <path>` flag accepts TWO format families: (a) external-review markdown (see `external-findings-format.md`), (b) internal review JSON (this file). The parser auto-detects format via content sniff: leading `{` routes to JSON; leading `# External Review:` routes to markdown; anything else triggers a format-mismatch error.
+The `--from-file <path>` flag accepts TWO format families: (a) external-review markdown (see `external-findings-format.md`), (b) internal findings JSON (this file). The parser auto-detects format via content sniff: leading `{` routes to JSON; leading `# External Review:` routes to markdown; anything else triggers a format-mismatch error.
 
-This format MUST match what `/opsx:review` (both `--as proposal` and `--as system`) writes to `openspec/changes/<name>/.orbit-runs/review-<mode>-<TS>.json`. The full JSON schema lives at `.claude/skills/openspec-review/references/run-summary-schema.md`; this file documents the `--from-file` parser's subset of that schema (the fields it reads to construct virtual markers).
+This format MUST match what `/opsx:review` writes to `openspec/changes/<name>/.orbit-runs/review-<mode>-<TS>.json` OR what `/opsx:audit-drift` writes to its summary JSON paths (per the audit-drift run-summary-schema). V1 accepts BOTH `command: "review"` AND `command: "audit-drift"` JSON; other `command` values are rejected. The full JSON schemas live at `.claude/skills/openspec-review/references/run-summary-schema.md` and `.claude/skills/openspec-audit-drift/references/run-summary-schema.md`; this file documents the `--from-file` parser's subset of those schemas (the fields it reads to construct virtual markers).
 
 ## Expected file format
+
+### Review JSON (`command: "review"`)
 
 ```json
 {
@@ -31,7 +33,37 @@ This format MUST match what `/opsx:review` (both `--as proposal` and `--as syste
 }
 ```
 
-Other top-level fields (`final_assessment`, `next_recommended`, `kind`, `depth`, `flags`, `passes_run`, `passes_skipped`, `stale_suppressed`, `iteration_note`) MAY be present and are IGNORED by the parser — they're only consumed by other tooling (e.g., orbit-status).
+### Audit-drift JSON (`command: "audit-drift"`)
+
+```json
+{
+  "command": "audit-drift",
+  "timestamp": "<ISO-8601>",
+  "change": "<change-name string OR null for project-wide standalone>",
+  "context": "standalone" | "library" | "pre-archive",
+  "findings_summary": {
+    "critical": <int>,
+    "warning": <int>,
+    "suggestion": <int>
+  },
+  "findings": [
+    {
+      "category": "1" | "2" | "3" | "4",
+      "severity": "CRITICAL" | "WARNING" | "SUGGESTION",
+      "file": "<path>",
+      "line": <integer>,
+      "title": "<finding title>",
+      "recommendation": "<actionable recommendation>"
+    }
+  ]
+}
+```
+
+The two shapes are identical at the universal-spine + `findings[]` level. They differ only in the provenance slot per finding: review JSON carries `pass` (string pass-id), audit-drift JSON carries `category` (one of `"1"`–`"4"` per the 4 audit-drift categories: vocabulary-residue, lens-staleness, cross-doc-consistency, archive-coherence).
+
+### Universal-spine field requirements (BOTH formats)
+
+The universal-spine fields (`command`, `timestamp`, `change`, `final_assessment`, `next_recommended`, `kind`) are REQUIRED in every real orbit-emitted JSON per `orbit-conventions`'s `Internal-run JSON summary format` requirement; downstream tools rely on them being present. The address-reviews `--from-file` parser does NOT consume them when constructing virtual markers — it only reads `command` (as the discriminator) and `findings[]` (for marker construction). Other top-level fields (`final_assessment`, `next_recommended`, `kind`, `depth`, `flags`, `passes_run`, `passes_skipped`, `stale_suppressed`, `iteration_note`, `categories_run`, `categories_skipped`, `caller`, etc.) are present in real JSON and IGNORED by this parser — they're consumed by other tooling (e.g., orbit-status).
 
 ## Parser contract
 
@@ -43,7 +75,8 @@ For each entry in the JSON's `findings[]` array, construct a virtual marker with
 | `title` | The entry's `title` field |
 | `file:line` | The entry's `file` + `line` fields joined as `<file>:<line>` |
 | `description` | The entry's `recommendation` field |
-| `source` | Always `internal-review` (vs `external` for markdown, `inline` for grep-found) |
+| `source` | `internal-review` for `command: "review"` JSON; `audit-drift` for `command: "audit-drift"` JSON (vs `external` for markdown, `inline` for grep-found) |
+| `provenance_detail` | The entry's `pass` field (for review JSON) OR `category` field (for audit-drift JSON) — preserved verbatim in the resolution log |
 
 Virtual markers walk the same lifecycle as inline markers, with one exception: **the marker-removal step (Step 3d in the SKILL.md walk) is a no-op** — there's no source-file marker text to delete. (Same behavior as external-markdown virtual markers; the no-op is shared across all virtual-marker provenance.)
 
@@ -51,14 +84,15 @@ Virtual markers walk the same lifecycle as inline markers, with one exception: *
 
 The parser MUST check the top-level `command` field after JSON parse succeeds:
 
-- `command: "review"` → proceed with `findings[]` extraction.
-- Any other `command` value (e.g., `"audit-drift"`, `"address-reviews"`, `"apply"`, `"archive"`, `"propose"`) → emit a clean error message naming the supported `command` value (`"review"`) and the observed value, then exit without acting on any findings.
+- `command: "review"` → proceed with `findings[]` extraction; tag virtual markers `source: "internal-review"`.
+- `command: "audit-drift"` → proceed with `findings[]` extraction; tag virtual markers `source: "audit-drift"`; use the per-finding `category` field as the provenance-detail slot (rather than `pass`).
+- Any other `command` value (e.g., `"address-reviews"`, `"apply"`, `"archive"`, `"propose"`, `"explore"`, `"new"`, `"continue"`, `"ff"`, `"review-external"`) → emit a clean error message naming the supported `command` values (`"review"`, `"audit-drift"`) and the observed value, then exit without acting on any findings.
 
-V1 supports `review-<mode>-*.json` only. Other internal JSONs (audit-drift findings, address-reviews logs) have different walk semantics — they're out of scope for v1 and rejected explicitly rather than silently mis-parsed.
+V1 supports `review-<mode>-*.json` AND `audit-drift-*.json` (both standalone and library/pre-archive contexts). Other internal JSONs are rejected explicitly rather than silently mis-parsed. **`command: "address-reviews"` is rejected on purpose**: address-reviews ingest of its own resolution log would loop (the lifecycle would feed itself recursively); cycle prevention requires explicit rejection.
 
-### Fresh pushback applies to JSON virtual markers
+### Fresh pushback applies to JSON virtual markers (both review and audit-drift)
 
-The JSON file's own `stale_suppressed[]` array already filtered stale findings at review time. **Fresh pushback against current state IS still applied** when address-reviews ingests the JSON: state may have changed between the review and the resolve (e.g., user fixed an issue ad-hoc; another commit landed). The SKILL.md walk step (3a — Apply pushback) executes for each JSON-virtual marker the same way it would for an inline marker or external-markdown virtual marker.
+The source JSON's own `stale_suppressed[]` array already filtered stale findings at source-run time. **Fresh pushback against current state IS still applied** when address-reviews ingests the JSON: state may have changed between the source run and the resolve (e.g., user fixed an issue ad-hoc; another commit landed). The SKILL.md walk step (3a — Apply pushback) executes for each JSON-virtual marker the same way it would for an inline marker or external-markdown virtual marker, regardless of whether the source was `/opsx:review` or `/opsx:audit-drift`.
 
 This is intentional double-pushback: the JSON-side filter is a subset of staleness; the lifecycle-side check is a superset.
 
@@ -67,9 +101,9 @@ This is intentional double-pushback: the JSON-side filter is a subset of stalene
 If the file is JSON but malformed in any of these ways, the parser MUST refuse to act on partial input:
 
 - **JSON parse failure** (file looks like JSON but invalid syntax) → emit a parse-error message naming the file + the JSON parse-error position (best-effort), then exit. User fixes the file and re-runs.
-- **Missing `command` field** OR `command` value other than `"review"` → emit the unsupported-command error (see "Command field discriminator" above).
+- **Missing `command` field** OR `command` value other than `"review"` / `"audit-drift"` → emit the unsupported-command error (see "Command field discriminator" above).
 - **Missing `findings[]` field** OR `findings` present but not an array → emit a clean error naming the missing/malformed `findings[]` requirement; reference this file for the expected shape; exit.
-- **Empty `findings: []`** → NOT an error. Succeed with zero virtual markers; the resolution log reports a clean empty walk (`✓ Resolved: 0, ⚠ Stale: 0, ⏸ Deferred: 0, ✗ Escalated: 0`) with a one-line note `Source JSON had no findings to walk; resolution log is informational.` A clean review with `findings: []` is the expected state for an all-clear pass — feeding it through `--from-file` is a valid no-op invocation.
+- **Empty `findings: []`** → NOT an error. Succeed with zero virtual markers; the resolution log reports a clean empty walk (`✓ Resolved: 0, ⚠ Stale: 0, ⏸ Deferred: 0, ✗ Escalated: 0`) with a one-line note `Source JSON had no findings to walk; resolution log is informational.` A clean review OR clean audit-drift run with `findings: []` is the expected state for an all-clear pass — feeding it through `--from-file` is a valid no-op invocation.
 
 ## Tolerated variations
 

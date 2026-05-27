@@ -47,7 +47,7 @@ The schema below documents per-command extensions ADDED to that spine (`source`,
     {
       "severity": "CRITICAL" | "WARNING" | "SUGGESTION",
       "title": "<finding title>",
-      "marker_source": "inline" | "external",
+      "marker_source": "inline" | "external" | "internal-review" | "audit-drift",
       "file": "<path>",
       "line": 41,
       "classification": "trivial_fix" | "decision_required" | "stale" | "unresolvable",
@@ -68,10 +68,10 @@ The schema below documents per-command extensions ADDED to that spine (`source`,
 
 - **`source`** distinguishes invocation paths: `whole-repo` for default scan, `scope` for positional `<scope>` argument, `from-file` for `--from-file <path>`.
 - **`source_path`** carries the scope or file path; `null` for `whole-repo`.
-- **`external_reviewer`** parsed from the `**Reviewer**:` field in the `--from-file` input; lets downstream tools track which AI's findings have been ingested.
+- **`external_reviewer`** parsed from the `**Reviewer**:` field in the `--from-file` input; lets downstream tools track which AI's findings have been ingested. Only populated when `marker_source` is `external` (external-review markdown input); set to `null` for inline / internal-review / audit-drift sources (those have no human-readable reviewer-name field).
 - **`input_findings_summary`** counts findings by severity at the input boundary (before pushback suppression). Total findings always = sum of `resolved` + `stale_suppressed` + `deferred` + `escalated` in `resolution_summary`.
 - **`pushback_verification`** is a short prose note (1-2 sentences) summarizing pushback work — "all 9 findings verified against current state; 0 stale suppressions" or "9 findings; 3 stale-suppressed with commit evidence."
-- **`marker_source`** distinguishes inline `@review:` markers (grep-found) from external virtual markers (parsed from `--from-file`).
+- **`marker_source`** distinguishes virtual-marker provenance: `inline` (grep-found `@review:` markers), `external` (external-review markdown parsed from `--from-file`), `internal-review` (internal `review-<mode>-*.json` JSON parsed from `--from-file`), `audit-drift` (`audit-drift-*.json` JSON parsed from `--from-file`).
 - **`classification`** is the pushback-and-classify outcome before action.
 - **`outcome`** is the final disposition; aligns with the ✓ Resolved / ⚠ Stale / ⏸ Deferred / ✗ Escalated counts in the resolution log.
 - **`persisted_escalations`** captures `@review(escalated):` markers deliberately left in place; mirrors the resolution log's escalated section so downstream queries don't re-parse the log.

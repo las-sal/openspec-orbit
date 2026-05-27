@@ -57,15 +57,15 @@ grep -rn "@review:" <scope> | grep -v <safe-exclusions>
 
 **`--from-file <path>` ingest** (review findings file — external markdown OR internal JSON):
 
-The `--from-file` flag accepts TWO format families: (a) **external-review markdown** (produced by external AIs per `/opsx:review-external`'s prompt template), (b) **internal review JSON** (produced by `/opsx:review` to `.orbit-runs/review-<mode>-*.json`). The parser auto-detects format via content sniff and routes to the appropriate parser:
+The `--from-file` flag accepts TWO format families: (a) **external-review markdown** (produced by external AIs per `/opsx:review-external`'s prompt template), (b) **internal findings JSON** (produced by `/opsx:review` to `.orbit-runs/review-<mode>-*.json` OR by `/opsx:audit-drift` to its summary JSON paths). The parser auto-detects format via content sniff and routes to the appropriate parser:
 
-- **Leading `{`** (first non-whitespace character) → JSON parser, per the contract at `references/internal-findings-format.md`. V1 accepts `command: "review"` JSON only; other internal JSON commands (`audit-drift`, `address-reviews`, etc.) are rejected with a clean unsupported-command error.
+- **Leading `{`** (first non-whitespace character) → JSON parser, per the contract at `references/internal-findings-format.md`. V1 accepts `command: "review"` OR `command: "audit-drift"` JSON; other internal JSON commands (`address-reviews`, `apply`, `archive`, `propose`, etc.) are rejected with a clean unsupported-command error. `command: "address-reviews"` is rejected on purpose to prevent recursive ingest cycles.
 - **Leading `# External Review:`** → markdown parser, per the contract at `references/external-findings-format.md`. This is the only markdown format orbit produces — written by external AIs after pulling the repo + reading the `/opsx:review-external` prompt.
 - **Neither leading pattern matches** → emit a clean format-mismatch error naming both supported formats; refuse to act on partial parse.
 
-The sniff inspects content only — it does NOT depend on file extension or pathname. Each finding (from either format) becomes a virtual marker with the same shape: `severity` / `title` / `file:line` / `description` / `source` (tagged `external` for markdown, `internal-review` for JSON). Virtual markers walk the same lifecycle as inline markers, with one exception: **the marker-removal step (Step 3d below) is a no-op for virtual markers regardless of provenance** — there's no source-file marker text to delete (the JSON file or markdown file is an audit artifact that travels with the change into archive; removing it on resolution would be wrong).
+The sniff inspects content only — it does NOT depend on file extension or pathname. Each finding (from either format) becomes a virtual marker with the same shape: `severity` / `title` / `file:line` / `description` / `source` (tagged `external` for markdown, `internal-review` for `command: "review"` JSON, `audit-drift` for `command: "audit-drift"` JSON). Virtual markers walk the same lifecycle as inline markers, with one exception: **the marker-removal step (Step 3d below) is a no-op for virtual markers regardless of provenance** — there's no source-file marker text to delete (the JSON file or markdown file is an audit artifact that travels with the change into archive; removing it on resolution would be wrong).
 
-**Fresh pushback applies to JSON virtual markers**: the JSON's own `stale_suppressed[]` array already filtered stale findings at review time, but state may have changed between the review and the resolve. The Step 3a pushback verification (per the primary discipline above) runs for every virtual marker — JSON-sourced or markdown-sourced — to catch staleness introduced since the source review/external pass.
+**Fresh pushback applies to JSON virtual markers** (both review and audit-drift): the source JSON's own `stale_suppressed[]` array already filtered stale findings at source-run time, but state may have changed between the source run and the resolve. The Step 3a pushback verification (per the primary discipline above) runs for every virtual marker — JSON-sourced or markdown-sourced — to catch staleness introduced since the source pass.
 
 ### 2. Triage
 
@@ -119,7 +119,7 @@ Unless `--keep-resolved-markers` is set, delete the original `@review: <text>` f
 - **Markdown**: remove the marker text. If it was the only content on a line, remove the line.
 - **Source code (C-style)**: remove just the marker text. If the comment now contains only whitespace or the comment delimiters (`//`, `/* */`), remove the whole comment.
 - **Source code (hash)**: same as C-style for `# @review:` comments.
-- **External (virtual marker)**: no-op — there's no source text to remove. Log as resolved.
+- **Virtual marker (external markdown, internal-review JSON, or audit-drift JSON)**: no-op — there's no source text to remove (the source file is an audit artifact). Log as resolved with the appropriate `source` tag (`external`, `internal-review`, or `audit-drift`).
 
 For `unresolvable` conversions (`@todo:` / `@review(escalated):`), the marker is **transformed** in place rather than removed; this is still considered "resolution" for log purposes.
 
@@ -316,7 +316,7 @@ This example demonstrates the JSON path: the input is an internal `review-system
   Detected: <observed first-line snippet>
   ```
 - **`--from-file` JSON parse failure** (leading `{` but invalid JSON) → emit a clean parse-error message naming the file and the JSON parse-error position (best-effort); exit without acting. User fixes the file and re-runs.
-- **`--from-file` unsupported JSON `command` field** (valid JSON but `command` is not `"review"`) → emit a clean error naming the supported value (`"review"`) and the unsupported value detected; reference both format docs for self-diagnosis; exit without acting. V1 supports `review-<mode>-*.json` only.
+- **`--from-file` unsupported JSON `command` field** (valid JSON but `command` is neither `"review"` nor `"audit-drift"`) → emit a clean error naming the supported values (`"review"`, `"audit-drift"`) and the unsupported value detected; reference both format docs for self-diagnosis; exit without acting. V1 supports `review-<mode>-*.json` and `audit-drift-*.json` only. `command: "address-reviews"` is rejected on purpose (cycle prevention).
 - **`--from-file` markdown malformed** (leading `# External Review:` but missing required sections / broken field labels) → emit a markdown-parse-error message with format guidance from `references/external-findings-format.md`; exit without acting.
 - **`--from-file` JSON missing `findings[]`** → treat as malformed input; emit a clean error naming the missing/malformed field; reference `internal-findings-format.md`; exit.
 - **`--from-file` JSON with empty `findings: []`** → NOT an error. Succeed with zero virtual markers; resolution log reports a clean empty walk with note `Source JSON had no findings to walk; resolution log is informational.` A clean review with `findings: []` is the expected state for an all-clear pass.

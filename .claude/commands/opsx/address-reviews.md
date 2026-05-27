@@ -15,7 +15,7 @@ Resolve `@review:` markers anywhere in the repo (or ingest external-review findi
 `/opsx:address-reviews [<scope>] [--from-file <path>] [flags]`
 
 - `<scope>` — optional. Path, pattern, or change name. Default: whole-repo scan with safe exclusions (`.git`, `node_modules`, `dist`, `build`).
-- `--from-file <path>` — ingest review findings from a file. Auto-detects format via content sniff: external-review markdown (per `references/external-findings-format.md`) OR internal review JSON (`review-<mode>-*.json`, per `references/internal-findings-format.md`). V1 internal-JSON ingest accepts `command: "review"` only; other internal JSON commands (`audit-drift`, `address-reviews`, etc.) are rejected with a clean error.
+- `--from-file <path>` — ingest review findings from a file. Auto-detects format via content sniff: external-review markdown (per `references/external-findings-format.md`) OR internal findings JSON (`review-<mode>-*.json` or `audit-drift-*.json`, per `references/internal-findings-format.md`). V1 internal-JSON ingest accepts `command: "review"` OR `command: "audit-drift"`; other internal JSON commands (`address-reviews`, `apply`, `archive`, etc.) are rejected with a clean error. `command: "address-reviews"` is rejected on purpose (cycle prevention).
 
 ## Flags
 

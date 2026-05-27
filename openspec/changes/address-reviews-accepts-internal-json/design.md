@@ -37,17 +37,19 @@ The mismatch was tolerable in v1 because the cross-AI loop was the friction bloc
 - **Separate `--from-internal <path>` flag**. Rejected — adds invocation cost (user must remember which flag to use); auto-detect is strictly better UX when the file content is unambiguous.
 - **Extension-only detection**. Rejected — fragile if user renames files or pipes content; doesn't compose with future formats.
 
-### D-shape-1: V1 accepts `command: "review"` JSON only
+### D-shape-1: V1 accepts `command: "review"` AND `command: "audit-drift"` JSON
 
-**Decision**: After successful JSON parse, the parser checks the top-level `command` field. If `command: "review"`, proceed. If `command: "audit-drift"` or `command: "address-reviews"` or anything else: emit a clean error message naming the supported shapes and exit without acting.
+**Decision**: After successful JSON parse, the parser checks the top-level `command` field. If `command: "review"` or `command: "audit-drift"`, proceed. Anything else: emit a clean error message naming the supported shapes and exit without acting.
 
 **Why**:
-- Other internal JSONs (`audit-drift`, `address-reviews`) carry findings semantically distinct from review findings: audit-drift findings often need spec/source edits beyond the marker lifecycle; address-reviews ingest of itself would be cycle-recursive.
-- Scope discipline: v1 closes the review-feedback loop, which is the well-understood need. Other shapes can be added incrementally with their own scenarios.
+- The baseline `orbit-run-summary-emit` `Audit-drift standalone recommendations` requirement (synced earlier this session) already mandates audit-drift findings to emit `next_recommended: "/opsx:address-reviews --from-file <this-json>"` — closing the bridge for BOTH review JSON AND audit-drift JSON is exactly what the baseline references this change to do. The initial v1 scope of review-only would have created an internal product contradiction (audit-drift recommends a command the parser refuses to honor); caught by GPT-5 Codex's iter-1 external CRITICAL.
+- The audit-drift `findings[]` shape mirrors review's: `severity` / `file` / `line` / `title` / `recommendation` are identical; only the provenance slot (`pass` vs `category`) differs. Lifecycle is identical regardless of source command.
+- `address-reviews` ingest of itself stays REJECTED — preserves cycle prevention (the resolution log would feed itself recursively).
 - The universal-spine `command` field is the natural discriminator — every orbit-emitted JSON carries it.
 
 **Alternative considered**:
-- **Accept all JSONs that have a `findings[]` array shape**. Rejected — different commands' findings have different walk semantics; treating audit-drift findings as review findings would understate the action required.
+- **Accept review JSON only** (original v1 scope). Rejected on external iter-1 CRITICAL — created an internal product contradiction with the baseline audit-drift recommendation contract. The "different walk semantics" framing turned out to be wrong; the lifecycle is the same regardless of source command.
+- **Accept all JSONs that have a `findings[]` array shape** (including `address-reviews`). Rejected — `address-reviews` ingest of itself would loop; cycle prevention requires explicit rejection.
 
 ### D-no-op-1: Marker removal is no-op for both virtual marker types
 

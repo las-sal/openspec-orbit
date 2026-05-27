@@ -10,7 +10,7 @@ metadata:
 ---
 Run an editorial review of an OpenSpec change. Two modes: `--as proposal` reviews pre-implementation artifacts (9 passes); `--as system` reviews the whole product state after apply (verify-change as Pass 0 + 6 system-wide passes). Both modes share the 3-dimension scorecard (Completeness / Correctness / Coherence), the severity ladder (CRITICAL / WARNING / SUGGESTION), pushback discipline, and `.orbit-runs/` persistence. They differ on which passes run, which gate the final-assessment references (`/opsx:apply` vs `/opsx:archive`), and a few mode-specific flags (`--mark` for proposal, `--skip-verify` for system).
 
-**Generates findings; does not resolve them.** Resolution flows through `/opsx:address-reviews` (inline `@review:` markers or `--from-file` external findings) or by the user replying directly to the report.
+**Generates findings; does not resolve them.** Resolution flows through `/opsx:address-reviews` (inline `@review:` markers, OR `--from-file` ingesting external-review markdown OR internal review JSON OR audit-drift JSON) or by the user replying directly to the report.
 
 **Input**: Optional change name and optional `--as proposal|system` mode flag plus secondary flags. If change name omitted, prompt via `AskUserQuestion` over `openspec list --json`. If mode omitted, infer from `tasks.md` state (see Step 3).
 

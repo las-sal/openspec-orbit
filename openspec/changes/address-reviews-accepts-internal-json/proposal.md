@@ -7,8 +7,8 @@ Issue [#4](https://github.com/las-sal/openspec-orbit/issues/4) has tracked this 
 ## What Changes
 
 - **`--from-file` auto-detects format** via content sniff: markdown (existing path, unchanged) OR JSON (new path).
-- **JSON ingest path**: parse `findings[]` array from `review-<mode>-*.json` into virtual markers; identical lifecycle to markdown virtual markers (pushback → classify → fix → ripple-flag → log); marker-removal step is no-op for both.
-- **V1 accepts `command: "review"` JSON only**; other internal JSONs (`audit-drift`, `address-reviews`) rejected with a clean error message naming supported shapes. Out of scope for this change.
+- **JSON ingest path**: parse `findings[]` array from `review-<mode>-*.json` AND `audit-drift-*.json` into virtual markers; identical lifecycle to markdown virtual markers (pushback → classify → fix → ripple-flag → log); marker-removal step is no-op for all virtual-marker types.
+- **V1 accepts `command: "review"` OR `command: "audit-drift"`**; other internal JSONs (`address-reviews`, `apply`, `archive`, `propose`, etc.) rejected with a clean error message naming supported shapes. `address-reviews` rejection prevents recursive cycles. Audit-drift inclusion honors the existing baseline contract at `orbit-run-summary-emit` `Audit-drift standalone recommendations` requirement, which mandates audit-drift findings to emit `next_recommended: "/opsx:address-reviews --from-file <this-json>"` — closing the bridge for BOTH JSON families this change targets.
 - **Pushback discipline still applies** to JSON findings: the JSON's own `stale_suppressed[]` array filtered stale at review time, but time-since-review staleness still needs fresh verification.
 - **New reference doc**: `references/internal-findings-format.md` documenting the parser contract (symmetric structure with `external-findings-format.md`).
 - **Failure modes**: clean refusal when neither format matches — refuse to act on partial parse.
