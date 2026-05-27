@@ -1,0 +1,12 @@
+{
+  "command": "review-external",
+  "timestamp": "2026-05-27T01:07:54Z",
+  "change": "address-reviews-auto-discovers-internal-json",
+  "final_assessment": "External proposal-mode review prompt packaged for address-reviews-auto-discovers-internal-json (iter 1, mode proposal); awaiting findings from target AI. This is the FIRST external review for this change in either mode. Internal proposal iter-1 + iter-1 address-reviews walk completed; 5 findings (2 WARN + 3 SUGG) all resolved via inline-walk. Going to external before /opsx:apply per learning from just-archived parent change (where external GPT-5 Codex caught a CRITICAL audit-drift contract conflict at the system-mode-iter-1 boundary).",
+  "next_recommended": "Paste openspec/changes/address-reviews-auto-discovers-internal-json/.orbit-runs/external-prompt-proposal-2026-05-27T01-07-53Z.md into the target AI, save the response as openspec/changes/address-reviews-auto-discovers-internal-json/.orbit-runs/external-proposal-<TS>.md, then /opsx:address-reviews address-reviews-auto-discovers-internal-json --from-file <path>",
+  "kind": "editorial",
+  "mode": "proposal",
+  "prompt_path": "openspec/changes/address-reviews-auto-discovers-internal-json/.orbit-runs/external-prompt-proposal-2026-05-27T01-07-53Z.md",
+  "target": null,
+  "awaiting_findings": true
+}
