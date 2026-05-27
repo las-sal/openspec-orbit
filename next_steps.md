@@ -84,21 +84,127 @@ Each phase eventually becomes its own `/opsx:explore` → `/opsx:propose` cycle 
 
 **Formalize first**: file an issue (`Add macro-architecture-planning convention`) so the next dev session (yours or AI's) treats it as a proper orbit primitive.
 
+## Deterministic-helper extraction (orbit-lib)
+
+This is **Phase 1-2 of the orbit-v2 pivot** (per the seed above), but worth capturing standalone — it's a substantive architectural question independent of the rest of the pivot.
+
+### The tension
+
+orbit's current model: SKILL.md is everything. The AI is the runtime — reading prose + executing via tool calls. No deterministic code separate from upstream's `openspec` CLI.
+
+Empirically observable costs:
+
+| Cost | Evidence |
+|---|---|
+| **Token compounding** | openspec-address-reviews SKILL.md grew from ~270 → ~441 lines in 9 days; openspec-review is ~465 lines. Loaded on every invocation. |
+| **AI variance** | Complex deterministic logic interpreted differently across model versions / sessions. The 5-state convergence model is ~50 lines of prose for ~30 lines of equivalent code. |
+| **Spec maintenance** | Schema-shape rules duplicated across many SKILL.md files (universal-spine guidance, marker discovery patterns, JSON shapes). Changes require fan-out edits. |
+| **Validation gaps** | `openspec validate` covers spec-side; nothing validates orbit-emit JSON shape. AI can omit fields or get them wrong. |
+
+### Proposed architectural model
+
+```
+                              ┌────────────────────────┐
+                              │  SKILL.md (prose)      │
+                              │  — orchestration       │
+                              │  — judgment calls      │
+                              │  — narrative UX        │
+                              │  — decision framework  │
+                              └─────────┬──────────────┘
+                                        │ calls
+                                        ↓
+       ┌──────────────────────────────────────────────────────┐
+       │   .claude/orbit-lib/  (deterministic helpers)        │
+       │                                                       │
+       │   • emit-summary     — JSON schema enforcement       │
+       │   • auto-discover    — recency rules + tie-break     │
+       │   • convergence      — 5-state detection             │
+       │   • compute-menu     — inflection-point recommendation│
+       │   • discover-markers — grep patterns + exclusions    │
+       │   • spec-diff        — delta vs baseline diff        │
+       └──────────────────────────────────────────────────────┘
+                              ↑ calls
+                              │
+                  ┌───────────┴────────────┐
+                  │  upstream openspec CLI │
+                  │  — already deterministic│
+                  └────────────────────────┘
+```
+
+**Prose-best work** stays in SKILL.md: judgment calls, narrative explanations, decision frameworks, user-facing UX choices, push-back discipline, the "why."
+
+**Code-best work** extracts to helpers: schema construction/validation, sorting/recency, hash-compare, JSON shape enforcement, pattern matching, file ops, anything mechanical with zero judgment.
+
+### Triggers for extraction
+
+When does logic move from prose to helper?
+
+1. **Same algorithm duplicated across 3+ SKILL.md files** (e.g., universal-spine guidance is in every emit-producing SKILL.md)
+2. **>50 lines of prose with zero judgment calls** (pure computation that a deterministic function does in <30 lines of code)
+3. **AI-variance bug surfaced in review** (one cycle's AI got the sort wrong; another got it right — that's a signal)
+4. **Frequent invocation** (loaded on every command call → tokens compound)
+5. **Schema enforcement** (anything where AI omission/wrong-field shape is a real risk)
+
+### Candidate themes (7 identified across the last 4 archived changes)
+
+| Blob | Source change | Current prose | Post-extract | Tokens saved/load |
+|---|---|---|---|---|
+| Auto-discovery + tie-break | `address-reviews-auto-discovers-internal-json` | ~30 lines | ~3 lines | ~540 |
+| JSON parser routing + content sniff | `address-reviews-accepts-internal-json` | ~35 lines | ~5 lines | ~600 |
+| 5-state convergence detection | `harden-review-mode-recommendations` | ~60 lines | ~5 lines | ~1100 |
+| 14-row stock phrasings lookup | `harden-review-mode-recommendations` | ~25 lines | helper-resolved | ~500 |
+| Cascade IN/OUT classification | `defaults-and-decision-forks` (just archived) | ~40 lines | ~5 lines | ~700 |
+| Decision-fork hybrid detection | `defaults-and-decision-forks` | ~50 lines | ~5 lines | ~900 |
+| JSON emit / universal-spine construction | every emit-producing change (cumulative) | ~30 lines × 5 SKILL.md | helper-resolved | ~2700 |
+
+Per-invocation savings: **~2000 tokens** reclaimed on average.
+
+### Growth trajectory
+
+| SKILL.md | Bootstrap (2026-05-18) | Today | Growth | Δ over ~9 days |
+|---|---|---|---|---|
+| openspec-address-reviews | 270 lines | 441 | +63% | +171 lines |
+| openspec-review | 342 lines | 465 | +36% | +123 lines |
+| openspec-audit-drift | ~250 (est) | 328 | +31% | +78 lines |
+
+At current pace, the largest SKILL.md files **double every ~2-3 months**. Extraction NOW saves more than extracting later — the costs compound.
+
+### Cycle-level projection (post-extraction)
+
+| Metric | Current | Post-extract | Δ |
+|---|---|---|---|
+| Per cycle (~5-10 invocations) | ~30-60k tokens of SKILL.md load | ~20-40k | ~10-20k |
+| Per change (~10 cycles for substantial changes) | ~300-600k | ~200-400k | ~100-200k |
+| Per year (~50 archived changes) | ~10-15M | ~7-10M | ~3-5M |
+
+### Cost vs. benefit
+
+**Dollar cost**: ~$10-15/year per active orbit user reclaimed at Anthropic input pricing. **Small in absolute terms.**
+
+**Real wins** (qualitative, harder to quantify but bigger):
+
+1. **Context window reclaim**: ~30-40% reduction in SKILL.md tokens per invocation = roughly equivalent percentage of working memory freed for user-context, code-reads, conversation history. For long sessions (the just-archived change ran 6 cycles across one session — context pressure was real), this is the actual prize.
+
+2. **AI variance elimination on mechanical logic**: subagent reviews currently catch some variance (Step 3d→3e cross-refs); but a different subagent might miss/catch differently. Deterministic helpers eliminate that variance for sort/classification/parsing logic.
+
+3. **Authoring cost**: change a sort rule in code once vs update ~3 SKILL.md files + risk one slip-through (exactly what happened with the lifecycle reorder — Codex caught 3 sites missed in apply).
+
+4. **Schema enforcement at emit time**: the resolution-log JSON shape went through 4 review cycles + had schema-doc drift surface as a pre-existing issue. A `orbit-lib emit-summary` helper that validates shape at write time would catch field omissions / type mismatches before they reach the JSON.
+
+### Realistic extraction cost
+
+- Bootstrap orbit-lib (language pick, distribution, first helper): **~1-2 change cycles**
+- Each subsequent extraction (one of the 7 blobs above): **~0.5-1 change cycle**
+- Top 5 extractions: **~5 cycles total** one-time investment
+
+### When to file the issue
+
+Natural trigger: **after the `workflow-inflection-point-fixes` bundle lands** (would add another ~50-100 lines of menu-heuristic prose — making the variance + duplication case sharper). Or earlier if appetite for the orbit-v2 pivot crystallizes first.
+
+The dollar math alone doesn't justify it. The context-window + variance + authoring-cost math does — and grows sharper every change cycle.
+
 ## Context for resuming
 
 ### Just-archived change
 
 `address-reviews-defaults-and-decision-forks` (2026-05-27) — landed `#14 + #11 + #18`. Cascade-by-default + walk-mode default + decision-fork detection. The Option D reframe (lifecycle-invariant OUT list only; no file-extension discrimination) emerged mid-cycle and broadened the cascade default's general-purpose utility for non-orbit consumers (Swift/Python/etc). 21 findings resolved across 6 review cycles.
-
-### Token-extraction analysis (this session)
-
-7 mechanical-logic blobs identified across recent changes as candidates for deterministic-helper extraction (orbit-lib). Per-invocation savings ~2000 tokens; per change ~100-200k; per year ~3-5M (modest in $ terms, but **30-40% context window reclaim** is the real prize). Growth trajectory: openspec-address-reviews/SKILL.md grew +63% in 9 days; doubles every ~2-3 months at current rate. The longer extraction waits, the more prose has to be migrated.
-
-The extractions found:
-1. Auto-discovery + tie-break (from `address-reviews-auto-discovers-internal-json`)
-2. JSON parser routing + content sniff (from `address-reviews-accepts-internal-json`)
-3. 5-state convergence detection (from `harden-review-mode-recommendations`)
-4. 14-row stock phrasings lookup (from `harden-review-mode-recommendations`)
-5. Cascade IN/OUT classification (from `defaults-and-decision-forks` — just archived)
-6. Decision-fork hybrid detection (from `defaults-and-decision-forks`)
-7. JSON emit / universal-spine construction (universal across emit-producing SKILL.md files)
