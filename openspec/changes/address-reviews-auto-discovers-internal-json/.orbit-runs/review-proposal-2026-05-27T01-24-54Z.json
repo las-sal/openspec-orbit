@@ -1,0 +1,54 @@
+{
+  "command": "review",
+  "timestamp": "2026-05-27T01:24:54Z",
+  "change": "address-reviews-auto-discovers-internal-json",
+  "mode": "proposal",
+  "iteration": 2,
+  "depth": "full",
+  "flags": ["--fresh"],
+  "findings_summary": {
+    "critical": 0,
+    "warning": 0,
+    "suggestion": 1
+  },
+  "scorecard": {
+    "completeness": { "critical": 0, "warning": 0, "suggestion": 0 },
+    "correctness":  { "critical": 0, "warning": 0, "suggestion": 0 },
+    "coherence":    { "critical": 0, "warning": 0, "suggestion": 1 }
+  },
+  "passes": {
+    "1_structure_delta_integrity":     { "result": "pass", "evidence": "openspec validate --strict: valid" },
+    "2_internal_coherence":            { "result": "pass", "evidence": "4 artifacts agree: --from-file exclusivity, 5+1 audit-trail fields, 11 scenarios, archive resolver" },
+    "3_cross_doc_coherence":           { "result": "pass", "evidence": "no CLAUDE.md / project.md updates needed; behavior-contract-only change" },
+    "4_archive_consistency":           { "result": "pass", "evidence": "baseline L25 accepts review+audit-drift; MODIFIED requirement extends baseline cleanly" },
+    "5_codegen_readiness":             { "result": "pass", "evidence": "positional resolution algorithm + tie-break + exclusivity all unambiguous" },
+    "6_gap_hunt":                      { "result": "pass", "evidence": "11 scenarios cover happy + 7 edge cases + audit-trail + 2 baseline" },
+    "7_drift_hunt":                    { "result": "pass", "evidence": "task 2.1(b) catches internal-findings-format.md:119 v1-residue ('must be exactly review') before apply" },
+    "8_inline_review_marker_residue":  { "result": "pass", "evidence": "grep returns 5 hits, all documentation references to marker syntax (not actual unresolved markers)" },
+    "9_pre_handoff_sweep":             { "result": "pass", "evidence": "1 SUGGESTION on tie-break example alphabet-order claim; non-blocking" }
+  },
+  "findings": [
+    {
+      "severity": "SUGGESTION",
+      "pass": 9,
+      "title": "tie-break example claims 'audit-drift sorts before review-proposal before review-system' — verify ASCII order at apply time",
+      "file": "openspec/changes/address-reviews-auto-discovers-internal-json/specs/orbit-address-reviews/spec.md",
+      "line": 46,
+      "recommendation": "ASCII lexicographic order: 'a' < 'r', and 'review-proposal' < 'review-system' (proposal < system since p < s). Claim is correct as written, but consider adding a one-line confirmation (e.g., 'ASCII order: a < r; proposal < system') so the implementer in chunk 1 doesn't have to re-derive. Non-blocking; cosmetic."
+    }
+  ],
+  "stale_findings_suppressed": [
+    { "source": "iter-1 internal Claude", "title": "scenario count drift (10 vs 11)", "evidence": "task 3.3 now says '11 scenarios total'; design L105 says '9 net-new + 7 edge + 1 audit-trail'; spec grep returns 11" },
+    { "source": "iter-1 internal Claude", "title": "precedence rule for markers-vs-from-file ambiguity", "evidence": "spec L11 codifies --from-file exclusivity normatively (Option A)" },
+    { "source": "iter-1 internal Claude", "title": "TS-collision tie-break absent", "evidence": "spec L46 codifies lexicographic full-filename tie-break with worked example" },
+    { "source": "iter-1 internal Claude", "title": "path-vs-name disambiguation absent", "evidence": "spec L9 + task 1.1(a) codify the active→archive→fallback-to-path lookup with regex anchor" },
+    { "source": "iter-1 internal Claude", "title": "run-summary-schema field-note prose missing", "evidence": "task 2.4(d) adds field-note prose for each new field" },
+    { "source": "iter-1 external GPT-5 Codex (WARN 1)", "title": "archive resolver not normative in spec", "evidence": "spec L9 codifies positional resolution with regex + tie-break + fallback" },
+    { "source": "iter-1 external GPT-5 Codex (WARN 2)", "title": "audit-trail evidence fields not codified as scenario", "evidence": "spec L53-56 new scenario codifies 5 normative fields + 1 optional" },
+    { "source": "iter-1 external GPT-5 Codex (WARN 3)", "title": "internal-findings-format residue not in scope", "evidence": "task 2.1(b) explicitly targets L119 'must be exactly review' residue; confirmed at internal-findings-format.md:119" },
+    { "source": "iter-1 external GPT-5 Codex (WARN 4)", "title": "--from-file vs marker grep additivity ambiguous", "evidence": "spec L11 + design D-explicit-override + task 1.1(e) + proposal L16 all agree: Option A exclusive replacement" }
+  ],
+  "iteration_note": "Iter 2 (1 prior internal + 1 prior external; total 9 findings; all 9 resolved). 0 critical / 0 warning / 1 suggestion this run.",
+  "final_assessment": "No critical issues. 0 warning(s) to consider. Ready to apply (with noted improvements).",
+  "next_recommended": "/opsx:apply address-reviews-auto-discovers-internal-json"
+}

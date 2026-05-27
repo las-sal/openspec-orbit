@@ -1,4 +1,6 @@
-# Reference: internal-findings file format (for `--from-file` JSON parsing)
+# Reference: internal-findings file format (for `--from-file` JSON parsing AND auto-discovery)
+
+This parser contract is consumed by BOTH explicit `--from-file <path>` invocations AND auto-discovery from `.orbit-runs/` when `/opsx:address-reviews <change-name>` finds no inline markers (per the auto-discovery fallback in SKILL.md Step 1). The parsing logic and virtual-marker construction are IDENTICAL regardless of how the JSON entered the lifecycle — only the resolution log's `source` field differs (`"from-file"` vs `"auto-discovered"`).
 
 The `--from-file <path>` flag accepts TWO format families: (a) external-review markdown (see `external-findings-format.md`), (b) internal findings JSON (this file). The parser auto-detects format via content sniff: leading `{` routes to JSON; leading `# External Review:` routes to markdown; anything else triggers a format-mismatch error.
 
@@ -116,7 +118,7 @@ The parser SHOULD be lenient on:
 
 The parser MUST be strict on:
 
-- **Top-level `command` field** — must be exactly `"review"` (case-sensitive) for v1.
+- **Top-level `command` field** — must be exactly `"review"` OR `"audit-drift"` (case-sensitive). Other values rejected per the unsupported-command path.
 - **Per-finding `severity` field** — must be one of `CRITICAL`, `WARNING`, `SUGGESTION` after case normalization.
 - **Per-finding `title` field** — must be a non-empty string.
 - **Per-finding `file` field** — must be a non-empty string (the file path).

@@ -1,0 +1,63 @@
+{
+  "command": "address-reviews",
+  "timestamp": "2026-05-27T01:21:40Z",
+  "change": "address-reviews-auto-discovers-internal-json",
+  "final_assessment": "Walked all 4 findings from external proposal-mode review iter-1 (GPT-5 Codex). All 4 WARNINGs resolved as substantive (but mechanical) fixes; 0 SUGGESTIONs to address; 0 deferrals. WARN 1 (archived change-name resolution underspecified) resolved by replacing the original 'Positional argument resolution (normative)' block in the spec requirement intro with a fuller version: enumerates active-first-then-archive lookup order, archive-entries-match-regex rule (`^\\d{4}-\\d{2}-\\d{2}-<name>$`), lexicographically-latest-date tie-break for multiple archive matches; mirrored in task 1.1 (added explicit positional-resolution sub-step (a) before marker grep). WARN 2 (resolution-log evidence fields not enforced) resolved by adding a new spec scenario `Auto-discovery resolution log captures audit-trail evidence` codifying 5 normative fields in the auto-discovered emission (source / source_path / source_command / source_token / latest_apply_token) + optional tie_break_rationale; broadened task 2.4 to require these field+prose updates at run-summary-schema.md. WARN 3 (internal-findings-format.md L119 strictness section says review-only) resolved by broadening task 2.1 to fix the residue (broaden command discriminator to review OR audit-drift) + sweep for similar v1-only-review framing. WARN 4 (--from-file + change scope semantics ambiguous) resolved per user decision Option A (exclusive): added new 'from-file exclusivity (normative)' block to spec requirement intro making explicit that --from-file is the ONLY input source when specified; updated 'Explicit --from-file overrides auto-discovery' scenario to remove the additive-marker-grep parenthetical (now says auto-discovery does NOT run AND marker grep does NOT run); positional is used only for emit-path resolution. Scenario count: 10 → 11 (1 new audit-trail-evidence scenario from WARN 2 fix).",
+  "next_recommended": "Optional: re-run /opsx:review --as proposal --fresh for convergence-confirmation pass (expect 0/0/0 since all 4 WARNs were trivial-once-decided fixes); or /opsx:apply directly accepting the in-context confidence on the resolution. Given parent change had Codex catch a CRITICAL at iter-1 system external, the proposal-mode external this change just had (and resolved) substantially de-risks the apply. /opsx:apply harden-review-mode-recommendations [sic: should be address-reviews-auto-discovers-internal-json] is the natural next step.",
+  "kind": "editorial",
+  "source": "from-file",
+  "source_path": "openspec/changes/address-reviews-auto-discovers-internal-json/.orbit-runs/external-proposal-2026-05-27T01-13-24Z.md",
+  "external_reviewer": "GPT-5 Codex",
+  "input_findings_summary": {
+    "critical": 0,
+    "warning": 4,
+    "suggestion": 0
+  },
+  "pushback_verification": "All 4 findings verified against current state. WARN 1 confirmed: spec intro 'Positional argument resolution' block said positional is a change name if it resolves to active or archived directory, but didn't specify HOW to resolve archived (user doesn't include date prefix). WARN 2 confirmed: design.md L60-65 promised resolution log captures source path / source command / recency-comparison evidence + apply timestamp, but task 2.4 + spec scenario L45 only required `source: \"auto-discovered\"`; implementer could satisfy spec while omitting all the evidence. WARN 3 confirmed: internal-findings-format.md L119 strict requirements section says 'Top-level `command` field — must be exactly `\"review\"` (case-sensitive) for v1' — direct residue from #4's pre-iter-2 review-only scope; should now be `\"review\"` OR `\"audit-drift\"` per the synced baseline. WARN 4 confirmed: spec scenario L39 'Explicit --from-file overrides auto-discovery' had parenthetical saying marker grep still happens for change-scope markers; ambiguous as either behavior change (additive) or unstated existing behavior; user chose Option A (exclusive). No stale-suppressions.",
+  "resolution_summary": {
+    "resolved": 4,
+    "stale_suppressed": 0,
+    "deferred": 0,
+    "escalated": 0
+  },
+  "resolutions": [
+    {
+      "severity": "WARNING",
+      "title": "Archived change-name resolution algorithm underspecified",
+      "marker_source": "external",
+      "classification": "trivial fix (algorithm specification)",
+      "decision": "specify active-first-then-archive lookup order with regex-match + latest-date tie-break",
+      "action": "Replaced the original 'Positional argument resolution (normative)' block in spec.md MODIFIED requirement intro with a fuller version specifying: (1) active match first at `openspec/changes/<name>/`; (2) if no active match, enumerate `openspec/changes/archive/` entries matching regex `^\\d{4}-\\d{2}-\\d{2}-<name>$`, lexicographically-latest date wins if multiple match; (3) if neither, treat as path/pattern scope. Mirrored in task 1.1 by adding explicit positional-resolution sub-step (a) before marker grep, with the same regex + tie-break rule.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "WARNING",
+      "title": "Resolution-log audit-trail fields promised by design but not enforced by spec/tasks",
+      "marker_source": "external",
+      "classification": "trivial fix (codify the promise)",
+      "decision": "add new spec scenario codifying 5 normative audit-trail fields + optional tie_break_rationale",
+      "action": "Added new spec scenario `Auto-discovery resolution log captures audit-trail evidence` codifying 5 normative fields in the auto-discovered emission: (a) `source: \"auto-discovered\"`; (b) `source_path` (repo-relative path to selected JSON); (c) `source_command` (the selected JSON's `command` value); (d) `source_token` (filename `<TS>` token of selected JSON); (e) `latest_apply_token` (most-recent `apply-*.json` filename token, or `null`) — the apply-token field is what makes D-no-stale-detection auditable, fulfilling the design's audit-trail mitigation. Optional (f) `tie_break_rationale` when TS-token tie-break was invoked. Broadened task 2.4 to require updates at both the JSON-shape and field-note sites of run-summary-schema.md with full prose for each new field.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "WARNING",
+      "title": "internal-findings-format.md strictness section still says command must be `\"review\"` (residue from pre-iter-2 #4)",
+      "marker_source": "external",
+      "classification": "trivial fix (residue cleanup)",
+      "decision": "broaden the strictness bullet + sweep for similar v1-only-review framing",
+      "action": "Broadened task 2.1 to require fixing the L119 strictness bullet (currently says `command` must be exactly `\"review\"` for v1 — broaden to `\"review\"` OR `\"audit-drift\"`) AND sweeping the rest of the reference doc for any other v1-only-review residue. The residue is from #4's initial review-only scope before iter-2 expanded it; iter-2 fix landed in the parser sections but missed this strictness bullet.",
+      "ripple_flagged": []
+    },
+    {
+      "severity": "WARNING",
+      "title": "--from-file + change scope semantics ambiguous (exclusive or additive?)",
+      "marker_source": "external",
+      "classification": "decision required",
+      "decision": "Option A (exclusive) per user decision — --from-file overrides marker grep entirely, no additive behavior",
+      "action": "Added new 'from-file exclusivity (normative)' block to spec requirement intro making explicit that when --from-file is specified: marker grep does NOT run, auto-discovery does NOT run, the parser ingests the file as the ONLY input source; the positional (if present) is used only for emit-path resolution. Updated 'Explicit --from-file overrides auto-discovery' scenario to remove the additive-marker-grep parenthetical and explicitly state marker grep does NOT run. Aligns with the baseline pattern where default scan / scoped scan / --from-file are 3 alternative input paths, not combinable inputs.",
+      "ripple_flagged": []
+    }
+  ],
+  "remaining_markers_in_scope": 0,
+  "persisted_escalations": []
+}

@@ -425,6 +425,8 @@ Flags:
 
 `<scope>` accepts a path, a pattern (glob), or a change name — covers what `--only` would do. Preview / dry-run (`--list`) and other extras are deferred to v2 per issue #3.
 
+**Auto-discovery** (change-name positional, no `@review:` markers found, no `--from-file`): the command auto-discovers the most-recent `review-<mode>-*.json` OR `audit-drift-*.json` in the change's `.orbit-runs/` directory and walks it through the standard ingest lifecycle — the canonical `/opsx:review <name>` → `/opsx:address-reviews <name>` workflow is now **2 commands**, with no `--from-file <path>` parameter or `--mark` pre-step needed. Recency rule: single global most-recent by filename `<TS>` token (review and audit-drift compete on the same recency axis with no class preference). Explicit `--from-file <path>` always overrides auto-discovery.
+
 Full design: [`sketches/address-reviews.md`](./openspec/changes/bootstrap-openspec-orbit/sketches/address-reviews.md)
 
 ---

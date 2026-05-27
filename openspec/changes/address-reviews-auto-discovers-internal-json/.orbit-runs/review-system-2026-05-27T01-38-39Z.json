@@ -1,0 +1,55 @@
+{
+  "command": "review",
+  "timestamp": "2026-05-27T01:38:39Z",
+  "change": "address-reviews-auto-discovers-internal-json",
+  "mode": "system",
+  "iteration": 1,
+  "depth": "full",
+  "flags": ["--fresh", "--as", "system"],
+  "kind": "editorial",
+  "findings_summary": {
+    "critical": 0,
+    "warning": 0,
+    "suggestion": 1
+  },
+  "scorecard": {
+    "completeness": { "critical": 0, "warning": 0, "suggestion": 0 },
+    "correctness":  { "critical": 0, "warning": 0, "suggestion": 0 },
+    "coherence":    { "critical": 0, "warning": 0, "suggestion": 1 }
+  },
+  "passes": {
+    "0_verify_change":         { "result": "pass", "evidence": "tasks: 14/14 checked; openspec validate --strict: valid; spec coverage complete (11 scenarios across 1 MODIFIED requirement)" },
+    "1_baseline_compliance":   { "result": "pass", "evidence": "pre-sync state expected; baseline orbit-address-reviews/spec.md MODIFIED requirement still carries old 2-scenario framing; resolves at sync-specs on archive. Parent requirement `--from-file ingest of review findings file` (baseline L23-25) accepts review+audit-drift JSON, fully compatible with this change's auto-discovery extension." },
+    "2_cohesion":              { "result": "pass", "evidence": "6 touched surfaces consistent: SKILL.md Step 1 / opsx command body / internal-findings-format.md / run-summary-schema.md / onboard SKILL+command rows / README. Cross-archive references to parent's `--from-file ingest of review findings file` requirement resolve cleanly to baseline L23-25. One coherence SUGGESTION on resolution-log template (see findings)." },
+    "3_surface_walk":          { "result": "pass", "evidence": "/opsx:address-reviews CLI surface preserved: same flags (--keep-resolved-markers, --from-file); change-name positional behavior is strict superset (existing markers-found case unchanged; new no-markers-no-from-file fallback added). Not a breaking change — all v1 invocations remain identically behaved." },
+    "4_perspective_reviews":   { "result": "skipped", "evidence": "no perspectives defined; skip Pass 4" },
+    "5_critical_path_scan":    { "result": "skipped", "evidence": "no critical paths defined; skip Pass 5" },
+    "6_drift_residue":         { "result": "pass", "evidence": "Cat 1 (vocab residue): clean — 'internal review JSON' framing now consistently 'internal findings JSON' or specifies review-vs-audit-drift; the L119 'exactly review' residue called out by iter-1 GPT-5 Codex is fixed. Cat 2 (lens staleness): N/A. Cat 3 (cross-doc): 1 SUGGESTION on SKILL.md L169 resolution-log Source-header template (4th enum value 'auto-discovered' not included). Cat 4 (archive coherence): parent archive references resolve." }
+  },
+  "findings": [
+    {
+      "severity": "SUGGESTION",
+      "pass": 6,
+      "title": "Resolution-log Source-header template missing fourth enum value `auto-discovered`",
+      "file": ".claude/skills/openspec-address-reviews/SKILL.md",
+      "line": 169,
+      "recommendation": "The Step 5 resolution-log output template shows `Source: <whole-repo | scope <path> | --from-file <path>>` — three values. The schema enum at run-summary-schema.md:31 now has four (`whole-repo | scope | from-file | auto-discovered`). For consistency with the schema and to give implementers a clear rendering target, extend the template to `Source: <whole-repo | scope <path> | --from-file <path> | auto-discovered <path>>`. Cosmetic; the worked examples at L249/L290 already use real Source-header values, so an implementer can infer the auto-discovered form, but the template should match the schema. Non-blocking."
+    }
+  ],
+  "stale_findings_suppressed": [
+    { "source": "iter-1 internal Claude", "count": 5, "evidence": "All 5 (2 warnings + 3 suggestions) resolved in iter-2 walk; iter-2 review-proposal JSON confirms convergence" },
+    { "source": "iter-1 external GPT-5 Codex", "count": 4, "evidence": "All 4 warnings resolved in iter-2 address-reviews walk (archive resolver normative in spec L9; audit-trail-evidence scenario at spec L53-56; internal-findings-format.md L119 residue fixed; --from-file exclusivity per Option A in spec L11)" },
+    { "source": "iter-2 internal Claude (cosmetic)", "count": 1, "evidence": "Cosmetic ASCII-order suggestion on spec L46; tie-break example claim is correct as written; inline-fixed at iter-2 close" }
+  ],
+  "convergence_state": 1,
+  "convergence_state_label": "no prior external system review",
+  "convergence_inputs": {
+    "external_system_md_present": false,
+    "apply_jsons_present": ["apply-2026-05-27T01-27-59Z.json", "apply-2026-05-27T01-30-07Z.json", "apply-2026-05-27T01-32-49Z.json"],
+    "address_reviews_jsons_present": ["address-reviews-2026-05-27T01-04-52Z.json", "address-reviews-2026-05-27T01-21-40Z.json"],
+    "resolution_step": "State 1 reached on Step 1 (Presence check) — no external-system-*.md exists in .orbit-runs/"
+  },
+  "iteration_note": "First system-mode run for this change.",
+  "final_assessment": "All checks passed. Recommend /opsx:review-external for fresh-context cross-check before archive (per orbit-conventions Review mode decision framework; in-context system review missed 3 of 3 real bugs in bootstrap-orbit-status-cli's first archived cycle). Or /opsx:review --fresh for a lighter pass (same model, fresh context). Proceed directly to /opsx:archive if accepting that risk.",
+  "next_recommended": "/opsx:review-external <name> --as system (or /opsx:archive if accepting in-context-only risk)"
+}

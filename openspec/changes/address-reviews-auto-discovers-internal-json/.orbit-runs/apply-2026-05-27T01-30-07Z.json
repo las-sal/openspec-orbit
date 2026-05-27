@@ -1,0 +1,22 @@
+{
+  "command": "apply",
+  "timestamp": "2026-05-27T01:30:07Z",
+  "change": "address-reviews-auto-discovers-internal-json",
+  "kind": "workflow",
+  "chunk": "2 of 3 (+ task 3.1)",
+  "chunk_name": "Reference docs + README + onboard surfaces + validation",
+  "chunk_complete": true,
+  "tasks_completed": 10,
+  "tasks_remaining": 3,
+  "user_validation_remaining": 3,
+  "tasks_completed_this_session": 10,
+  "tasks_completed_this_chunk": ["2.1", "2.2", "2.3", "2.4", "3.1"],
+  "files_changed": [
+    ".claude/skills/openspec-address-reviews/references/internal-findings-format.md (title broadened to mention --from-file AND auto-discovery; new top-paragraph explicitly states parser contract is consumed by both invocation paths with identical parsing logic and virtual-marker construction, only resolution log's source field differs; strictness section L119 broadened from command-must-be-review to command-must-be-review-or-audit-drift — residue cleanup from #4's pre-iter-2 review-only scope)",
+    "README.md (~L426 area address-reviews command reference): new 'Auto-discovery' paragraph documenting change-name-positional + no-markers + no-from-file → most-recent JSON discovery with recency rule + tie-break + --from-file override clause; canonical 2-command workflow explicitly named",
+    ".claude/skills/openspec-onboard/SKILL.md + .claude/commands/opsx/onboard.md command-table rows for /opsx:address-reviews: appended 'Auto-discovers internal review/audit-drift JSON when invoked with a change name and no markers found (no --from-file needed)' for new-user discoverability",
+    ".claude/skills/openspec-address-reviews/references/run-summary-schema.md (substantive update): source enum extended to whole-repo | scope | from-file | auto-discovered (4 values); 4 new top-level fields added to JSON shape — source_command, source_token, latest_apply_token, tie_break_rationale (optional) — each with type signature + when-emitted clause; source_path field-note prose extended to mention auto-discovered case; new combined field-note paragraph documents all 4 auto-discovery audit-trail fields with rationale linking to D-no-stale-detection and D-recency-1 design choices"
+  ],
+  "final_assessment": "Chunk 2 complete + task 3.1 (validation) passed inline. The auto-discovery feature is now documented across 5 surfaces (SKILL Step 1 + opsx command file + internal-findings-format.md + README + onboard SKILL/command tables + run-summary-schema.md) with consistent priority order, recency rule, exclusivity semantics, and audit-trail-field requirements. openspec validate --strict → valid. The implementation is complete; tasks 3.2-3.5 are user-validation gates.",
+  "next_recommended": "/opsx:apply address-reviews-auto-discovers-internal-json — final chunk: user-validation handoff (tasks 3.2-3.5). 3.2 reads SKILL.md prose; 3.3 reads spec scenarios; 3.4 reads README + onboard discoverability; 3.5 final gate before /opsx:review --as system."
+}

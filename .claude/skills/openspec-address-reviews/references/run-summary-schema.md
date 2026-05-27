@@ -28,8 +28,12 @@ The schema below documents per-command extensions ADDED to that spine (`source`,
   "final_assessment": "<short narrative of the resolution outcome>",
   "next_recommended": "<suggested next command, e.g., 're-run /opsx:review --as proposal to confirm convergence'>",
   "kind": "editorial",
-  "source": "whole-repo" | "scope" | "from-file",
-  "source_path": "<scope path or --from-file path or null>",
+  "source": "whole-repo" | "scope" | "from-file" | "auto-discovered",
+  "source_path": "<scope path or --from-file path or auto-discovered JSON path or null>",
+  "source_command": "<for auto-discovered source: the selected JSON's command field — 'review' or 'audit-drift'; null otherwise>",
+  "source_token": "<for auto-discovered source: filename <TS> token of the selected JSON (e.g., '2026-05-27T00-43-10Z'); null otherwise>",
+  "latest_apply_token": "<for auto-discovered source: most-recent apply-*.json filename token in the same .orbit-runs/, or null if no apply JSON exists; null for other sources>",
+  "tie_break_rationale": "<for auto-discovered source: optional string describing how a TS-token tie-break was resolved; absent (or null) otherwise>",
   "external_reviewer": "<from --from-file's Reviewer field, if applicable, else null>",
   "input_findings_summary": {
     "critical": 0,
@@ -66,8 +70,9 @@ The schema below documents per-command extensions ADDED to that spine (`source`,
 
 ## Field notes
 
-- **`source`** distinguishes invocation paths: `whole-repo` for default scan, `scope` for positional `<scope>` argument, `from-file` for `--from-file <path>`.
-- **`source_path`** carries the scope or file path; `null` for `whole-repo`.
+- **`source`** distinguishes invocation paths: `whole-repo` for default scan, `scope` for positional `<scope>` argument, `from-file` for `--from-file <path>`, `auto-discovered` for the auto-discovery fallback (change-name positional + markers absent + candidate JSON found in `.orbit-runs/` — per the `Auto-discovery resolution log captures audit-trail evidence` scenario in the orbit-address-reviews spec).
+- **`source_path`** carries the scope, `--from-file` path, OR auto-discovered JSON path; `null` for `whole-repo`. For `auto-discovered` source, this is the repo-relative path to the selected JSON (e.g., `openspec/changes/<name>/.orbit-runs/review-system-2026-05-27T00-43-10Z.json`).
+- **`source_command`**, **`source_token`**, **`latest_apply_token`**, **`tie_break_rationale`** — the auto-discovery audit-trail fields. Emitted ONLY when `source: "auto-discovered"`; `null` (or absent for `tie_break_rationale`) for other sources. Together they document the discovery decision: `source_command` = the selected JSON's top-level `command` value (`"review"` or `"audit-drift"`); `source_token` = the selected JSON's filename `<TS>` token (the winner of the recency comparison); `latest_apply_token` = the most-recent `apply-*.json` filename token in the same `.orbit-runs/` (existence-checked at discovery time; supports the D-no-stale-detection design choice — orbit doesn't refuse to walk a JSON older than the latest apply, but the resolution log records both timestamps so downstream auditors can assess staleness); `tie_break_rationale` = optional explanation for when the recency comparison invoked the lexicographic-sort tie-break.
 - **`external_reviewer`** parsed from the `**Reviewer**:` field in the `--from-file` input; lets downstream tools track which AI's findings have been ingested. Only populated when `marker_source` is `external` (external-review markdown input); set to `null` for inline / internal-review / audit-drift sources (those have no human-readable reviewer-name field).
 - **`input_findings_summary`** counts findings by severity at the input boundary (before pushback suppression). Total findings always = sum of `resolved` + `stale_suppressed` + `deferred` + `escalated` in `resolution_summary`.
 - **`pushback_verification`** is a short prose note (1-2 sentences) summarizing pushback work — "all 9 findings verified against current state; 0 stale suppressions" or "9 findings; 3 stale-suppressed with commit evidence."

@@ -35,7 +35,15 @@ Do NOT re-edit already-fixed state. Stale markers get removed without further ed
 
 ### 1. Discover (or ingest)
 
-**Default — whole-repo scan**:
+**Discovery priority order**:
+
+1. `@review:` markers in scope (always tried first when markers might exist — preserves current behavior)
+2. If positional resolves to a change name AND no markers found AND no `--from-file`: auto-discover most-recent internal review JSON or audit-drift JSON in the change's `.orbit-runs/`
+3. If neither markers nor JSON: clean "no findings" exit
+
+**Explicit `--from-file <path>` is always exclusive**: when specified, marker grep does NOT run and auto-discovery does NOT run — the parser ingests the file as the ONLY input source. The positional (if any) is used only for emit-path resolution (where the resulting `address-reviews-<TS>.json` is written).
+
+**Default — whole-repo scan** (no positional, no `--from-file`):
 
 ```bash
 grep -rn --include='*' "@review:" . \
@@ -45,15 +53,25 @@ grep -rn --include='*' "@review:" . \
   | grep -v '/build/'
 ```
 
-Safe exclusions: `.git/`, `node_modules/`, `dist/`, `build/`. Other common build dirs may be added per project (`.next/`, `target/`, etc.).
+Safe exclusions: `.git/`, `node_modules/`, `dist/`, `build/`. Other common build dirs may be added per project (`.next/`, `target/`, etc.). Auto-discovery does NOT apply for bare invocation — no change-directory anchor for `.orbit-runs/` lookup.
 
-**Scoped scan — `<scope>` positional argument**:
+**Positional `<scope>` argument** — resolve in this order:
 
-```bash
-grep -rn "@review:" <scope> | grep -v <safe-exclusions>
-```
+1. **Active change**: `openspec/changes/<scope>/` exists → treat `<scope>` as a change name; grep restricted to that directory; auto-discovery available (Step (c) below).
+2. **Archived change**: no active match, but `openspec/changes/archive/` contains one or more entries matching the regex `^\d{4}-\d{2}-\d{2}-<scope>$` → treat as a change name resolving to the archive directory. If multiple archive entries match the same `<scope>` suffix (rare; same change name archived on different dates), the lexicographically-latest date wins (most-recent archive).
+3. **Path/pattern fallback**: no active or archive match → treat as a path/pattern scope; grep restricted to that path; auto-discovery does NOT apply (no `.orbit-runs/` anchor).
 
-`<scope>` accepts a path, a pattern, or a change name (heuristic: if it matches `openspec/changes/<name>/` or `openspec list --json` output, scope to that directory).
+**Auto-discovery fallback** (change-name positional, no markers, no `--from-file`):
+
+(a) Run grep for `@review:` markers in the resolved change directory. If any found → walk them (current behavior; auto-discovery does NOT fire because markers already provide work).
+
+(b) If grep returns zero markers AND no `--from-file` flag was specified: look in the change's `.orbit-runs/` directory for files matching `review-<mode>-*.json` OR `audit-drift-*.json`. Pick the single most-recent file by filename `<TS>` token across all candidate types — review and audit-drift JSON compete on the same recency axis with NO class preference (per `D-recency-1`; audit-drift CAN win over review if its `<TS>` token is later). If two candidate files share an identical `<TS>` token (rare; possible only within the same ISO-second), tie-break by stable lexicographic sort of the full filename (ASCII order: `a` < `r`; within `review-`, `proposal` < `system` → so `audit-drift-<TS>.json` sorts before `review-proposal-<TS>.json` sorts before `review-system-<TS>.json`); alphabetically-earliest wins.
+
+(c) If a candidate JSON is found: feed it to the `--from-file` ingest path described below (content-sniff routes to JSON parser per `references/internal-findings-format.md`; identical lifecycle and virtual-marker construction to explicit `--from-file` invocation; the only difference is the resolution log's `source` field — see Step 5).
+
+(d) If neither markers nor JSON candidates exist: emit `No @review: markers in scope and no internal review/audit-drift JSON in .orbit-runs/. Nothing to walk.` and exit cleanly.
+
+**`--mark` is optional, not prerequisite**: historically, `/opsx:review --as proposal --mark` was the way to produce markers that address-reviews would later walk. Auto-discovery makes `--mark` purely a stylistic choice (do you want findings annotated in source for diff-readability?), NOT a structural requirement. The canonical `/opsx:review <name>` → `/opsx:address-reviews <name>` workflow works without `--mark` because address-reviews discovers the just-written `review-<mode>-*.json`.
 
 **`--from-file <path>` ingest** (review findings file — external markdown OR internal JSON):
 
@@ -148,7 +166,7 @@ Resolution log is NOT a 3-dimension scorecard. Output structure:
 ```
 ## Address-reviews report
 
-Source: <whole-repo | scope <path> | --from-file <path>>
+Source: <whole-repo | scope <path> | --from-file <path> | auto-discovered <path>>
 Markers found: <N>
 Markers walked: <M> (subset specified: <yes/no>)
 

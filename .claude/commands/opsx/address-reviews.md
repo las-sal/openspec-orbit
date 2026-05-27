@@ -14,7 +14,7 @@ Resolve `@review:` markers anywhere in the repo (or ingest external-review findi
 
 `/opsx:address-reviews [<scope>] [--from-file <path>] [flags]`
 
-- `<scope>` — optional. Path, pattern, or change name. Default: whole-repo scan with safe exclusions (`.git`, `node_modules`, `dist`, `build`).
+- `<scope>` — optional. Path, pattern, or change name. Resolves in this order: active change at `openspec/changes/<scope>/` → archived change at `openspec/changes/archive/<YYYY-MM-DD>-<scope>/` (regex match; latest date wins on multi-match) → path/pattern fallback. Default (no positional): whole-repo scan with safe exclusions (`.git`, `node_modules`, `dist`, `build`).
 - `--from-file <path>` — ingest review findings from a file. Auto-detects format via content sniff: external-review markdown (per `references/external-findings-format.md`) OR internal findings JSON (`review-<mode>-*.json` or `audit-drift-*.json`, per `references/internal-findings-format.md`). V1 internal-JSON ingest accepts `command: "review"` OR `command: "audit-drift"`; other internal JSON commands (`address-reviews`, `apply`, `archive`, etc.) are rejected with a clean error. `command: "address-reviews"` is rejected on purpose (cycle prevention).
 
 ## Flags
@@ -29,7 +29,7 @@ Resolve `@review:` markers anywhere in the repo (or ingest external-review findi
 
 Invokes the `openspec-address-reviews` skill, which executes the lean v1 lifecycle:
 
-1. **Discover** — grep for `@review:` markers in scope, OR parse `--from-file` into virtual markers (auto-detect: leading `{` → JSON parser; leading `# External Review:` → markdown parser; else format-mismatch error)
+1. **Discover** — discovery priority order: (a) `@review:` markers in scope; (b) if change-name positional + no markers + no `--from-file`: auto-discover most-recent `review-<mode>-*.json` OR `audit-drift-*.json` in the change's `.orbit-runs/` (single global most-recent by filename `<TS>` token; lexicographic tie-break on collision); (c) if neither: clean "no findings" exit. Explicit `--from-file <path>` is exclusive — marker grep + auto-discovery both skip; content-sniff routes to JSON parser (leading `{`) or markdown parser (leading `# External Review:`); else format-mismatch error.
 2. **Triage** — present a numbered list; user can scope to a subset
 3. **Walk each sequentially**:
    - **Pushback** — verify against current state (grep / git log / file read); classify stale findings and suppress them
@@ -66,7 +66,7 @@ Markdown carries the marker bare; source code and configs wrap it in the file ty
 
 ## Constraints
 
-- **Never creates new `@review:` markers.** Only `/opsx:review --as proposal --mark` does that.
+- **Never creates new `@review:` markers.** Only `/opsx:review --as proposal --mark` does that. `--mark` is optional, NOT a prerequisite — auto-discovery makes the canonical `/opsx:review <name>` → `/opsx:address-reviews <name>` workflow work without pre-marking.
 - **No auto-cascade in v1.** Ripple-flagged files are listed, not edited.
 
 See `.claude/skills/openspec-address-reviews/SKILL.md` for full lifecycle, classification heuristics, ingest format, and worked example.

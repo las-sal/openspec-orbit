@@ -162,7 +162,7 @@ Every slash command in your post-install `.claude/commands/opsx/` (15 files: 14 
 
 | Command | One-line description |
 |---------|---------------------|
-| `/opsx:address-reviews [<scope>] [--from-file <path>]` | Walk inline `@review:` markers or `--from-file` findings (external-review markdown, internal review JSON, or audit-drift JSON — auto-detected by content sniff) through pushback → classify → fix → ripple → remove. Resolves rather than scans. |
+| `/opsx:address-reviews [<scope>] [--from-file <path>]` | Walk inline `@review:` markers or `--from-file` findings (external-review markdown, internal review JSON, or audit-drift JSON — auto-detected by content sniff) through pushback → classify → fix → ripple → remove. Resolves rather than scans. Auto-discovers internal review/audit-drift JSON when invoked with a change name and no markers found (no `--from-file` needed). |
 | `/opsx:apply <name>` | Implement tasks from `tasks.md` chunk-by-chunk with end-of-chunk run-summary emits. Pauses on premise problems. |
 | `/opsx:archive <name>` | Move change to `openspec/changes/archive/`, run sync-specs to propagate deltas to baseline. Pre-archive `@review:` marker check + audit-drift sweep. |
 | `/opsx:audit-drift [<change-name>]` | Scan for drift between captured knowledge and reality (4 categories: vocabulary, lens, cross-doc, archive). Standalone or library-call. |

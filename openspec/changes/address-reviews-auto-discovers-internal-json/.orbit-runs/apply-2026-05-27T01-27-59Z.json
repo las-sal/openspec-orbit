@@ -1,0 +1,20 @@
+{
+  "command": "apply",
+  "timestamp": "2026-05-27T01:27:59Z",
+  "change": "address-reviews-auto-discovers-internal-json",
+  "kind": "workflow",
+  "chunk": "1 of 3",
+  "chunk_name": "SKILL + command body — discovery-step fallback",
+  "chunk_complete": true,
+  "tasks_completed": 5,
+  "tasks_remaining": 8,
+  "user_validation_remaining": 3,
+  "tasks_completed_this_session": 5,
+  "tasks_completed_this_chunk": ["1.1", "1.2", "1.3", "1.4", "1.5"],
+  "files_changed": [
+    ".claude/skills/openspec-address-reviews/SKILL.md (Step 1 Discover section comprehensively rewritten: new top-level 'Discovery priority order' block + new '--from-file always exclusive' block + new 'Positional <scope> argument' resolution algorithm (active → archive regex → path/pattern fallback) + new 'Auto-discovery fallback' 4-sub-step procedure (markers grep → recency-rule JSON pick with TS-collision tie-break + ASCII-order example → feed to ingest path → clean exit if neither) + new '--mark is optional, not prerequisite' framing. Tasks 1.1-1.3 + 1.5 all addressed in one cohesive edit.)",
+    ".claude/commands/opsx/address-reviews.md (Input section <scope> description broadened to enumerate the 3-step resolution; What it does Step 1 description broadened to enumerate the 3-step discovery priority order with --from-file exclusivity; Constraints section --mark bullet broadened to mention auto-discovery makes --mark optional)"
+  ],
+  "final_assessment": "Chunk 1 complete. Auto-discovery logic now documented in 2 surfaces (SKILL + command file) with consistent priority order + recency rule + tie-break + --from-file exclusivity + --mark-no-longer-prerequisite framing. The substantive design (positional resolution algorithm, normative discovery rules, audit-trail-evidence requirements) lives in the SKILL.md Step 1 section. Command file is the compact mirror for quick-reference.",
+  "next_recommended": "/opsx:apply address-reviews-auto-discovers-internal-json — next chunk: Reference docs + README + onboard surfaces (4 tasks: 2.1 internal-findings-format strictness residue fix, 2.2 README L417 area note, 2.3 onboard SKILL/command table-row append, 2.4 run-summary-schema enum + new audit-trail fields + field-note prose)"
+}

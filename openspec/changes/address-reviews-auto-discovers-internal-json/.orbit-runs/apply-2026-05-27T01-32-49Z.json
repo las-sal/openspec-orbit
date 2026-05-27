@@ -1,0 +1,19 @@
+{
+  "command": "apply",
+  "timestamp": "2026-05-27T01:32:49Z",
+  "change": "address-reviews-auto-discovers-internal-json",
+  "kind": "workflow",
+  "chunk": "3 of 3 (final)",
+  "chunk_name": "Validation + user-validation handoff (final)",
+  "chunk_complete": true,
+  "tasks_completed": 13,
+  "tasks_remaining": 0,
+  "user_validation_remaining": 0,
+  "tasks_completed_this_session": 13,
+  "tasks_completed_this_chunk": ["3.2", "3.3", "3.4", "3.5"],
+  "files_changed": [
+    "openspec/changes/address-reviews-auto-discovers-internal-json/tasks.md (final 4 user-validation checkboxes marked complete per user attestation 'all good' after reviewing SKILL Step 1 prose, the 11 spec scenarios, and the README + onboard surface updates; no inline content edits)"
+  ],
+  "final_assessment": "Chunk 3 complete. All 13 tasks done. `/opsx:address-reviews <change-name>` now auto-discovers the most-recent internal review JSON OR audit-drift JSON in the change's .orbit-runs/ when no markers are found and no --from-file is specified — canonical `/opsx:review <name>` → `/opsx:address-reviews <name>` is now 2 commands, no --mark pre-step or --from-file parameter needed. Implementation surface: SKILL Step 1 + opsx command file mirror + internal-findings-format.md + run-summary-schema.md (4 new audit-trail fields) + README + onboard SKILL/command tables — 6 files updated. openspec validate --strict passes.",
+  "next_recommended": "/opsx:review --as system address-reviews-auto-discovers-internal-json --fresh — system-mode review with --fresh. Under the iteration-aware logic, this will fire State 1 (no prior external system review for this change) and recommend /opsx:review-external before archive. Or skip external + walk into /opsx:archive accepting the in-context-only risk."
+}
