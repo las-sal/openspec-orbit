@@ -84,6 +84,24 @@ Each phase eventually becomes its own `/opsx:explore` → `/opsx:propose` cycle 
 
 **Formalize first**: file an issue (`Add macro-architecture-planning convention`) so the next dev session (yours or AI's) treats it as a proper orbit primitive.
 
+## "Mastermind" mode — uber-explore for multi-proposal efforts
+
+Idea: a riff on a previously-suggested "mastermind" mode. An **uber-explore** that produces an architecture / large effort which then **chunks out into a set of core efforts**, each of which becomes its own proposal explored and pushed separately.
+
+Early shape:
+- `architecture.md` as the parent artifact (parent of `design.md`s) — describes the problem and decomposes it into a set of core efforts
+- Each core effort = one candidate proposal that can be explored + pushed independently
+- Architecture doc persists; child proposals reference it; phases land asynchronously
+
+Open shape questions to revisit:
+- Relation to the **macro-architecture-planning convention** sketched above (`openspec/architecture/<topic>.md`) — are these the same thing under two names, or is mastermind the *interactive mode* and architecture.md the *artifact*?
+- Does mastermind get its own slash command (`/opsx:mastermind`?) or is it a flag on `/opsx:explore` (e.g. `--scope=architecture`)?
+- Decomposition primitive: explicit "phase" entries in `architecture.md`, or a separate `phases/` directory, or just a section list that humans + AI both treat as the source of truth?
+- How does a child proposal *reference* its parent architecture — frontmatter link, prose link, registry entry?
+- Lifecycle: does the architecture doc get archived when all child phases land, or stay long-lived as a record?
+
+Likely overlaps with the macro-architecture section above — worth merging the framings when this gets picked up.
+
 ## Deterministic-helper extraction (orbit-lib)
 
 This is **Phase 1-2 of the orbit-v2 pivot** (per the seed above), but worth capturing standalone — it's a substantive architectural question independent of the rest of the pivot.
