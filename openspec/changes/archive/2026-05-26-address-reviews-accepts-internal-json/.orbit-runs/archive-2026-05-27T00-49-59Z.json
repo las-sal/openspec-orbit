@@ -1,0 +1,66 @@
+{
+  "command": "archive",
+  "timestamp": "2026-05-27T00:49:59Z",
+  "change": "address-reviews-accepts-internal-json",
+  "kind": "workflow",
+  "final_assessment": "Archived cleanly to openspec/changes/archive/2026-05-26-address-reviews-accepts-internal-json/. Closes #4 (--from-file should accept internal-review JSON summaries). Pre-archive: 0 unresolved @review: markers (the one grep hit at design.md:60 is documentary prose about marker convention, not a real marker); 4/4 artifacts done; 13/13 tasks complete; audit-drift sweep returned 0 CRITICAL across all 4 categories (Cat 1 N/A: no RENAMED/REMOVED; Cat 2 skip: no lenses; Cat 3 just verified clean in iter-2 system review at 00-43-10Z; Cat 4 N/A pre-sync). Spec sync applied 2 MODIFIED operations cleanly: orbit-address-reviews baseline `--from-file ingest of external-review findings` MODIFIED to `--from-file ingest of review findings file` (intro rewritten + scenarios 2 → 10); `Pushback discipline applied per marker` MODIFIED (intro broadened + 1 new scenario added, 3 → 4). Project-wide openspec validate --all --strict passed 11/11. Full audit trail (15 files: 13 .orbit-runs/ + this archive summary + the synced baseline) travelled with the change into .orbit-runs/.",
+  "next_recommended": "Commit and push the archive + synced baseline, then close GitHub #4 with a one-line rationale linking to this archive. The new dual-command --from-file path is now production-ready: future /opsx:review system-mode runs can feed their review-*.json directly through /opsx:address-reviews --from-file, AND /opsx:audit-drift's standalone next_recommended (which has long pointed at --from-file <this-json>) now resolves cleanly.",
+  "audit": {
+    "ran": true,
+    "skipped_via_flag": false,
+    "context": "pre-archive",
+    "findings_total": 0,
+    "findings_by_category": { "1": 0, "2": 0, "3": 0, "4": 0 },
+    "categories_skipped": ["2"],
+    "skip_reasons": { "2": "lenses absent (openspec/lenses/ does not exist)" }
+  },
+  "user_decision": "proceeded_clean",
+  "sync_specs": {
+    "ran": true,
+    "user_choice": "sync_now",
+    "delta_capabilities": ["orbit-address-reviews"],
+    "operations": [
+      {
+        "capability": "orbit-address-reviews",
+        "operation": "MODIFIED",
+        "requirement_before": "--from-file ingest of external-review findings",
+        "requirement_after": "--from-file ingest of review findings file",
+        "scenarios_before": 2,
+        "scenarios_after": 10,
+        "note": "title renamed + intro rewritten for broader scope (now covers external markdown + review JSON + audit-drift JSON via content-sniff auto-detect)"
+      },
+      {
+        "capability": "orbit-address-reviews",
+        "operation": "MODIFIED",
+        "requirement": "Pushback discipline applied per marker",
+        "scenarios_before": 3,
+        "scenarios_after": 4,
+        "note": "intro broadened to cover all virtual-marker provenance + new scenario 'Internal JSON virtual markers receive fresh pushback'"
+      }
+    ],
+    "validation": "openspec validate --all --strict → 11/11 pass"
+  },
+  "artifacts_complete": true,
+  "tasks_complete": true,
+  "unresolved_review_markers": 0,
+  "archive_path": "openspec/changes/archive/2026-05-26-address-reviews-accepts-internal-json/",
+  "iteration_history_summary": {
+    "propose": 1,
+    "review_proposal_internal": 2,
+    "review_proposal_external": 0,
+    "address_reviews_proposal": 1,
+    "apply_chunks": 3,
+    "review_system_internal": 2,
+    "review_system_external": 1,
+    "address_reviews_system": 1,
+    "total_orbit_runs_files": 14,
+    "convergence_state_at_archive": 3,
+    "convergence_state_label_at_archive": "Path B convergence: external findings resolved via address-reviews",
+    "key_inflection_points": [
+      "proposal iter-1: 1 CRITICAL (phantom `# Internal Review:` markdown header) caught + resolved via inline-walk (the meta-irony: workaround pattern because v1 --from-file didn't accept JSON, exactly what this change closes)",
+      "system iter-1 external (GPT-5 Codex): 1 CRITICAL (audit-drift contract conflict — baseline mandated --from-file recommendation that v1 parser would reject) drove substantive iter-2 scope expansion",
+      "iter-2 address-reviews walk: Option A scope expansion (review-only → review + audit-drift) closed all 5 external findings"
+    ]
+  },
+  "warnings": []
+}
