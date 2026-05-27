@@ -1,0 +1,112 @@
+{
+  "command": "archive",
+  "timestamp": "2026-05-27T06:30:00Z",
+  "change": "address-reviews-defaults-and-decision-forks",
+  "kind": "workflow",
+  "final_assessment": "Archived cleanly to openspec/changes/archive/2026-05-27-address-reviews-defaults-and-decision-forks/. Closes #14 (cascade-by-default, P0) + #11 (walk-mode-default, P1) + #18 (decision-fork detection, P2). 3-issue bundle landed via the Option D reframe that emerged in iter-1 (lifecycle-invariant OUT list only; no file-extension discrimination). Pre-archive checks: 1 documentary @review: marker hit (suppressed); 4/4 artifacts done; 35 AI-doable tasks complete + 8 user-validation handoff tasks intentionally unchecked per orbit-conventions Apply per-chunk-end emission semantic rule; audit-drift pre-archive sweep returned 0 findings. Spec sync propagated 7 ops across 3 capabilities (orbit-address-reviews: 2 MOD + 3 ADD; orbit-review: 1 ADD; orbit-audit-drift: 1 ADD) — openspec validate --all --strict 11/11 pass. Cumulative iteration count: 21 findings resolved across 6 review cycles (internal proposal iter-1 + internal proposal iter-2 fresh + external proposal Codex + internal system iter-1 fresh + external system Codex + internal system iter-2 fresh) + 5 address-reviews walks. Full audit trail (19 files in .orbit-runs/) travels with the change.",
+  "next_recommended": "Commit and push the archive + 3 synced baselines + closes #11, #14, #18 on GitHub with rationale linking to this archive. The new defaults (walk-mode + cascade-by-default + decision-fork detection) are now active in the /opsx:address-reviews skill prose; consumers will get the new behavior on their next invocation. User-validation tasks 8.1-8.8 remain unchecked in the archived tasks.md as audit-trail of the intentional convention — orbit users will live-test the new defaults during their next address-reviews invocations.",
+  "audit": {
+    "ran": true,
+    "skipped_via_flag": false,
+    "context": "pre-archive",
+    "findings_total": 0,
+    "findings_by_category": { "1": 0, "2": 0, "3": 0, "4": 0 },
+    "categories_skipped": ["2"],
+    "skip_reasons": { "2": "lenses absent (openspec/lenses/ does not exist)" },
+    "stale_suppressed_count": 2,
+    "stale_suppressed_summary": "Two expected pre-archive states suppressed: (1) Ripple flag without auto-cascade requirement still in baseline (sync-specs will rename at this archive step); (2) Discover → triage → walk → ripple flag → report lifecycle requirement title in baseline (intentionally NOT renamed per design D2 — only the cascade requirement got the rename; body was MODIFIED to describe new lifecycle)."
+  },
+  "user_decision": "proceeded_clean",
+  "sync_specs": {
+    "ran": true,
+    "user_choice": "sync_now",
+    "delta_capabilities": ["orbit-address-reviews", "orbit-review", "orbit-audit-drift"],
+    "operations": [
+      {
+        "capability": "orbit-address-reviews",
+        "operation": "MODIFIED",
+        "requirement": "Discover → triage → walk → ripple flag → report lifecycle",
+        "scenarios_added": ["Walk-mode lifecycle order per finding", "Batch-mode lifecycle order"],
+        "scenarios_preserved": ["Triage scoping"],
+        "note": "Body rewritten to codify walk-mode default + cascade-on-resolve; requirement title preserved (the 'ripple flag' in the title is now a historical artifact relative to new body content — captured as design tradeoff per D2)."
+      },
+      {
+        "capability": "orbit-address-reviews",
+        "operation": "RENAMED-MODIFIED",
+        "requirement_from": "Ripple flag without auto-cascade",
+        "requirement_to": "Ripple cascade by default",
+        "scenarios_before": 2,
+        "scenarios_after": 10,
+        "note": "Full body rewrite with 4 OUT categories + mode invariants + cascade-trusts-ripple-flag principle; v1 scenarios replaced with 10 cascade scenarios."
+      },
+      {
+        "capability": "orbit-address-reviews",
+        "operation": "ADDED",
+        "requirement": "Walk-mode by default with --batch opt-in",
+        "scenarios_after": 6,
+        "note": "Codifies #11 — per-finding default; 3 opt-in triggers (flag, verbal-in-invocation, command-shape-interruption); walk_mode_source audit field."
+      },
+      {
+        "capability": "orbit-address-reviews",
+        "operation": "ADDED",
+        "requirement": "Disjunctive recommendation fields surface as decision forks",
+        "scenarios_after": 10,
+        "note": "Codifies #18 — Step 3b.5 hybrid detection (structured first, heuristic fallback); strict triggers + non-triggers; [discuss] escape hatch; malformed-array fallback with structured_path_skipped_reason field."
+      },
+      {
+        "capability": "orbit-address-reviews",
+        "operation": "ADDED",
+        "requirement": "Resolution-log JSON shape extensions for walk-mode / decision-forks / cascade",
+        "scenarios_after": 6,
+        "note": "v2 schema additions: top-level walk_mode + walk_mode_source + walk_mode_shifted_at_finding; per-resolution recommendation_fork (6 fields including structured_path_skipped_reason); per-resolution ripple_cascade.applied/flagged_not_applied (replaces v1 top-level ripple_flagged_files_aggregate). v1↔v2 reader guidance documented."
+      },
+      {
+        "capability": "orbit-review",
+        "operation": "ADDED",
+        "requirement": "Optional recommendation_options field on finding entries",
+        "scenarios_after": 7,
+        "note": "Producer-side affordance for the structured decision-fork detection path. ≥2 entries + non-empty label/body contract; prose recommendation still summarizes."
+      },
+      {
+        "capability": "orbit-audit-drift",
+        "operation": "ADDED",
+        "requirement": "Optional recommendation_options field on audit-drift finding entries",
+        "scenarios_after": 6,
+        "note": "Identical field shape to orbit-review for uniform consumer-side parsing. Per-category emit guidance (C1 single; C2/C3 disjunctive; C4 single)."
+      }
+    ],
+    "validation": "openspec validate --all --strict → 11/11 pass"
+  },
+  "artifacts_complete": true,
+  "tasks_complete": false,
+  "tasks_done": 35,
+  "tasks_remaining": 8,
+  "tasks_remaining_kind": "user_validation_handoff",
+  "tasks_remaining_note": "All 8 unchecked tasks are user-validation handoff per orbit-conventions Apply per-chunk-end emission semantic rule. They surface as warnings at archive (informational), not blockers. The user will live-test the new defaults during their next /opsx:address-reviews invocations.",
+  "unresolved_review_markers": 0,
+  "archive_path": "openspec/changes/archive/2026-05-27-address-reviews-defaults-and-decision-forks/",
+  "iteration_history_summary": {
+    "propose": 1,
+    "review_proposal_internal": 2,
+    "review_proposal_external": 1,
+    "address_reviews_proposal": 3,
+    "apply_chunks": 4,
+    "review_system_internal": 2,
+    "review_system_external": 1,
+    "address_reviews_system": 2,
+    "total_orbit_runs_files": 19,
+    "convergence_state_at_archive": 3,
+    "convergence_state_label_at_archive": "Path B convergence: external system findings resolved via address-reviews iter-5",
+    "key_inflection_points": [
+      "proposal iter-1 internal: 1 CRITICAL (cascade-scope contradiction) → user pushback drove Option D reframe (lifecycle-invariant OUT list only; no file-extension discrimination) — fundamental design pivot mid-cycle that simplified AND broadened the cascade-by-default's general-purpose utility",
+      "proposal iter-2 internal fresh: 0 CRITICAL + 5 findings caught reframe residue in design.md Risks table that in-context iter-1 walk missed — empirical case for fresh-context review on novel reframes",
+      "proposal iter-1 external GPT-5 Codex: 0 CRITICAL + 3 codegen-readiness gaps caught (archive paths in cross-change OUT bullet, open-ended safe-exclusion phrase, bold-Options variant ambiguity) — empirical case for cross-AI review on novel framing",
+      "system iter-1 internal fresh: 0 CRITICAL + 2 stale Step 3d→3e cross-refs in sibling reference docs + 1 pre-existing audit-drift drift (S1 fixed inline per user Option A)",
+      "system iter-1 external GPT-5 Codex: 0 CRITICAL + 3 lifecycle-reorder ripple sites caught that BOTH 2 internal cycles AND apply itself missed (Change-completeness discipline, classifier prose, CLAUDE.md governing doc) — strongest empirical case yet for external system review on novel-reframe changes",
+      "system iter-2 internal fresh: 0 findings (convergence checkpoint) → Path B convergence confirmed → archive"
+    ]
+  },
+  "warnings": [
+    "Archived with 8 incomplete tasks (user-validation handoff, intentional per orbit-conventions)"
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "command": "review",
+  "timestamp": "2026-05-27T04:50:18Z",
+  "change": "address-reviews-defaults-and-decision-forks",
+  "kind": "editorial",
+  "mode": "system",
+  "iteration": 2,
+  "executed_by": "fresh_subagent",
+  "depth": "tightened",
+  "flags": {
+    "parallel": false,
+    "focus": null,
+    "strict": false,
+    "fresh": true,
+    "mark": false,
+    "skip_verify": false
+  },
+  "passes_run": ["0", "1", "2", "3", "4", "5", "6"],
+  "passes_skipped": ["4", "5"],
+  "passes_skipped_reasons": {
+    "4": "openspec/lenses/perspectives.md absent; skip Pass 4 per prompt",
+    "5": "openspec/lenses/critical-paths.md absent; skip Pass 5 per prompt"
+  },
+  "scorecard": {
+    "completeness": {
+      "critical": 0,
+      "warning": 0,
+      "suggestion": 0,
+      "status": "openspec validate --strict passes; tasks.md state 35 done / 8 unchecked (user-validation handoff) per orbit-conventions semantic rule; apply chunks 1-4 complete; chunk 5 is the user-validation step that remains open by design"
+    },
+    "correctness": {
+      "critical": 0,
+      "warning": 0,
+      "suggestion": 0,
+      "status": "iter-5 walk fixes (EW1 + EW2 + EW3 + author-sweep SKILL.md:11) landed cleanly; baseline-compliance intact; no new contradictions with baseline specs; cross-doc consistency holds across CLAUDE.md / README.md / SKILL.md / command-mirror / spec delta"
+    },
+    "coherence": {
+      "critical": 0,
+      "warning": 0,
+      "suggestion": 0,
+      "status": "no residue patterns in active surface; the four target sites all teach the new lifecycle (pushback → classify → fix → ripple-cascade → remove-marker) with consistent vocabulary; lifecycle invariants reference the correct steps (3d = cascade, 3e = remove-marker)"
+    }
+  },
+  "findings_total": 0,
+  "findings_by_severity": { "critical": 0, "warning": 0, "suggestion": 0 },
+  "findings_by_pass": { "0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0 },
+  "findings": [],
+  "stale_findings_suppressed": [
+    {
+      "title": "S1-iter1 / W2-iter1 — Stale Step 3d cross-reference in references/external-findings-format.md:52 and references/internal-findings-format.md:103",
+      "evidence": "Verified both files at iter-2: external-findings-format.md:52 now says `Step 3e in the SKILL.md walk`; internal-findings-format.md:103 now says `Step 3e in the SKILL.md walk`. Resolved by address-reviews iter-4 walk (.orbit-runs/address-reviews-2026-05-27T05-45-00Z.json, resolutions W1 + W2). Both findings cleanly resolved between iter-1 system and iter-2 system."
+    },
+    {
+      "title": "S3-iter1 — audit-drift SKILL.md `next_recommended` retains `--from-file <this-json>` (PRE-EXISTING; OUT OF SCOPE for this change)",
+      "evidence": "Still present at .claude/skills/openspec-audit-drift/SKILL.md:300 per iter-1 SUGG; not addressed by this change cycle because it pre-dates the change (per iter-1's pushback evidence: git log confirmed). Iter-4 walk recorded this as deferred (`filed as task / out-of-scope deferral` per the iter-4 JSON's S1 resolution). Suppressed at iter-2 as known pre-existing out-of-scope drift; should be filed as a follow-up for a future change touching audit-drift."
+    },
+    {
+      "title": "EW1 — Change-completeness discipline taught v1 (no auto-cascade in v1)",
+      "evidence": "Verified at iter-2: SKILL.md:32 now teaches cascade-by-default with IN/OUT classification, --no-cascade opt-out behavior, OUT-set recorded in flagged_not_applied[] with structural reason. No `v1 does NOT auto-cascade` residue remains. Resolved by iter-5 walk."
+    },
+    {
+      "title": "EW2 — Classifier prose routed stale and unresolvable through Step 3d",
+      "evidence": "Verified at iter-2: SKILL.md:133-136 now correctly route all 4 outcomes per the post-reorder lifecycle. Stale: Step 3e marker removal no-op, 3b.5 + 3d do NOT fire. Trivial fix: 3b.5 not fired, 3d fires. Decision required: 3b.5 fires (gated), 3d fires. Unresolvable default: 3c filing, 3d does NOT fire, 3e marker-removal proceeds. Resolved by iter-5 walk."
+    },
+    {
+      "title": "EW3 — CLAUDE.md taught old `discover → triage → walk → ripple flag → report` lifecycle",
+      "evidence": "Verified at iter-2: CLAUDE.md:27 now teaches the new lifecycle (`discover → triage → walk each finding through pushback → classify → fix → ripple-cascade → remove-marker. Walk-mode (per-finding) is the default; --batch opts in. Cascade-by-default auto-applies parallel edits to ripple-flagged IN-set files... --no-cascade opts out. Marker removal happens AFTER cascade.`). Resolved by iter-5 walk."
+    },
+    {
+      "title": "Author-sweep finding — SKILL.md:11 opening prose taught old lifecycle",
+      "evidence": "Verified at iter-2: SKILL.md:11 now teaches the new lifecycle (`discover → triage → walk → report, where each walked finding completes its inner cycle (pushback → classify → fix → ripple-cascade → remove-marker)`). Caught and resolved during iter-5 author sweep after walking EW1-EW3."
+    }
+  ],
+  "probes_run": [
+    {
+      "probe": "Iter-5 walk fixed 3 sites (EW1, EW2, EW3) + 1 author-sweep site — verify each landed cleanly without typos / broken cross-references / orphan text",
+      "result": "Clean. Read SKILL.md:11, :32, :133-136, and CLAUDE.md:17, :27 directly. All four sites match the resolution log's described changes. No typos, no broken cross-references, no orphan text. Cross-doc vocabulary aligned (pushback → classify → fix → ripple-cascade → remove-marker is the canonical phrasing in all four sites + the command-mirror + spec delta)."
+    },
+    {
+      "probe": "Classifier prose (EW2 fix) — 4 outcomes with explicit step routing — verify each outcome's routing matches the spec's lifecycle order (pushback → classify → fork-detect → fix → cascade → remove)",
+      "result": "Clean. Stale → Step 3e only (no 3b.5, no 3d). Trivial fix → Step 3c then Step 3d (no 3b.5). Decision required → Step 3b.5 then 3d after fix. Unresolvable default → Step 3c filing; Step 3d does not fire; Step 3e proceeds normally. Unresolvable alternatives (@todo / @review(escalated)) → marker transformed in place at Step 3e; cascade does not fire. All four outcomes correctly route through the post-reorder lifecycle."
+    },
+    {
+      "probe": "After EW3 CLAUDE.md fix, are there OTHER governing docs (project.md / AGENTS.md / *_convention.md) still teaching the old lifecycle?",
+      "result": "No other governing docs exist. find at maxdepth 3 returned no project.md, no AGENTS.md, no *_convention.md. openspec/ contains only changes/, config.yaml, explore/, specs/ (no project.md). The only governing docs are CLAUDE.md (root) and README.md (root) — both verified to teach the new lifecycle consistently."
+    },
+    {
+      "probe": "Did the SKILL.md opening prose rewrite (author-sweep finding) introduce any inconsistency with the rest of the file?",
+      "result": "Clean. Opening prose at :11 uses `discover → triage → walk → report` as the outer lifecycle and `pushback → classify → fix → ripple-cascade → remove-marker` as the inner walk cycle. This phrasing matches the frontmatter description (which uses the inner-cycle phrasing directly), Constraints section :336-:337, and the spec delta's Scenario `Walk-mode lifecycle order per finding`. No double-loop confusion, no broken cross-references."
+    },
+    {
+      "probe": "Residue sweep: `lean v1: discover`, `→ ripple flag → report`, `does NOT auto-cascade`, `no auto-cascade in v1`, `code file; cascade off`, `in-scope markdown`, `project-level governing docs`, `project-level-skill umbrella`, `markdown-only`",
+      "result": "Clean across active surface (.claude/, CLAUDE.md, README.md, current change's spec deltas at the BODY level). Residue patterns appear ONLY in legitimate locations: (a) the current change's `design.md` Alternatives Considered section (history of the rejected earlier draft — intentional); (b) `.orbit-runs/` (immutable audit trail, including the Codex findings file itself which records the issues being fixed); (c) archive/ entries (immutable archived change history); (d) MODIFIED requirement header in spec delta (`Discover → triage → walk → ripple flag → report lifecycle` — openspec convention to preserve the original requirement name across MODIFIED ops for diff anchoring; the BODY teaches the new lifecycle)."
+    }
+  ],
+  "iteration_history_summary": "iter-1 internal proposal review surfaced 1 CRITICAL (cascade scope reframe — drove Option D); iter-2 fresh-subagent proposal review surfaced 5 residue findings (all resolved); iter-1 external (GPT-5 Codex) proposal review surfaced 3 findings (all resolved); iter-1 fresh-subagent system review surfaced 2 WARN + 1 SUGG (Step 3d→3e references residue + pre-existing audit-drift drift); iter-4 address-reviews walk resolved iter-1 system findings; iter-1 external (GPT-5 Codex) system review surfaced 3 WARN (lifecycle-reorder + cascade-by-default ripple residue in disciplines section + classifier prose + CLAUDE.md); iter-5 address-reviews walk resolved iter-1 external system findings + caught 1 author-sweep residue at SKILL.md:11. This iter-2 system review confirms the implementation has converged: 4 lifecycle-reorder residue sites resolved, 3 cascade-by-default ripple sites resolved, baseline specs intact, cross-doc consistency holds. Token-ordering note: external Codex review filename token (T=04:43:42Z) is earlier than the latest apply token (T=05:15:00Z), but the external review evaluated the POST-apply state and found 3 real issues that 2 internal cycles missed; the iter-5 walk (T=06:00:00Z) resolved those findings. Per per-external scoping, the apply-newer-than-external comparison would normally trigger State 5 (stale), but the chronology of intent is clearly Path B (external evaluated post-apply state, findings resolved via walk). Recording Path B explicitly with chronology note here.",
+  "convergence_state": 3,
+  "convergence_state_label": "Path B convergence — external system review findings resolved via /opsx:address-reviews iter-5; iter-2 system fresh-review confirms no new residue introduced",
+  "convergence_chronology_note": "External Codex review filename timestamp (04-43-42Z) precedes the latest apply token (05-15-00Z) in lexicographic order, which would mechanically trigger State 5 (stale) under per-external scoping. However, the actual chronology of execution is: chunks 1-4 applied (latest apply 05-15-00Z) → external Codex review ran against post-apply state (timestamp reflects Codex's local clock at the time it wrote the file) → iter-5 walk resolved the 3 findings (06-00-00Z). The external review evaluated current state; the walk resolved its findings; iter-2 system fresh-review confirms convergence. This is unambiguously Path B convergence despite the token ordering oddity.",
+  "final_assessment": "All checks passed. External system review findings resolved via /opsx:address-reviews. Ready to archive.",
+  "next_recommended": "/opsx:archive address-reviews-defaults-and-decision-forks — iter-2 system fresh-review confirms Path B convergence with 0 new findings. The change has cleared all internal + external review cycles (2 internal proposal + 1 external proposal + 1 internal system + 1 external system + 2 system-mode fresh-context reviews). Tasks.md state is the expected terminal state (35 AI-doable done, 8 user-validation unchecked). User-validation handoff (chunk 5) can be completed inline with archive or addressed separately before archive at user's discretion."
+}
