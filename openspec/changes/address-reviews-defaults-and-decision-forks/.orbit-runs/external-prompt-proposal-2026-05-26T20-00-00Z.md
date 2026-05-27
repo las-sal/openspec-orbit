@@ -142,6 +142,14 @@ Multi-line descriptions are fine within the `**Description**:` field — just co
 
 ## When you're done
 
-Once your findings file is written, the orbit user will run `/opsx:address-reviews address-reviews-defaults-and-decision-forks --from-file openspec/changes/address-reviews-defaults-and-decision-forks/.orbit-runs/external-proposal-<YOUR-TS>.md` to walk each finding. You don't need to do anything after writing the file.
+After writing your findings file, **commit and push it back to the remote** so the orbit user can pull it for ingest. Suggested commit pattern (matches prior orbit external-review commits):
+
+```
+git add openspec/changes/address-reviews-defaults-and-decision-forks/.orbit-runs/external-proposal-<YOUR-TS>.md
+git commit -m "External review (proposal, iter 1): address-reviews-defaults-and-decision-forks"
+git push
+```
+
+The orbit user will then `git pull` and run `/opsx:address-reviews address-reviews-defaults-and-decision-forks --from-file openspec/changes/address-reviews-defaults-and-decision-forks/.orbit-runs/external-proposal-<YOUR-TS>.md` (or rely on auto-discovery, which will resolve to your file if it's the most recent in `.orbit-runs/`).
 
 Thank you for the second opinion.
