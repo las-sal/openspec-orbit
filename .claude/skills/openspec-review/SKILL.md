@@ -97,6 +97,40 @@ Run the mode-specific pass set sequentially (or in parallel for the marked passe
 2. Apply the pushback discipline against current state.
 3. Emit findings tagged CRITICAL / WARNING / SUGGESTION with file:line + actionable recommendation.
 
+### Disjunctive recommendations: emit structured `recommendation_options`
+
+When a finding's recommendation is genuinely disjunctive — offering the user a choice between two or more concrete alternatives (e.g., "Either file a follow-up issue, or extend scope to tasks.md" / numbered alternatives `(A) … (B)` / "Options: X / Y") — emit an optional structured field alongside the prose `recommendation`:
+
+```json
+{
+  "pass": "...",
+  "severity": "WARNING",
+  "file": "...",
+  "line": ...,
+  "title": "...",
+  "recommendation": "Either (A) file a follow-up issue tracking the v2 polish, or (B) add Group 19 to tasks.md extending this change's scope.",
+  "recommendation_options": [
+    { "label": "A", "body": "file a follow-up issue tracking the v2 polish" },
+    { "label": "B", "body": "add Group 19 to tasks.md extending this change's scope" }
+  ]
+}
+```
+
+**When to emit** `recommendation_options`:
+
+- The finding genuinely requires a USER choice between defensible paths (different outcomes; not just rewordings).
+- ≥ 2 options. (Single-option arrays defeat the purpose; the prose `recommendation` field carries single recommendations.)
+- Each entry has non-empty `label` (use `"A"`, `"B"`, `"C"`, … or `"1"`, `"2"`, …) and non-empty `body` (the concrete action the user would take).
+
+**When NOT to emit**:
+
+- Single concrete action with no alternative (rename X → Y; remove duplicate; tighten a type signature). The prose `recommendation` field alone is sufficient.
+- Prose containing "or" that is NOT a real choice ("fix it now or later", "X or Y could happen"). Loose "or" is conversational, not disjunctive — do NOT trigger the structured field.
+
+**Prose summary still required**: when emitting `recommendation_options`, the prose `recommendation` field still summarizes the disjunction for human readers of the markdown report. The structured field is a producer-side affordance for the consumer (address-reviews) to surface as a structured fork prompt; it complements the prose, does not replace it.
+
+**Backward compatibility**: the field is OPTIONAL on every finding. Findings without disjunctive recommendations omit it. Downstream parsers SHALL ignore the field if unknown (forward-compat). See `references/run-summary-schema.md` for the canonical JSON shape.
+
 #### Proposal-mode passes (9)
 
 ```

@@ -16,9 +16,9 @@ This schema inherits the 6-field **universal spine** from `orbit-conventions`'s 
 - `next_recommended` (verbatim recommendation, e.g., `"re-run /opsx:review --as proposal to confirm convergence"`)
 - `kind: "editorial"` (address-reviews is an editorial command per the kind taxonomy)
 
-The schema below documents per-command extensions ADDED to that spine (`source`, `source_path`, `external_reviewer`, `input_findings_summary`, `pushback_verification`, `resolution_summary`, `resolutions`, `remaining_markers_in_scope`, `persisted_escalations`). Per-command extensions are address-reviews-specific state.
+The schema below documents per-command extensions ADDED to that spine (`source`, `source_path`, `external_reviewer`, `walk_mode`, `walk_mode_source`, `walk_mode_shifted_at_finding`, `input_findings_summary`, `pushback_verification`, `resolution_summary`, `resolutions` with `recommendation_fork` and `ripple_cascade` sub-objects, `remaining_markers_in_scope`, `persisted_escalations`). Per-command extensions are address-reviews-specific state.
 
-## Schema
+## Schema (v2)
 
 ```json
 {
@@ -31,10 +31,13 @@ The schema below documents per-command extensions ADDED to that spine (`source`,
   "source": "whole-repo" | "scope" | "from-file" | "auto-discovered",
   "source_path": "<scope path or --from-file path or auto-discovered JSON path or null>",
   "source_command": "<for auto-discovered source: the selected JSON's command field — 'review' or 'audit-drift'; null otherwise>",
-  "source_token": "<for auto-discovered source: filename <TS> token of the selected JSON (e.g., '2026-05-27T00-43-10Z'); null otherwise>",
+  "source_token": "<for auto-discovered source: filename <TS> token of the selected JSON; null otherwise>",
   "latest_apply_token": "<for auto-discovered source: most-recent apply-*.json filename token in the same .orbit-runs/, or null if no apply JSON exists; null for other sources>",
   "tie_break_rationale": "<for auto-discovered source: optional string describing how a TS-token tie-break was resolved; absent (or null) otherwise>",
   "external_reviewer": "<from --from-file's Reviewer field, if applicable, else null>",
+  "walk_mode": "per_finding" | "batch",
+  "walk_mode_source": "flag" | "verbal" | "command-shape-interruption",
+  "walk_mode_shifted_at_finding": "<1-indexed finding number when mode shifted mid-walk; present only when walk_mode_source == 'command-shape-interruption'>",
   "input_findings_summary": {
     "critical": 0,
     "warning": 0,
@@ -56,8 +59,18 @@ The schema below documents per-command extensions ADDED to that spine (`source`,
       "line": 41,
       "classification": "trivial_fix" | "decision_required" | "stale" | "unresolvable",
       "action": "<what was done — applied edit, filed as task, converted to @todo:, escalated, etc.>",
-      "files_updated": ["<paths edited as part of the resolution>"],
-      "ripple_flagged": ["<paths flagged for sibling consistency, not edited>"],
+      "recommendation_fork": {
+        "detected": true,
+        "source": "structured" | "heuristic",
+        "options_presented": [{ "label": "A", "body": "..." }, { "label": "B", "body": "..." }],
+        "chosen": "A",
+        "discuss_invoked": false,
+        "structured_path_skipped_reason": "<optional; e.g., 'only 1 entry in array', 'missing label on entry index 2'>"
+      },
+      "ripple_cascade": {
+        "applied": ["<paths edited as part of the cascade>"],
+        "flagged_not_applied": [{ "path": "...", "reason": "<OUT-category reason OR `--no-cascade suppressed`>" }]
+      },
       "outcome": "resolved" | "stale" | "deferred" | "escalated"
     }
   ],
@@ -67,6 +80,17 @@ The schema below documents per-command extensions ADDED to that spine (`source`,
   ]
 }
 ```
+
+## v1 → v2 format migration (reader guidance)
+
+The v2 shape is a **structural change** from v1, not a rename. Readers handling archived JSONs from both eras MUST detect which version they're reading:
+
+- **v2 detection**: presence of `walk_mode` (top-level) OR `ripple_cascade` (per-resolution) indicates v2. v2 emits these fields on every walk.
+- **v1 detection**: presence of `ripple_flagged_files_aggregate` (top-level flat array of strings) indicates v1. v1 did NOT emit `walk_mode` or per-resolution `ripple_cascade`.
+
+**Why NOT a rename**: v1 aggregated ripple-flagged paths in a single top-level array across ALL resolutions, with no per-resolution attribution. v2 splits per-resolution into `ripple_cascade.applied[]` + `ripple_cascade.flagged_not_applied[]`. The shapes are NOT bijective — v1 archived JSONs cannot be losslessly upconverted to v2 (per-resolution attribution is lost in v1). Treat v1's aggregate as the union of all per-resolution ripple sets across the run; attribution to specific findings is unavailable.
+
+**v2 fields not present in v1**: `walk_mode`, `walk_mode_source`, `walk_mode_shifted_at_finding`, per-resolution `recommendation_fork`, per-resolution `ripple_cascade`. Downstream consumers (e.g., `orbit-status` sibling-repo tier-1 best-effort parse) handle absence as v1 and proceed gracefully.
 
 ## Field notes
 
@@ -81,3 +105,90 @@ The schema below documents per-command extensions ADDED to that spine (`source`,
 - **`outcome`** is the final disposition; aligns with the ✓ Resolved / ⚠ Stale / ⏸ Deferred / ✗ Escalated counts in the resolution log.
 - **`persisted_escalations`** captures `@review(escalated):` markers deliberately left in place; mirrors the resolution log's escalated section so downstream queries don't re-parse the log.
 - **`next_recommended`** is the closing suggestion shown in the final-assessment line.
+- **`walk_mode`** records the lifecycle mode the run used (per #11): `per_finding` (default — each marker walked sequentially with its own pushback → classify → fix → cascade → remove cycle) or `batch` (all markers complete pushback + classify + fix in one pass, then cascade as a single aggregated step).
+- **`walk_mode_source`** distinguishes how batch-mode was entered: `flag` (`--batch` argv), `verbal` (recognized batch-intent phrase in the invocation message — "fix them all", "batch them", "go ahead with all", or equivalent), `command-shape-interruption` (bare unambiguous mid-walk mode-switch message — "go batch", "switch to batch", "batch the rest"). Omitted when `walk_mode == "per_finding"`.
+- **`walk_mode_shifted_at_finding`** is the 1-indexed finding number at which the mode shifted; present ONLY when `walk_mode_source == "command-shape-interruption"`; omitted otherwise.
+- **`recommendation_fork`** (per-resolution, OPTIONAL) — present only when decision-fork detection fired in Step 3b.5 (per #18). Object captures: `detected` (always true when present), `source` (`"structured"` = parser used the input finding's `recommendation_options[]` field; `"heuristic"` = parser scanned the recommendation prose for disjunctive signals), `options_presented` (the options shown to the user as `[{label, body}]`), `chosen` (the option label the user picked; matches one of `options_presented[].label`), `discuss_invoked` (true when the `[discuss]` escape hatch was used before the final choice), `structured_path_skipped_reason` (optional; present only when structured detection was attempted but skipped due to malformed input — e.g., "only 1 entry in array", "missing label on entry index 2"). Omitted entirely for findings with no fork.
+- **`ripple_cascade`** (per-resolution) — replaces v1's top-level `ripple_flagged_files_aggregate`. Object splits each resolution's ripples into `applied` (paths cascade-edited consistent with the primary fix; recorded for audit) AND `flagged_not_applied` (paths identified as ripple targets but NOT edited, with `{path, reason}` entries). Reasons fall into TWO source categories:
+  - **Structural OUT-category reasons** (4 codes): `audit-trail file; cascade skipped by policy` / `baseline spec; add a delta to your current change's specs/<capability>/spec.md to capture this ripple` / `cross-change ripple; cascade scope is current change only` / `safe-exclusion path; never edited`. Fire when cascade was ON and the file matched an OUT prefix.
+  - **Mode-suppression reason** (1 code): `--no-cascade suppressed`. Fires uniformly for ALL ripple-flagged files when `--no-cascade` was set, regardless of IN/OUT classification.
+
+## Worked-example JSON snippets
+
+### (a) Walk-mode clean run (per_finding default, all IN, no fork)
+
+```json
+{
+  "command": "address-reviews",
+  "walk_mode": "per_finding",
+  "resolutions": [
+    {
+      "title": "<finding>",
+      "classification": "trivial_fix",
+      "action": "applied edit at design.md:14",
+      "ripple_cascade": {
+        "applied": ["openspec/changes/foo/design.md", "openspec/changes/foo/tasks.md"],
+        "flagged_not_applied": []
+      },
+      "outcome": "resolved"
+    }
+  ]
+}
+```
+
+### (b) Batch-mode with verbal source
+
+```json
+{
+  "command": "address-reviews",
+  "walk_mode": "batch",
+  "walk_mode_source": "verbal",
+  "resolutions": [/* ... */]
+}
+```
+
+### (c) Decision-fork with [discuss] invoked
+
+```json
+{
+  "resolutions": [
+    {
+      "title": "Test coverage gap — file follow-up or extend scope?",
+      "classification": "decision_required",
+      "recommendation_fork": {
+        "detected": true,
+        "source": "structured",
+        "options_presented": [
+          { "label": "A", "body": "file a follow-up issue tracking the v2 polish" },
+          { "label": "B", "body": "extend scope to tasks.md" }
+        ],
+        "chosen": "B",
+        "discuss_invoked": true
+      },
+      "action": "applied user choice B — added Group 19 to tasks.md",
+      "ripple_cascade": { "applied": ["openspec/changes/foo/tasks.md"], "flagged_not_applied": [] },
+      "outcome": "resolved"
+    }
+  ]
+}
+```
+
+### (d) `--no-cascade` — all ripples flagged-not-applied
+
+```json
+{
+  "walk_mode": "per_finding",
+  "resolutions": [
+    {
+      "title": "<finding>",
+      "ripple_cascade": {
+        "applied": [],
+        "flagged_not_applied": [
+          { "path": "openspec/changes/foo/design.md", "reason": "--no-cascade suppressed" },
+          { "path": "openspec/changes/foo/tasks.md", "reason": "--no-cascade suppressed" }
+        ]
+      }
+    }
+  ]
+}
+```

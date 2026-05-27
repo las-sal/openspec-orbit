@@ -1,0 +1,15 @@
+{
+  "command": "apply",
+  "timestamp": "2026-05-27T05:15:00Z",
+  "change": "address-reviews-defaults-and-decision-forks",
+  "kind": "workflow",
+  "tasks_completed": 35,
+  "tasks_remaining": 8,
+  "user_validation_remaining": 8,
+  "chunk": "4 of 5",
+  "chunk_name": "Documentation surface",
+  "chunk_complete": true,
+  "tasks_completed_this_session": 4,
+  "final_assessment": "Chunk 4 complete. README.md /opsx:address-reviews section: lifecycle box rewritten with walk-mode-default framing + Step 3b.5 decision-fork detection + cascade IN/OUT split + 4 lifecycle-invariant OUT categories; flag block extended with --batch + --no-cascade documentation. README workflow box verified clean (already mentions auto-discovery; no pre-Option-D framing to fix). .claude/skills/openspec-onboard/SKILL.md + .claude/commands/opsx/onboard.md (mirror): high-level Editorial Review bullet updated with walk-mode + cascade defaults; Phase 4 description rewritten with walk-mode + decision-fork + cascade IN/OUT semantics; command table row expanded with --batch + --no-cascade flags and Disjunctive-A/B/discuss-forks note. All 35 AI-doable tasks complete (Group 8 = 8 user-validation tasks remain unchecked per orbit convention; they fire at archive time as warnings, not blockers). openspec validate --strict passes.",
+  "next_recommended": "/opsx:verify address-reviews-defaults-and-decision-forks — all AI-doable tasks complete; user-validation handoff (Chunk 5, group 8) remains intentionally unchecked per orbit convention; verify confirms tasks/spec/implementation are coherent before the system-mode review gate."
+}

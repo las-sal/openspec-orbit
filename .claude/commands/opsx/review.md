@@ -93,6 +93,8 @@ Edge cases (multiple matching files, unparseable tokens, parse failures, danglin
 
 Standard 3-dimension scorecard report with CRITICAL / WARNING / SUGGESTION severities, file:line refs, and actionable recommendations. Mode and iteration are shown in the header. Final-assessment line uses one of the stock phrasings above (see SKILL.md for the full table and a worked system-mode example).
 
+**Disjunctive recommendations**: when a finding's recommendation requires the user to choose between two or more concrete alternatives (e.g., "Either file a follow-up issue, or extend scope to tasks.md"), the JSON emit includes an optional `recommendation_options: [{label, body}]` field on the finding entry alongside the prose `recommendation`. The structured field is consumed by `/opsx:address-reviews` for the decision-fork prompt UX; the prose `recommendation` still summarizes the disjunction. Producer-side contract: ≥ 2 entries; non-empty `label` and `body`; omit for single-recommendation findings. See SKILL.md's "Disjunctive recommendations" section + `references/run-summary-schema.md` for the full shape + emit rules.
+
 ## Execution disciplines
 
 Three disciplines apply throughout (per `orbit-conventions`):

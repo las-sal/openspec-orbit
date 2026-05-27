@@ -1,0 +1,15 @@
+{
+  "command": "apply",
+  "timestamp": "2026-05-27T05:00:00Z",
+  "change": "address-reviews-defaults-and-decision-forks",
+  "kind": "workflow",
+  "tasks_completed": 31,
+  "tasks_remaining": 12,
+  "user_validation_remaining": 0,
+  "chunk": "3 of 5",
+  "chunk_name": "Resolution-log JSON shape + reference docs",
+  "chunk_complete": true,
+  "tasks_completed_this_session": 7,
+  "final_assessment": "Chunk 3 complete. .claude/skills/openspec-address-reviews/references/run-summary-schema.md: schema header renamed to v2; new fields walk_mode/walk_mode_source/walk_mode_shifted_at_finding (top-level) + recommendation_fork (per-resolution; 6-field object including structured_path_skipped_reason) + ripple_cascade.applied/flagged_not_applied (per-resolution, replacing v1 ripple_flagged_files_aggregate); v1→v2 migration section documenting structural non-bijectivity; 4 worked-example JSON snippets (walk-mode clean, batch-mode verbal, decision-fork with [discuss], --no-cascade); field notes for all new fields including reason-code source distinction. external-findings-format.md verified clean (input-side only; no resolution-log refs). internal-findings-format.md: recommendation_options[] added to both review and audit-drift JSON shape sections; parser contract table extended with recommendation_options row; new section 'Optional recommendation_options field (BOTH formats)' documents producer contract; Strictness section gained note that optional fields aren't asserted absent.",
+  "next_recommended": "/opsx:apply address-reviews-defaults-and-decision-forks — last AI-doable chunk (Chunk 4: documentation surface; tasks 7.1-7.4)"
+}

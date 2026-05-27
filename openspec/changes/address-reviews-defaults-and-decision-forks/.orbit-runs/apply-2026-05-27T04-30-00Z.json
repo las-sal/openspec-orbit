@@ -1,0 +1,15 @@
+{
+  "command": "apply",
+  "timestamp": "2026-05-27T04:30:00Z",
+  "change": "address-reviews-defaults-and-decision-forks",
+  "kind": "workflow",
+  "tasks_completed": 11,
+  "tasks_remaining": 32,
+  "user_validation_remaining": 0,
+  "chunk": "1 of 5",
+  "chunk_name": "Cascade behavior + walk-mode default",
+  "chunk_complete": true,
+  "tasks_completed_this_session": 11,
+  "final_assessment": "Chunk 1 (Cascade-by-default + Walk-mode-by-default) complete. Updated .claude/skills/openspec-address-reviews/SKILL.md: (a) frontmatter description + compatibility line reflect walk-mode + cascade-by-default; (b) Step 3 intro adds walk-mode-default + 3-trigger batch-mode table (flag/verbal/command-shape-interruption); (c) Step 3e Ripple cascade fully rewritten to lifecycle-invariant OUT-list framing with 4 categories table; (d) Step 3d (remove marker) reordered to come AFTER 3e (ripple cascade) per new lifecycle; (e) Constraints section flipped from 'no auto-cascade in v1' to 'cascade by default' + 'walk-mode by default'. Mirrored Step 3 + flags + Constraints to .claude/commands/opsx/address-reviews.md. Step 3d cross-reference in Step 1 updated to Step 3e.",
+  "next_recommended": "/opsx:apply address-reviews-defaults-and-decision-forks — next chunk (Chunk 2: decision-fork detection producer + consumer; tasks 3.1-4.7)"
+}

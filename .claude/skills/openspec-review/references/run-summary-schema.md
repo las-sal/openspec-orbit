@@ -56,7 +56,11 @@ The schema below documents per-command extensions ADDED to that spine (`mode`, `
       "file": "design.md",
       "line": 159,
       "title": "<finding title>",
-      "recommendation": "<actionable recommendation>"
+      "recommendation": "<actionable recommendation>",
+      "recommendation_options": [
+        { "label": "A", "body": "<option A body>" },
+        { "label": "B", "body": "<option B body>" }
+      ]
     }
   ],
   "stale_suppressed": [
@@ -78,3 +82,4 @@ The schema below documents per-command extensions ADDED to that spine (`mode`, `
 - **`stale_suppressed`** captures findings that pushback removed; they don't appear in the user-facing report but do persist here for audit.
 - **`final_assessment`** is one of the stock phrasings (mode-specific gate text); see the final-assessment table in SKILL.md.
 - **`iteration_note`** is the one-line "Note: N of these findings appeared in the last run" comparison; `null` when this is the first run for the mode.
+- **`recommendation_options`** is OPTIONAL on each finding. Present only when the finding's recommendation is genuinely disjunctive — multiple defensible paths the user must choose between. Producer-side contract (per `orbit-review` spec's `Optional recommendation_options field on finding entries`): MUST contain ≥ 2 entries; each entry MUST have non-empty `label` (typically `"A"`, `"B"`, `"C"`, … or `"1"`, `"2"`, …) and non-empty `body`. The prose `recommendation` field still summarizes the disjunction for human readers. Consumer (address-reviews) uses this for the structured decision-fork detection path; absence triggers heuristic fallback. Omit the field for single-recommendation findings.

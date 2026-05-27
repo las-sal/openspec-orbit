@@ -29,7 +29,11 @@ This format MUST match what `/opsx:review` writes to `openspec/changes/<name>/.o
       "file": "<path>",
       "line": <integer>,
       "title": "<finding title>",
-      "recommendation": "<actionable recommendation>"
+      "recommendation": "<actionable recommendation>",
+      "recommendation_options": [
+        { "label": "A", "body": "..." },
+        { "label": "B", "body": "..." }
+      ]
     }
   ]
 }
@@ -55,11 +59,26 @@ This format MUST match what `/opsx:review` writes to `openspec/changes/<name>/.o
       "file": "<path>",
       "line": <integer>,
       "title": "<finding title>",
-      "recommendation": "<actionable recommendation>"
+      "recommendation": "<actionable recommendation>",
+      "recommendation_options": [
+        { "label": "A", "body": "..." },
+        { "label": "B", "body": "..." }
+      ]
     }
   ]
 }
 ```
+
+### Optional `recommendation_options` field (BOTH formats)
+
+Both review JSON and audit-drift JSON MAY emit an optional `recommendation_options: [{label, body}]` array on a finding when the recommendation is genuinely disjunctive — multiple defensible paths the user must choose between. The address-reviews parser reads this field for the **structured decision-fork detection path** (per `orbit-address-reviews` spec's `Disjunctive recommendation fields surface as decision forks` requirement). Field shape is identical across the two producer formats; consumer parses both uniformly.
+
+Producer-side contract (enforced by orbit-review and orbit-audit-drift specs):
+
+- MUST contain ≥ 2 entries when emitted (single-option arrays defeat the purpose; the prose `recommendation` field carries single recommendations).
+- Each entry MUST have non-empty `label` (typically `"A"`, `"B"`, `"C"`, … or `"1"`, `"2"`, …) and non-empty `body` (the concrete action the user would take if they pick this option).
+- The prose `recommendation` field still summarizes the disjunction for human readers; the structured field complements it, doesn't replace.
+- OPTIONAL on every finding — single-recommendation findings omit it.
 
 The two shapes are identical at the universal-spine + `findings[]` level. They differ only in the provenance slot per finding: review JSON carries `pass` (string pass-id), audit-drift JSON carries `category` (one of `"1"`–`"4"` per the 4 audit-drift categories: vocabulary-residue, lens-staleness, cross-doc-consistency, archive-coherence).
 
@@ -79,6 +98,7 @@ For each entry in the JSON's `findings[]` array, construct a virtual marker with
 | `description` | The entry's `recommendation` field |
 | `source` | `internal-review` for `command: "review"` JSON; `audit-drift` for `command: "audit-drift"` JSON (vs `external` for markdown, `inline` for grep-found) |
 | `provenance_detail` | The entry's `pass` field (for review JSON) OR `category` field (for audit-drift JSON) — preserved verbatim in the resolution log |
+| `recommendation_options` (optional) | The entry's `recommendation_options[]` array if present and well-formed. Drives the structured decision-fork detection path in Step 3b.5 of the SKILL.md walk. Malformed input (< 2 entries, missing label/body) triggers heuristic fallback with a stderr warning + `structured_path_skipped_reason` field in the resolution log. |
 
 Virtual markers walk the same lifecycle as inline markers, with one exception: **the marker-removal step (Step 3d in the SKILL.md walk) is a no-op** — there's no source-file marker text to delete. (Same behavior as external-markdown virtual markers; the no-op is shared across all virtual-marker provenance.)
 
@@ -125,6 +145,8 @@ The parser MUST be strict on:
 - **Per-finding `recommendation` field** — must be a non-empty string (becomes the virtual marker's description).
 
 The reason for the strict/lenient split: the strict items are what the orbit run-summary schema guarantees by spec (per `orbit-conventions`'s `Internal-run JSON summary format` requirement + `orbit-review`'s per-command extensions); the lenient items are best-effort fields that downstream tools handle but the parser doesn't strictly require.
+
+**On optional structured fields** — the strict/lenient split does NOT assert the absence of optional fields. `recommendation_options[]` is OPTIONAL on every finding; presence triggers the structured decision-fork detection path (Step 3b.5 of SKILL.md), absence triggers heuristic fallback. Malformed presence (< 2 entries, missing fields) triggers heuristic fallback with a stderr warning + `structured_path_skipped_reason` field in the resolution log. Parser MUST gracefully handle both presence and absence without erroring.
 
 ## Quick worked example of valid input
 

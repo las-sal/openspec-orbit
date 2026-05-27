@@ -53,6 +53,8 @@ Invokes the `openspec-audit-drift` skill, which:
 
 Standard 3-dimension scorecard report grouped by Category and Dimension; CRITICAL / WARNING / SUGGESTION findings with file:line refs and actionable recommendations. Final-assessment line uses one of the context-specific stock phrasings (see SKILL.md).
 
+**Disjunctive recommendations**: when a finding's recommendation requires the user to choose between two or more concrete remediation paths (e.g., Category 2 lens-staleness "rename surface ref vs. remove obsolete perspective"; Category 3 cross-doc disagreement "update X to match Y vs. update Y to match X"), the JSON emit includes an optional `recommendation_options: [{label, body}]` field on the finding entry alongside the prose `recommendation`. Per-category emit guidance: C1 typically single-rec; C2 and C3 often disjunctive; C4 typically single. Producer contract: ≥ 2 entries; non-empty `label` and `body`; omit for single-recommendation findings. See SKILL.md + `references/run-summary-schema.md` for full shape.
+
 ## Execution disciplines
 
 - **Read-before-reference** — verify every cited file:line by reading the line; distinguish genuine vocabulary residue from documentation of the residue pattern.

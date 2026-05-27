@@ -400,26 +400,48 @@ Four enforcement wins justify the skill over "just ask the AI":
 | Marker removal invariant | Markers leak into canonical specs |
 | Multi-file-type uniformity | Per-file-type marker conventions diverge |
 
-Lifecycle:
+Lifecycle (**walk-mode default** since `address-reviews-defaults-and-decision-forks`; `--batch` opts INTO legacy batch-mode):
 
 ```
 1. Discover → grep -rn "@review:" scope (default: whole repo with safe exclusions)
               OR parse --from-file <path>
 2. Triage   → show numbered list; user can scope
-3. Walk each (sequential):
+3. Walk each finding (sequential by default — each gets its own complete cycle):
    a. Verify against current state (pushback)
    b. Classify: trivial fix / decision required / stale / unresolvable
-   c. Apply (or defer per user choice)
-   d. Remove marker
-4. Ripple flag → list affected related files (lean v1; no auto-cascade)
-5. Report → resolution log: ✓ resolved / ⚠ stale / ⏸ deferred / ✗ escalated
+   b.5 Decision-fork detection (gated on classify == "decision required"): hybrid
+       — try structured recommendation_options[] from the source JSON first; fall
+       back to heuristic over the recommendation prose. On match, surface options
+       via AskUserQuestion with [discuss] escape hatch.
+   c. Apply (trivial fix, chosen fork option, or generic decision)
+   d. Ripple cascade (auto-apply by default; --no-cascade opts out):
+      — IN-set files: edit consistent with primary fix; record in ripple_cascade.applied[]
+      — OUT-set files: record in ripple_cascade.flagged_not_applied[] with reason
+      — OUT = 4 lifecycle-invariant categories: audit trail (.orbit-runs/),
+        baseline specs (openspec/specs/), cross-change/archive
+        (openspec/changes/<other>/, openspec/changes/archive/), safe-exclusions
+        (.git/, node_modules/, dist/, build/)
+   e. Remove marker (invariant; --keep-resolved-markers overrides)
+4. Report → resolution log: ✓ resolved / ⚠ stale / ⏸ deferred / ✗ escalated
 ```
 
 Flags:
 
 ```
 /opsx:address-reviews [<scope>]
-  [--from-file <path>]               ingest review findings as virtual markers (auto-detects external-review markdown, internal review JSON, or audit-drift JSON)
+  [--from-file <path>]               ingest review findings as virtual markers
+                                     (auto-detects external-review markdown,
+                                      internal review JSON, or audit-drift JSON)
+  [--batch]                          opt INTO batch-mode (all findings resolved
+                                     together before any ripple-cascade). Verbal
+                                     trigger phrases in the invocation message
+                                     ("fix them all", "batch them") AND bare
+                                     command-shape mid-walk messages ("go batch",
+                                     "switch to batch") also opt in.
+  [--no-cascade]                     opt OUT of cascade. ALL ripple-flagged files
+                                     recorded in flagged_not_applied[] with reason
+                                     `--no-cascade suppressed`, regardless of
+                                     IN/OUT classification.
   [--keep-resolved-markers]          debug; don't remove on resolution
 ```
 

@@ -1,8 +1,8 @@
 ---
 name: openspec-address-reviews
-description: "Resolve `@review:` markers anywhere in the repo (or review findings via `--from-file` markdown / JSON, or auto-discovered internal review/audit-drift JSON when invoked with a change name and no markers) by walking each through pushback → classify → fix → ripple-flag → remove-marker. Use after `/opsx:review` writes findings to `.orbit-runs/` (auto-discovered; no `--mark` pre-step needed), after `/opsx:review-external` returns external findings, after `/opsx:audit-drift` writes drift findings, or any time the repo has accumulated `@review:` annotations. `--mark` is optional — auto-discovery makes the canonical 2-command `review → address-reviews` workflow work without pre-marking."
+description: "Resolve `@review:` markers anywhere in the repo (or review findings via `--from-file` markdown / JSON, or auto-discovered internal review/audit-drift JSON when invoked with a change name and no markers) by walking each through pushback → classify → fix → ripple-cascade → remove-marker. Walk-mode (per-finding) is the default; `--batch` opts in. Cascade-by-default auto-applies ripple edits to IN-set files (everything outside the four lifecycle-invariant OUT categories: audit trail, baseline specs, cross-change/archive dirs, safe-exclusions); `--no-cascade` opts out. Use after `/opsx:review` writes findings to `.orbit-runs/` (auto-discovered; no `--mark` pre-step needed), after `/opsx:review-external` returns external findings, after `/opsx:audit-drift` writes drift findings, or any time the repo has accumulated `@review:` annotations."
 license: MIT
-compatibility: Requires openspec CLI. Ingests findings via `--from-file` (external-review markdown OR internal `review-<mode>-*.json` OR `audit-drift-*.json`) OR via auto-discovery from `.orbit-runs/` when invoked with a change-name positional and no inline markers found. `--mark` is optional, not prerequisite.
+compatibility: Requires openspec CLI. Ingests findings via `--from-file` (external-review markdown OR internal `review-<mode>-*.json` OR `audit-drift-*.json`) OR via auto-discovery from `.orbit-runs/` when invoked with a change-name positional and no inline markers found. Default behaviors: walk-mode (per-finding); cascade-on (auto-applies ripples to IN-set files). `--batch` opts INTO batch-mode; `--no-cascade` opts OUT of cascade. `--mark` is optional, not prerequisite.
 metadata:
   author: openspec-orbit
   version: "0.1"
@@ -81,7 +81,7 @@ The `--from-file` flag accepts TWO format families: (a) **external-review markdo
 - **Leading `# External Review:`** → markdown parser, per the contract at `references/external-findings-format.md`. This is the only markdown format orbit produces — written by external AIs after pulling the repo + reading the `/opsx:review-external` prompt.
 - **Neither leading pattern matches** → emit a clean format-mismatch error naming both supported formats; refuse to act on partial parse.
 
-The sniff inspects content only — it does NOT depend on file extension or pathname. Each finding (from either format) becomes a virtual marker with the same shape: `severity` / `title` / `file:line` / `description` / `source` (tagged `external` for markdown, `internal-review` for `command: "review"` JSON, `audit-drift` for `command: "audit-drift"` JSON). Virtual markers walk the same lifecycle as inline markers, with one exception: **the marker-removal step (Step 3d below) is a no-op for virtual markers regardless of provenance** — there's no source-file marker text to delete (the JSON file or markdown file is an audit artifact that travels with the change into archive; removing it on resolution would be wrong).
+The sniff inspects content only — it does NOT depend on file extension or pathname. Each finding (from either format) becomes a virtual marker with the same shape: `severity` / `title` / `file:line` / `description` / `source` (tagged `external` for markdown, `internal-review` for `command: "review"` JSON, `audit-drift` for `command: "audit-drift"` JSON). Virtual markers walk the same lifecycle as inline markers, with one exception: **the marker-removal step (Step 3e below) is a no-op for virtual markers regardless of provenance** — there's no source-file marker text to delete (the JSON file or markdown file is an audit artifact that travels with the change into archive; removing it on resolution would be wrong).
 
 **Fresh pushback applies to JSON virtual markers** (both review and audit-drift): the source JSON's own `stale_suppressed[]` array already filtered stale findings at source-run time, but state may have changed between the source run and the resolve. The Step 3a pushback verification (per the primary discipline above) runs for every virtual marker — JSON-sourced or markdown-sourced — to catch staleness introduced since the source pass.
 
@@ -108,6 +108,18 @@ Mark external-sourced entries explicitly (`(external)` prefix). Use **AskUserQue
 
 ### 3. Walk each marker
 
+**Walk-mode is the default** (per #11): each marker receives its own complete inner cycle — pushback → classify → fix → ripple-cascade → remove-marker — before the next marker's pushback begins. The user can interrupt between markers; the resolution log captures partial completion if interrupted.
+
+**Batch-mode is opt-in** via one of three triggers (mutually-exclusive — first match wins; resolution log records which fired in `walk_mode_source`):
+
+| Trigger | Detection | `walk_mode_source` |
+|---|---|---|
+| **`--batch` flag** | Present in the invocation argv. Canonical signal. | `"flag"` |
+| **Verbal `--batch` in invocation message** | The user's invocation message (the message that triggered the command) contains one of these batch-intent phrases: `"fix them all"`, `"batch them"`, `"go ahead with all"`, `"address all at once"`, or another clearly equivalent phrase conveying batch-resolution intent. The phrase MUST be in the invocation message — phrases inside subsequent walk-step responses do NOT shift mode (see next row). | `"verbal"` |
+| **Mid-walk command-shape interruption** | During an active walk, the user sends a bare, unambiguous mode-switch message: `"go batch"`, `"switch to batch"`, `"batch the rest"`. The message must be command-shaped (typically 2-4 words, no conversational filler) — ambiguous phrases like `"yeah let's just keep going"` or `"fine, fix them all"` mid-walk do NOT shift mode. Record the 1-indexed finding number at which the shift occurred in the resolution log's `walk_mode_shifted_at_finding` field. | `"command-shape-interruption"` |
+
+In batch-mode, all markers complete `pushback + classify + fix` in one pass before any ripple-cascade fires; ripples are applied once at the end as a single aggregated step. **Decision-fork prompts still fire** (per Step 3c.5) even in batch-mode — batch only suppresses per-finding completion checkpoints for unambiguous fixes.
+
 For every marker in the chosen scope, execute the lifecycle below sequentially.
 
 #### 3a. Apply pushback (primary discipline above)
@@ -123,14 +135,108 @@ Apply heuristics in order:
 3. **decision required** — resolution requires ambiguity resolution, a design choice between defensible alternatives, a scope decision, or has implications beyond the immediate location. Surface 2–4 concrete options via **AskUserQuestion** (not open-ended).
 4. **unresolvable** — resolution needs information not currently available (deferred decision, future capability, blocked on external input). Default: file as a task in `tasks.md` (proceed to 3d with action "filed as task"). Alternatives via **AskUserQuestion**: convert to `@todo: <content>`, escalate to `@review(escalated): <content with explanation>`.
 
+#### 3b.5. Decision-fork detection (gated on classify == "decision required")
+
+**Fires only when classify == "decision required"** (per #18). Skip this sub-step entirely for `stale` / `trivial fix` / `unresolvable` classifications — they short-circuit straight to 3c.
+
+**Goal**: when a finding's recommendation is disjunctive (multiple defensible paths the user must choose between), surface as an `AskUserQuestion` fork rather than the generic 2–4 option prompt — and capture the chosen option in the resolution log for downstream audit.
+
+**Hybrid detection** (try structured first; fall back to heuristic):
+
+1. **Structured path** — if the finding came from a JSON-virtual marker (internal-review or audit-drift JSON via `--from-file` or auto-discovery) AND the source JSON's finding entry includes a `recommendation_options: [{label, body}]` array with ≥ 2 entries AND every entry has non-empty `label` AND non-empty `body`: use that array DIRECTLY as the fork options. Skip heuristic. Record `recommendation_fork.source: "structured"` in the resolution log.
+
+2. **Heuristic fallback** — if structured path was unavailable (missing field, malformed entry — see malformed-handling below) OR the marker is markdown-sourced (external markdown, inline markers): scan the finding's recommendation text for STRICT disjunctive signals. Triggers (all are non-fuzzy):
+   - **Numbered alternatives**: `(A) … (B)`, `1. … 2.`, `[A] … [B]`
+   - **"Either … or …"** with clause-level branches (each clause is a recognizable recommendation)
+   - **"Options:" prefix** (accepting both bold variants: `**Options**:` colon-outside-bold, `**Options:**` colon-inside-bold; normalize markdown emphasis before pattern-matching) followed by a list or numbered enumeration
+
+   **NOT triggers** — do NOT fire on loose "or" in prose: `"fix it now or later"`, `"X or Y could happen"`, `"the issue is A or B and we should address one of them"`. False-negative bias intentional.
+
+   On heuristic match, parse the recommendation text into options (each option becomes `{label, body}`; labels typically `"A"`, `"B"`, …). Record `recommendation_fork.source: "heuristic"` in the resolution log.
+
+3. **No detection** — neither structured nor heuristic triggered: classify falls through to the generic decision-required path (Step 3b's normal `AskUserQuestion` with 2–4 concrete options the AI surfaces from context). No `recommendation_fork` field is recorded.
+
+**Malformed structured input** (zero entries, single entry, missing `label` or empty `label`, missing `body` or empty `body`): emit a stderr warning naming the finding + reason (`"only 1 entry in array"`, `"missing label on entry index 2"`, `"empty body on entry index 0"`); FALL BACK to heuristic detection over the prose `recommendation`. Record `recommendation_fork.source: "heuristic"` AND `recommendation_fork.structured_path_skipped_reason: "<reason>"` in the resolution log. Malformed input never aborts the walk.
+
+**Fork prompt UX**: surface options via `AskUserQuestion` with the finding title as the question and each option as a button. ALWAYS include a `[discuss]` option as the per-prompt escape hatch — selecting `[discuss]` makes the AI surface tradeoff analysis on the options (pros/cons; relevant context; any related findings) and re-prompt with the same fork (or a refined fork if discussion clarifies a third path). Record `recommendation_fork.discuss_invoked: true` when `[discuss]` was used; `false` otherwise.
+
+**Capture in resolution log** — `recommendation_fork` object on the per-resolution entry (omitted entirely when no fork fired):
+
+```json
+"recommendation_fork": {
+  "detected": true,
+  "source": "structured" | "heuristic",
+  "options_presented": [{ "label": "A", "body": "..." }, { "label": "B", "body": "..." }],
+  "chosen": "A",
+  "discuss_invoked": false,
+  "structured_path_skipped_reason": "<optional; only when structured was attempted then skipped>"
+}
+```
+
+**Fork-prompt firing in batch-mode**: forks STILL fire in batch-mode (per Step 3 intro). Batch only suppresses per-finding completion checkpoints for unambiguous fixes; user decisions on disjunctive recommendations remain user-driven.
+
+**Mini fork-prompt trace**:
+
+```
+Walking finding W1 (WARNING, classified "decision required"):
+  Title: Test suite covers ~30 of ~45 spec scenarios
+  Recommendation: "Either (A) file a follow-up issue tracking the v2 polish, or
+                  (B) add Group 19 to tasks.md extending this change's scope."
+
+Decision-fork detection fired via heuristic ("Either ... or" with clause-level branches).
+Options parsed:
+  (A) file a follow-up issue tracking the v2 polish
+  (B) add Group 19 to tasks.md extending this change's scope
+
+→ AskUserQuestion: "W1 — which path?"
+   [A] file a follow-up issue
+   [B] extend scope to tasks.md
+   [discuss] surface tradeoffs
+
+User picks [A]. Resolution-log entry records:
+  recommendation_fork: {
+    detected: true, source: "heuristic",
+    options_presented: [{label: "A", body: "..."}, {label: "B", body: "..."}],
+    chosen: "A", discuss_invoked: false
+  }
+```
+
 #### 3c. Apply the fix
 
 - **trivial fix**: apply the edit. Re-read the file after to confirm.
-- **decision required**: apply the user's chosen option.
+- **decision required**: apply the user's chosen option (from Step 3b.5 fork prompt if fired, or from the generic prompt otherwise).
 - **unresolvable (default)**: append a task to `openspec/changes/<change>/tasks.md` (or repo-level `TODO.md` if no change context); task text is the marker's content + ripple-flag context.
 - **unresolvable (`@todo:` or `@review(escalated):`)**: replace the marker text in place (do NOT remove — the new form persists as future signal).
 
-#### 3d. Remove the marker (invariant)
+#### 3d. Ripple cascade (auto-apply by default; `--no-cascade` opts out)
+
+If the resolution edited a normative artifact, compute the ripple-flag set — files that need parallel edits to stay consistent with the primary fix. Then split each ripple into **IN** (auto-applied) and **OUT** (recorded in `flagged_not_applied[]`).
+
+**OUT — the four lifecycle-invariant exclusion categories** (these are the ONLY structural exclusions; any other file is IN):
+
+| OUT category | Path prefix | Reason recorded in `flagged_not_applied` |
+|---|---|---|
+| Audit trail | `openspec/changes/<name>/.orbit-runs/*` AND `openspec/.orbit-runs/*` | `audit-trail file; cascade skipped by policy` |
+| Baseline specs | `openspec/specs/<capability>/spec.md` | `baseline spec; add a delta to your current change's specs/<capability>/spec.md to capture this ripple` |
+| Cross-change (active + archived) | `openspec/changes/<other-name>/*` AND `openspec/changes/archive/*` | `cross-change ripple; cascade scope is current change only` |
+| Safe-exclusions (exact set) | `.git/`, `node_modules/`, `dist/`, `build/` | `safe-exclusion path; never edited` |
+
+**The safe-exclusion prefix set is EXACT** — do NOT extend ad-hoc to other paths during application. Expanding the set requires a spec change.
+
+**IN — everything else.** File extension is NOT a discriminator: `.py`, `.swift`, `.c`, `.sh`, `.md`, dotfiles, configs — all eligible if ripple-flagged and not matching an OUT prefix. For each IN file, apply the parallel edit consistent with the primary fix (run pushback against the file's current state first; classify as decision-required if ambiguous and surface a fork prompt). Record the path in `ripple_cascade.applied[]`.
+
+**`--no-cascade` flag** (opt-out): when set, NO ripples are edited regardless of IN/OUT classification. ALL ripple-flagged files are recorded under `ripple_cascade.flagged_not_applied[]` with reason `--no-cascade suppressed`. Use case: user wants to inspect the ripple set before allowing edits.
+
+**Cascade trusts the ripple-flag analysis**: cascade does NOT make independent "should this file be touched?" judgments beyond the four-category OUT check. The contextual scope judgment ("is this file relevant to my finding?") lives in the earlier ripple-flag-derivation step — if ripple-flag analysis didn't surface a file, cascade doesn't touch it.
+
+**Reason-code source distinction** (per spec's mode invariants):
+
+- **Structural OUT-category reasons** (the four codes in the table above): fire when cascade was ON but the file matched an OUT prefix.
+- **Mode-suppression reason** (`--no-cascade suppressed`): fires uniformly for ALL ripple-flagged files when `--no-cascade` is set, regardless of IN/OUT classification.
+
+The two source categories are structurally distinct — `--no-cascade suppressed` is NOT a fifth OUT category.
+
+#### 3e. Remove the marker (invariant)
 
 Unless `--keep-resolved-markers` is set, delete the original `@review: <text>` from its source file:
 
@@ -142,18 +248,6 @@ Unless `--keep-resolved-markers` is set, delete the original `@review: <text>` f
 For `unresolvable` conversions (`@todo:` / `@review(escalated):`), the marker is **transformed** in place rather than removed; this is still considered "resolution" for log purposes.
 
 `--keep-resolved-markers` flag: skip the removal step entirely. Debug use only — markers persist after resolution.
-
-#### 3e. Ripple flag (no auto-cascade in v1)
-
-If the resolution edited a normative artifact (proposal, design, spec, tasks, explore.md), compute potentially-affected related files:
-
-- Sibling specs in the same change directory
-- `CLAUDE.md`, `openspec/project.md`, root `*_convention.md`
-- `openspec/lenses/perspectives.md`, `openspec/lenses/critical-paths.md`
-
-**Do NOT flag**: baseline specs at `openspec/specs/<capability>/` (that's `/opsx:apply` + `sync-specs` territory), source code (same reason), `.git/` and build dirs.
-
-The ripple-flagged files are listed in the resolution log entry, NOT auto-edited. v1 design choice — user re-runs the command or fixes manually.
 
 ### 4. (Internal — Step 3 runs inside this loop)
 
@@ -239,7 +333,8 @@ Adjacent forms (same discovery grep, different semantics):
 ## Constraints
 
 - **Never write new `@review:` markers.** Only `/opsx:review --as proposal --mark` does that. address-reviews can transform markers (e.g., to `@todo:` or `@review(escalated):`) but never creates fresh `@review:` markers.
-- **No auto-cascade in v1.** Ripple-flagged files are listed, not edited. v2 may add `--cascade` (issue #3).
+- **Cascade by default; `--no-cascade` opts out.** Ripple-flagged files in the IN set (everything outside the four lifecycle-invariant OUT categories — audit trail, baseline specs, cross-change/archive dirs, safe-exclusions) are auto-edited per Step 3d. File extension is NOT a discriminator.
+- **Walk-mode by default; `--batch` opts in.** Each marker gets its own complete pushback → classify → fix → cascade → remove cycle. Batch-mode triggers via `--batch` flag, verbal phrase in the invocation message, or a bare command-shape interruption mid-walk (per Step 3 trigger table).
 
 ## Worked example (`--from-file` markdown ingest, iter 5 of bootstrap-openspec-orbit)
 
@@ -250,7 +345,9 @@ Source: --from-file openspec/changes/bootstrap-openspec-orbit/.orbit-runs/extern
 External reviewer: Claude Opus 4.7 (fresh-context in-session subagent — iter 5)
 Input findings: 0 CRITICAL / 4 WARNING / 5 SUGGESTION
 Markers walked: 9 (all)
+Walk mode: per_finding (default)
 Pushback verification: all 9 verified against current state; 0 stale suppressions.
+Cascade summary: 14 IN files cascaded across 9 resolutions; 3 OUT files flagged_not_applied (2 baseline specs, 1 cross-change archive ref).
 
 ### Summary
 

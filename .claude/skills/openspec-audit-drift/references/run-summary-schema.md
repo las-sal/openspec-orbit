@@ -58,7 +58,11 @@ The schema below documents per-command extensions ADDED to that spine (`context`
       "file": "openspec/specs/foo/spec.md",
       "line": 42,
       "title": "Stale 'BridgeServer' reference (renamed to HostLifecycle in 2026-03)",
-      "recommendation": "Delta the file in a future change or apply a hotfix commit."
+      "recommendation": "Delta the file in a future change or apply a hotfix commit.",
+      "recommendation_options": [
+        { "label": "A", "body": "<option A body>" },
+        { "label": "B", "body": "<option B body>" }
+      ]
     }
   ],
   "stale_suppressed": [
@@ -74,3 +78,4 @@ The schema below documents per-command extensions ADDED to that spine (`context`
 - **`categories_run` / `categories_skipped`** are strings (category IDs); skip reasons in the report body, not the array.
 - **`findings_summary.by_category`** keys are category IDs `"1"` through `"4"`.
 - **`final_assessment`** is `null` for library context (findings handed back to the caller for folding into the caller's report).
+- **`recommendation_options`** is OPTIONAL on each finding. Present only when the finding's recommendation is genuinely disjunctive — multiple defensible remediation paths the user must choose between. Producer-side contract (per `orbit-audit-drift` spec's `Optional recommendation_options field on audit-drift finding entries`): MUST contain ≥ 2 entries; each entry MUST have non-empty `label` (typically `"A"`, `"B"`, `"C"`, …) and non-empty `body`. Per-category emit guidance: Category 1 (vocabulary residue) typically single-recommendation; Category 2 (lens staleness) often disjunctive (rename-vs-remove); Category 3 (cross-doc consistency) often disjunctive (which side is canonical); Category 4 (archive coherence) typically single. The prose `recommendation` field still summarizes the disjunction for human readers. Field shape is identical to `orbit-review`'s `recommendation_options`; consumer (address-reviews) parses both producers uniformly. Omit for single-recommendation findings.

@@ -1,0 +1,15 @@
+{
+  "command": "apply",
+  "timestamp": "2026-05-27T04:45:00Z",
+  "change": "address-reviews-defaults-and-decision-forks",
+  "kind": "workflow",
+  "tasks_completed": 24,
+  "tasks_remaining": 19,
+  "user_validation_remaining": 0,
+  "chunk": "2 of 5",
+  "chunk_name": "Decision-fork producer + consumer (#18)",
+  "chunk_complete": true,
+  "tasks_completed_this_session": 13,
+  "final_assessment": "Chunk 2 complete. Producer side: orbit-review SKILL.md gained 'Disjunctive recommendations: emit structured recommendation_options' section + emit rules; references/run-summary-schema.md added the optional field to the finding shape + field-notes; mirrored to commands/opsx/review.md. orbit-audit-drift mirror: same field added to SKILL.md output-format section with per-category emit guidance (C1 typically single; C2/C3 often disjunctive; C4 typically single); references/run-summary-schema.md updated; mirrored to commands/opsx/audit-drift.md. Consumer side: openspec-address-reviews SKILL.md got new Step 3b.5 (Decision-fork detection) gated on classify=='decision required'; hybrid detection (structured first, heuristic fallback); strict triggers + non-triggers documented; [discuss] escape hatch UX; malformed-array fallback with stderr warning + structured_path_skipped_reason; mini fork-prompt trace example; mirrored to commands/opsx/address-reviews.md.",
+  "next_recommended": "/opsx:apply address-reviews-defaults-and-decision-forks — next chunk (Chunk 3: JSON shape + reference docs; tasks 5.1-6.3)"
+}

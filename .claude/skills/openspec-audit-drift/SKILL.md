@@ -165,6 +165,41 @@ Full schema (fields, types, semantics) lives at `references/run-summary-schema.m
 
 Header (`## Audit-drift report` + `Context: <standalone|library|pre-archive>` + depth + flags) → `### Summary` scorecard table grouped by Category and Dimension → `### Findings` grouped by severity (CRITICAL/WARNING/SUGGESTION; each finding `**[Category N] file:line** — title` then `Recommendation: ...`) → `### Stale findings suppressed` (when applicable) → `### Final assessment` (context-specific phrasing; omitted when library context) → `Run summary: <path>` line.
 
+### Disjunctive recommendations: emit structured `recommendation_options`
+
+When an audit-drift finding's recommendation is genuinely disjunctive — multiple defensible remediation paths the user must choose between — emit an optional structured field alongside the prose `recommendation` (same shape as `orbit-review`'s; consumed by `/opsx:address-reviews` for the decision-fork prompt):
+
+```json
+{
+  "category": "2",
+  "severity": "WARNING",
+  "file": "openspec/lenses/perspectives.md",
+  "line": 8,
+  "title": "Perspective references missing capability <name>",
+  "recommendation": "Either (A) rename the surface ref to match the current capability name, or (B) remove the perspective if it's obsolete.",
+  "recommendation_options": [
+    { "label": "A", "body": "rename the surface ref to match the current capability name <current-name>" },
+    { "label": "B", "body": "remove the perspective if it's obsolete" }
+  ]
+}
+```
+
+**Per-category emit guidance** (not strict — emit when genuinely disjunctive):
+
+- **Category 1 (Vocabulary residue)**: typically single-recommendation (`delta the file` or `apply a hotfix commit`). Emit `recommendation_options` only when BOTH paths are equally defensible and the user's context decides (e.g., "delta this file in a future change vs. apply a hotfix commit now").
+- **Category 2 (Lens staleness)**: typically disjunctive (rename surface ref vs. remove obsolete perspective). Emit `recommendation_options` when the choice is genuinely the user's to make.
+- **Category 3 (Cross-doc consistency)**: often disjunctive when two docs disagree (update X to match Y vs. update Y to match X). Emit `recommendation_options` for these.
+- **Category 4 (Archive coherence)**: typically requires `sync-specs` or a hotfix; usually single-recommendation. Emit only when multiple resolution paths are equally defensible.
+
+**Producer-side contract** (per `orbit-audit-drift` spec):
+
+- MUST contain ≥ 2 entries when emitted. Single-option arrays are a producer bug.
+- Each entry MUST have non-empty `label` (typically `"A"`, `"B"`, `"C"`, …) and non-empty `body`.
+- The prose `recommendation` field still summarizes the disjunction for human readers — the structured field complements it, doesn't replace.
+- Field is OPTIONAL on every finding. Omit for single-recommendation findings.
+
+Field shape is identical to `orbit-review`'s; consumer (`/opsx:address-reviews`) parses both producers uniformly. See `references/run-summary-schema.md` for the canonical shape.
+
 ## Worked example (standalone, full depth)
 
 ```

@@ -1,10 +1,10 @@
 ---
 name: "OPSX: Address Reviews"
-description: Resolve @review: markers across the repo (or external-review findings via --from-file) with pushback discipline
+description: Resolve @review: markers across the repo (or external-review findings via --from-file) with pushback discipline; walk-mode + cascade-by-default
 category: Workflow
 tags: [workflow, address-reviews, orbit]
 ---
-Resolve `@review:` markers anywhere in the repo (or ingest external-review findings from a file) by walking each through: pushback → classify → fix → ripple-flag → remove-marker.
+Resolve `@review:` markers anywhere in the repo (or ingest external-review findings from a file) by walking each through: pushback → classify → fix → ripple-cascade → remove-marker. Walk-mode (per-finding) is the default; `--batch` opts in. Cascade-by-default auto-applies ripple edits to IN-set files; `--no-cascade` opts out.
 
 **Primary use case**: close the cross-AI review cycle. Ingest the external-AI findings file written by `/opsx:review-external` via `--from-file`, walk each finding with pushback discipline.
 
@@ -20,6 +20,16 @@ Resolve `@review:` markers anywhere in the repo (or ingest external-review findi
 ## Flags
 
 ```
+--batch                          opt INTO batch-mode (all findings resolved
+                                 together before any ripple-cascade). Verbal
+                                 trigger phrases in the invocation message
+                                 ("fix them all", "batch them") AND bare
+                                 command-shape mid-walk messages ("go batch",
+                                 "switch to batch") also opt in.
+--no-cascade                     opt OUT of cascade. ALL ripple-flagged files
+                                 are recorded in flagged_not_applied[] with
+                                 reason `--no-cascade suppressed` regardless
+                                 of IN/OUT classification.
 --keep-resolved-markers          debug: don't remove markers after resolution
 ```
 
@@ -27,15 +37,16 @@ Resolve `@review:` markers anywhere in the repo (or ingest external-review findi
 
 ## What it does
 
-Invokes the `openspec-address-reviews` skill, which executes the lean v1 lifecycle:
+Invokes the `openspec-address-reviews` skill, which executes the v1 lifecycle:
 
 1. **Discover** — discovery priority order: (a) `@review:` markers in scope; (b) if change-name positional + no markers + no `--from-file`: auto-discover most-recent `review-<mode>-*.json` OR `audit-drift-*.json` in the change's `.orbit-runs/` (single global most-recent by filename `<TS>` token; lexicographic tie-break on collision); (c) if neither: clean "no findings" exit. Explicit `--from-file <path>` is exclusive — marker grep + auto-discovery both skip; content-sniff routes to JSON parser (leading `{`) or markdown parser (leading `# External Review:`); else format-mismatch error.
 2. **Triage** — present a numbered list; user can scope to a subset
-3. **Walk each sequentially**:
+3. **Walk each sequentially** (walk-mode default; `--batch` opts INTO legacy batch-mode):
    - **Pushback** — verify against current state (grep / git log / file read); classify stale findings and suppress them
    - **Classify** — stale / trivial fix / decision required / unresolvable
-   - **Fix** — apply trivial fix, or surface 2–4 options via `AskUserQuestion` for decisions
-   - **Ripple flag** — list affected related files (no auto-cascade in v1)
+   - **Decision-fork detection** (gated on classify == "decision required") — hybrid: try structured `recommendation_options[]` from JSON-virtual marker first; fall back to heuristic over recommendation prose (numbered alternatives, "either…or" with clause-level branches, "Options:" prefix in either bold variant). On match, surface options via `AskUserQuestion` with `[discuss]` as escape hatch. Stale/trivial/unresolvable short-circuit before this step. Malformed structured input (zero/1 entry, missing fields) falls back to heuristic with stderr warning + `structured_path_skipped_reason` field in the resolution log.
+   - **Fix** — apply trivial fix, or apply the user's chosen fork option, or apply the generic 2–4 option decision
+   - **Ripple cascade** — split ripple-flagged files into IN (auto-edit; record in `ripple_cascade.applied[]`) vs OUT (record in `ripple_cascade.flagged_not_applied[]` with structural reason). OUT = the four lifecycle-invariant categories: audit trail (`.orbit-runs/`), baseline specs (`openspec/specs/`), cross-change/archive (`openspec/changes/<other>/`, `openspec/changes/archive/`), safe-exclusions (`.git/`, `node_modules/`, `dist/`, `build/`). `--no-cascade` suppresses ALL cascade.
    - **Remove marker** — delete from source on resolution (invariant; `--keep-resolved-markers` overrides)
 4. **Report** — emit a resolution log with ✓ Resolved / ⚠ Stale / ⏸ Deferred / ✗ Escalated counts and per-marker entries
 5. **Persist** — write run summary to `.orbit-runs/address-reviews-<TS>.json`
@@ -62,11 +73,12 @@ Markdown carries the marker bare; source code and configs wrap it in the file ty
 
 - **Pushback (primary)** — verify each marker against current state before fixing. Stale → remove without edit + evidence note.
 - **Read-before-reference** — re-read each file before applying any fix; verify after edits.
-- **Change completeness** — ripple-flag related files; v1 lists them rather than auto-cascading.
+- **Change completeness** — cascade-by-default auto-applies parallel edits to ripple-flagged IN-set files; OUT-set files are recorded in `flagged_not_applied[]` for audit.
 
 ## Constraints
 
 - **Never creates new `@review:` markers.** Only `/opsx:review --as proposal --mark` does that. `--mark` is optional, NOT a prerequisite — auto-discovery makes the canonical `/opsx:review <name>` → `/opsx:address-reviews <name>` workflow work without pre-marking.
-- **No auto-cascade in v1.** Ripple-flagged files are listed, not edited.
+- **Cascade by default; `--no-cascade` opts out.** IN-set ripples auto-applied; OUT-set ripples recorded in `flagged_not_applied[]`. File extension is NOT a discriminator — the OUT list is the four lifecycle-invariant categories only.
+- **Walk-mode by default; `--batch` opts in.** Each marker gets its own pushback → classify → fix → cascade → remove cycle.
 
 See `.claude/skills/openspec-address-reviews/SKILL.md` for full lifecycle, classification heuristics, ingest format, and worked example.
