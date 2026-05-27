@@ -1,0 +1,66 @@
+{
+  "command": "archive",
+  "timestamp": "2026-05-27T02:15:36Z",
+  "change": "address-reviews-auto-discovers-internal-json",
+  "kind": "workflow",
+  "final_assessment": "Archived cleanly to openspec/changes/archive/2026-05-26-address-reviews-auto-discovers-internal-json/. Closes #10 (auto-discovers internal review JSON) + retires the baseline orbit-run-summary-emit L412 forward-reference to #10/#4 (replaced with date-neutral historical note). Pre-archive: 0 unresolved @review: markers (5 grep hits all documentary prose about the marker concept itself); 4/4 artifacts done; 15/15 tasks complete; audit-drift sweep returned 0 CRITICAL. Spec sync applied 2 MODIFIED operations cleanly: orbit-address-reviews `Address-reviews command available` (2 → 11 scenarios + 3 normative intro paragraphs covering discovery priority + positional resolution + --from-file exclusivity); orbit-run-summary-emit `Audit-drift standalone recommendations` (change-scoped recommendation drops --from-file; project-wide unchanged; L412 self-reference retired). Project-wide openspec validate --all --strict passed 11/11. Full audit trail (17 files in .orbit-runs/) travels with the change.",
+  "next_recommended": "Commit and push the archive + 2 synced baselines, then close GitHub #10 with rationale linking to this archive. The canonical /opsx:review <name> → /opsx:address-reviews <name> workflow is now 2 commands with no --mark pre-step or --from-file flag needed. And /opsx:audit-drift's emitted recommendation cleanly relies on auto-discovery for change-scoped invocations.",
+  "audit": {
+    "ran": true,
+    "skipped_via_flag": false,
+    "context": "pre-archive",
+    "findings_total": 0,
+    "findings_by_category": { "1": 0, "2": 0, "3": 0, "4": 0 },
+    "categories_skipped": ["2"],
+    "skip_reasons": { "2": "lenses absent (openspec/lenses/ does not exist)" }
+  },
+  "user_decision": "proceeded_clean",
+  "sync_specs": {
+    "ran": true,
+    "user_choice": "sync_now",
+    "delta_capabilities": ["orbit-address-reviews", "orbit-run-summary-emit"],
+    "operations": [
+      {
+        "capability": "orbit-address-reviews",
+        "operation": "MODIFIED",
+        "requirement": "Address-reviews command available",
+        "scenarios_before": 2,
+        "scenarios_after": 11,
+        "note": "intro expanded with 3 normative paragraphs (Discovery priority order + Positional argument resolution + --from-file exclusivity); 9 net-new scenarios (1 happy path + 7 edge cases + 1 audit-trail-evidence resolution-log scenario)"
+      },
+      {
+        "capability": "orbit-run-summary-emit",
+        "operation": "MODIFIED",
+        "requirement": "Audit-drift standalone recommendations",
+        "scenarios_before": 5,
+        "scenarios_after": 5,
+        "note": "change-scoped recommendation drops --from-file (auto-discovery handles it); project-wide unchanged; L412 forward-reference to #10/#4 retired and replaced with date-neutral historical note"
+      }
+    ],
+    "validation": "openspec validate --all --strict → 11/11 pass"
+  },
+  "artifacts_complete": true,
+  "tasks_complete": true,
+  "unresolved_review_markers": 0,
+  "archive_path": "openspec/changes/archive/2026-05-26-address-reviews-auto-discovers-internal-json/",
+  "iteration_history_summary": {
+    "propose": 1,
+    "review_proposal_internal": 2,
+    "review_proposal_external": 1,
+    "address_reviews_proposal": 2,
+    "apply_chunks": 3,
+    "review_system_internal": 2,
+    "review_system_external": 1,
+    "address_reviews_system": 1,
+    "total_orbit_runs_files": 17,
+    "convergence_state_at_archive": 3,
+    "convergence_state_label_at_archive": "Path B convergence: external findings resolved via address-reviews",
+    "key_inflection_points": [
+      "proposal iter-1 internal: 5 findings resolved inline (the meta-irony pattern — this change is what closes the workaround)",
+      "proposal iter-1 external GPT-5 Codex: 4 WARNs (all substantive precision-tightening: archive resolver algorithm, audit-trail-evidence fields, residue cleanup, --from-file exclusivity per Option A)",
+      "system iter-1 external GPT-5 Codex: 2 WARNs + 3 SUGGs — SUGG 2 triggered scope expansion to add 2nd capability delta (orbit-run-summary-emit audit-drift recommendation update); honors baseline L412's own forward-reference",
+      "system iter-2 internal --fresh: Path B convergence achieved; 1 cosmetic SUGG (historical-note self-reference) inline-fixed before archive"
+    ]
+  },
+  "warnings": []
+}
