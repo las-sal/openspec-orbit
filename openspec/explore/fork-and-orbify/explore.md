@@ -235,6 +235,16 @@ Implications (refine D11):
 
 Sources: developers.openai.com/codex/skills · github.com/openai/codex/blob/main/docs/skills.md
 
+### D12 — Rip out telemetry entirely in A1 (RATIFIED; resolves Q6)
+
+A hard fork that is deliberately *not* upstream-affiliated and runs as a personal tool has no reason
+to phone home to Fission/PostHog. **Remove telemetry entirely** (not opt-in — opt-in leaves dead
+surface area that would never be enabled): delete `src/telemetry/`, the `posthog-node` dependency,
+the two Commander `preAction`/`postAction` hooks in `cli/index.ts` (`trackCommand` / `shutdown`), and
+the first-run notice (`maybeShowTelemetryNotice`). Isolated, low-risk; done as part of A1. Closes the
+last substantive A1 gate — only the parkable naming sub-decisions (repo / npm package / bin name)
+remain before A1 can start.
+
 ---
 
 ## Open questions
@@ -272,10 +282,10 @@ cross-doc consistency, archive coherence). The artifact-graph is per-change. Doe
 orthogonal (a global command), or become a special "global gate" the archive phase consults? The
 engine has no concept of project-scoped phases today.
 
-### Q6 — Telemetry: rip out posthog or make opt-in?
+### Q6 — Telemetry: rip out posthog or make opt-in? ✅ RESOLVED by D12
 
-`telemetry/` + `posthog-node` + the Commander pre/postAction hooks. Isolated, easy to remove. A fork
-almost certainly wants it gone or opt-in. (Likely a D-level decision once confirmed.)
+**Resolved:** rip it out entirely in A1 (not opt-in) — `src/telemetry/`, `posthog-node`, the two
+Commander hooks, and the first-run notice. See D12.
 
 ### Q7 — Upstream rebase strategy
 
