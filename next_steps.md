@@ -102,6 +102,10 @@ Open shape questions to revisit:
 
 Likely overlaps with the macro-architecture section above — worth merging the framings when this gets picked up.
 
+**Worked exemplar (2026-06-05) — use as training/input when building this.** The fork-and-orbify planning session is a near-perfect specimen of the gap this mode fills: the work wasn't a *change*, it was establishing the strategic frame, decomposing a multi-workstream effort into a phased program, and identifying decision-forcing-functions *before any proposal existed*. `/opsx:explore` was the closest tool but it thinks about *one* problem — nothing owned the cross-change arc (the 6-change DAG, the "parity milestone", which decisions are forcing-functions). That cross-change ownership is exactly the mastermind/architect layer.
+- Parent artifact produced: `openspec/architecture/openspec-1.3.1-architecture.md` (the grounding deep-dive) + `openspec/explore/fork-and-orbify/explore.md` (the exploration).
+- The decomposition that session produced (1 foundation + 3 cohesion + 2 capability changes, organized by a "parity milestone") is itself the kind of output `/opsx:architect` should generate — chunking an architecture into a dependency-ordered set of child proposals. Mine this session's chat transcript for the interaction shape when picking this up.
+
 ## Deterministic-helper extraction (orbit-lib)
 
 This is **Phase 1-2 of the orbit-v2 pivot** (per the seed above), but worth capturing standalone — it's a substantive architectural question independent of the rest of the pivot.
